@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.ProducerContentValidation.FunctionApp", "EPR.ProducerContentValidation.FunctionApp\EPR.ProducerContentValidation.FunctionApp.csproj", "{28E03AA1-AB29-41C5-9749-8E657B523677}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.ProducerContentValidation.FunctionApp.UnitTests", "EPR.ProducerContentValidation.FunctionApp.UnitTests\EPR.ProducerContentValidation.FunctionApp.UnitTests.csproj", "{B320427A-D6E5-4526-850A-4CD6395B40A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.ProducerContentValidation.Application", "EPR.ProducerContentValidation.Application\EPR.ProducerContentValidation.Application.csproj", "{05AFF197-3A91-4785-A053-C949984A0168}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.ProducerContentValidation.Application.UnitTests", "EPR.ProducerContentValidation.Application.UnitTests\EPR.ProducerContentValidation.Application.UnitTests.csproj", "{41F0031E-EFF7-4C25-9934-5C5D9A95C85C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.ProducerContentValidation.TestSupport", "EPR.ProducerContentValidation.TestSupport\EPR.ProducerContentValidation.TestSupport.csproj", "{3CFB967D-D84E-44E0-91A4-55B44EEC5215}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0408BD47-B8AF-4972-9D34-41078B6EE09E}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		stylecop.ruleset = stylecop.ruleset
+		..\README.md = ..\README.md
+		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
+		..\LICENCE.md = ..\LICENCE.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{28E03AA1-AB29-41C5-9749-8E657B523677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28E03AA1-AB29-41C5-9749-8E657B523677}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28E03AA1-AB29-41C5-9749-8E657B523677}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28E03AA1-AB29-41C5-9749-8E657B523677}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B320427A-D6E5-4526-850A-4CD6395B40A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B320427A-D6E5-4526-850A-4CD6395B40A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B320427A-D6E5-4526-850A-4CD6395B40A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B320427A-D6E5-4526-850A-4CD6395B40A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05AFF197-3A91-4785-A053-C949984A0168}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05AFF197-3A91-4785-A053-C949984A0168}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05AFF197-3A91-4785-A053-C949984A0168}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05AFF197-3A91-4785-A053-C949984A0168}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41F0031E-EFF7-4C25-9934-5C5D9A95C85C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41F0031E-EFF7-4C25-9934-5C5D9A95C85C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41F0031E-EFF7-4C25-9934-5C5D9A95C85C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41F0031E-EFF7-4C25-9934-5C5D9A95C85C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CFB967D-D84E-44E0-91A4-55B44EEC5215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CFB967D-D84E-44E0-91A4-55B44EEC5215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CFB967D-D84E-44E0-91A4-55B44EEC5215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CFB967D-D84E-44E0-91A4-55B44EEC5215}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

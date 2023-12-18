@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "ServiceBus:ConnectionString": "Endpoint=sb://devrwdinfsb1401.servicebus.windows.net/",
+    "ServiceBus:SplitQueueName": "defra.epr.producer.data",
+    "SubmissionApi:BaseUrl": "https://localhost:1234",
+    "Validation:Disabled": false,
+    "StorageAccount:PomContainer": "pom-upload-container",
+    "Validation:MaxIssuesToProcess": 1000,
+    "Redis:ConnectionString": "https://localhost:1234"
+  }
+}

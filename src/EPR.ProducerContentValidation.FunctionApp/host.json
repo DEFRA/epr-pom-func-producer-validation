@@ -1,0 +1,17 @@
+{
+  "version": "2.0",
+  "logging": {
+    "fileLoggingMode": "always",
+    "logLevel": {
+      "EPR.ProducerContentValidation.FunctionApp": "Information",
+      "ApplicationInsights": "Information",
+      "Default": "Information"
+    },
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "excludedTypes": "Request"
+      }
+    }
+  }
+}

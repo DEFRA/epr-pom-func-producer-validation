@@ -1,0 +1,68 @@
+{
+	"info": {
+		"_postman_id": "58eb00d5-b2bb-4a94-b228-343303021a92",
+		"name": "ProducerValidationFunction",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22519636"
+	},
+	"item": [
+		{
+			"name": "ValidRequest",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"OrganisationId\": \"0c8e3368-80de-46e0-9a71-f5a64e5b8c33\",\n    \"UserId\": \"2f4ec7ed-58c2-43e0-8c9d-744e66075f8b\",\n    \"SubmissionId\": \"a0aacc43-4ac9-4cb6-b4b0-7f837c1623e7\",\n    \"ProducerId\": \"a27bed93-990f-4547-8673-7c050a24d531\",\n    \"Lines\": [\n        {\n            \"RowNumber\": 1,\n            \"ProducerType\": \"BO\",\n            \"WasteType\": \"Waste Type A\",\n            \"PackagingCategory\": \"PC\",\n            \"MaterialType\": \"MT\",\n            \"MaterialSubType\": \"MST\",\n            \"FromHomeNation\": \"FHC\",\n            \"ToHomeNation\": \"THC\",\n            \"QuantityKg\": 1,\n            \"QuantityUnits\": 1\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/validate-producer-content",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"validate-producer-content"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "InvalidRequest",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"OrganisationId\": \"0c8e3368-80de-46e0-9a71-f5a64e5b8c33\",\n    \"UserId\": \"2f4ec7ed-58c2-43e0-8c9d-744e66075f8b\",\n    \"SubmissionId\": \"a0aacc43-4ac9-4cb6-b4b0-7f837c1623e7\",\n    \"ProducerId\": \"a27bed93-990f-4547-8673-7c050a24d531\",\n    \"Lines\": [\n        {\n            \"RowNumber\": 1,\n            \"ProducerType\": \"B\",\n            \"WasteType\": \"Waste Type\",\n            \"PackagingCategory\": \"PC\",\n            \"MaterialType\": \"MT\",\n            \"MaterialSubType\": \"MST\",\n            \"FromHomeNation\": \"FHC\",\n            \"ToHomeNation\": \"THC\",\n            \"QuantityKg\": 1,\n            \"QuantityUnits\": 1\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/validate-producer-content",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"validate-producer-content"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
