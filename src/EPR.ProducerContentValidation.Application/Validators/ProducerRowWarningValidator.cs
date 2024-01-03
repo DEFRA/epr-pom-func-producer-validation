@@ -11,5 +11,6 @@ public class ProducerRowWarningValidator : AbstractValidator<ProducerRow>
     public ProducerRowWarningValidator()
     {
         Include(new QuantityKgValidator());
+        Include(new DrinksContainerQuantityUnitWeightValidator());
     }
 }

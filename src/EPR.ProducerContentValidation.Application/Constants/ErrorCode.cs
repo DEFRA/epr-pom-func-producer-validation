@@ -47,6 +47,7 @@ public static class ErrorCode
     public const string InvalidSubmissionPeriodFor2023P3 = "55";
     /* Error codes for warnings */
     public const string WarningPackagingMaterialWeightLessThan100 = "59";
+    public const string WarningPackagingTypeQuantityUnitsLessThanQuantityKgs = "64";
     /* Error codes 80 through 89 should be reserved for errors from the Check Splitter API */
     public const string UncaughtExceptionErrorCode = "99";
 }
