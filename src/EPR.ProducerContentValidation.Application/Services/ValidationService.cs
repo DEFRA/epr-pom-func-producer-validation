@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Extensions;
 using EPR.ProducerContentValidation.Application.Models;
@@ -33,10 +34,13 @@ public class ValidationService : IValidationService
     {
         _logger.LogEnter();
 
-        var errors = await _compositeValidator.ValidateAndFetchForErrorsAsync(producer.Rows, producer.BlobName);
-        var warnings = await _compositeValidator.ValidateAndFetchForWarningsAsync(producer.Rows, producer.BlobName);
+        var errorStoreKey = FormatStoreKey(producer.BlobName, IssueType.Error);
+        var warningStoreKey = FormatStoreKey(producer.BlobName, IssueType.Warning);
 
-        await _compositeValidator.ValidateDuplicatesAndGroupedData(producer, errors);
+        var errors = await _compositeValidator.ValidateAndFetchForErrorsAsync(producer.Rows, errorStoreKey, producer.BlobName);
+        var warnings = await _compositeValidator.ValidateAndFetchForWarningsAsync(producer.Rows, warningStoreKey, producer.BlobName);
+
+        await _compositeValidator.ValidateDuplicatesAndGroupedData(producer.Rows, errorStoreKey, errors, producer.BlobName);
 
         var producerValidationOutRequest = _mapper.Map<SubmissionEventRequest>(producer) with
         {
@@ -49,5 +53,10 @@ public class ValidationService : IValidationService
         _logger.LogExit();
 
         return producerValidationOutRequest;
+    }
+
+    private static string FormatStoreKey(string blobName, string issueType)
+    {
+        return $"{blobName}:{issueType}";
     }
 }

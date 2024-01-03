@@ -16,20 +16,20 @@ public class CompositeValidator : ICompositeValidator
     private readonly IValidator<ProducerRow> _producerRowWarningValidator;
     private readonly IGroupedValidator _groupedValidator;
     private readonly IDuplicateValidator _duplicateValidator;
-    private readonly IErrorCountService _errorCountService;
+    private readonly IIssueCountService _issueCountService;
     private readonly IMapper _mapper;
     private readonly ValidationOptions _validationOptions;
 
     public CompositeValidator(
         IOptions<ValidationOptions> validationOptions,
-        IErrorCountService errorCountService,
+        IIssueCountService issueCountService,
         IMapper mapper,
         IProducerRowValidatorFactory producerRowValidatorFactory,
         IProducerRowWarningValidatorFactory producerRowWarningValidatorFactory,
         IGroupedValidator groupedValidator,
         IDuplicateValidator duplicateValidator)
     {
-        _errorCountService = errorCountService;
+        _issueCountService = issueCountService;
         _mapper = mapper;
         _validationOptions = validationOptions.Value;
 
@@ -39,12 +39,12 @@ public class CompositeValidator : ICompositeValidator
         _duplicateValidator = duplicateValidator;
     }
 
-    public async Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForErrorsAsync(IEnumerable<ProducerRow> rows, string blobName)
+    public async Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForErrorsAsync(IEnumerable<ProducerRow> producerRows, string errorStoreKey, string blobName)
     {
         var errors = new List<ProducerValidationEventIssueRequest>();
-        var remainingErrorCountToProcess = await _errorCountService.GetRemainingErrorCapacityAsync(blobName);
+        var remainingErrorCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey);
 
-        foreach (var row in rows.TakeWhile(_ => remainingErrorCountToProcess > 0))
+        foreach (var row in producerRows.TakeWhile(_ => remainingErrorCountToProcess > 0))
         {
             var rowValidationResult = await _producerRowValidator.ValidateAsync(row);
 
@@ -57,8 +57,8 @@ public class CompositeValidator : ICompositeValidator
                 .Take(remainingErrorCountToProcess)
                 .ToList();
 
-            await _errorCountService.IncrementErrorCountAsync(blobName, errorCodes.Count);
-            remainingErrorCountToProcess = await _errorCountService.GetRemainingErrorCapacityAsync(blobName);
+            await _issueCountService.IncrementIssueCountAsync(errorStoreKey, errorCodes.Count);
+            remainingErrorCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey);
 
             errors.Add(_mapper.Map<ProducerValidationEventIssueRequest>(row) with
             {
@@ -70,10 +70,12 @@ public class CompositeValidator : ICompositeValidator
         return errors;
     }
 
-    public async Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForWarningsAsync(IEnumerable<ProducerRow> rows, string blobName)
+    public async Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForWarningsAsync(IEnumerable<ProducerRow> producerRows, string warningStoreKey, string blobName)
     {
         var warnings = new List<ProducerValidationEventIssueRequest>();
-        foreach (var row in rows)
+        var remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(warningStoreKey);
+
+        foreach (var row in producerRows.TakeWhile(_ => remainingWarningCountToProcess > 0))
         {
             var rowValidationResult = await _producerRowWarningValidator.ValidateAsync(row);
 
@@ -82,7 +84,12 @@ public class CompositeValidator : ICompositeValidator
                 continue;
             }
 
-            var errorCodes = rowValidationResult.Errors.Select(x => x.ErrorCode).ToList();
+            var errorCodes = rowValidationResult.Errors.Select(x => x.ErrorCode)
+                .Take(remainingWarningCountToProcess)
+                .ToList();
+
+            await _issueCountService.IncrementIssueCountAsync(warningStoreKey, errorCodes.Count);
+            remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(warningStoreKey);
 
             warnings.Add(_mapper.Map<ProducerValidationEventIssueRequest>(row) with
             {
@@ -94,19 +101,18 @@ public class CompositeValidator : ICompositeValidator
         return warnings;
     }
 
-    public async Task ValidateDuplicatesAndGroupedData(Producer producer, List<ProducerValidationEventIssueRequest> errors)
+    public async Task ValidateDuplicatesAndGroupedData(IEnumerable<ProducerRow> producerRows, string errorStoreKey, List<ProducerValidationEventIssueRequest> errors, string blobName)
     {
         if (_validationOptions.Disabled)
         {
             return;
         }
 
-        var remainingErrorCountToProcess = await _errorCountService.GetRemainingErrorCapacityAsync(producer.BlobName);
+        var remainingErrorCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey);
         if (remainingErrorCountToProcess > 0)
         {
-            var distinctRows = await _duplicateValidator.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
-            var producerWithDistinctRows = producer with { Rows = distinctRows };
-            await _groupedValidator.ValidateAndAddErrorsAsync(producerWithDistinctRows, producer.BlobName, errors);
+            var distinctRows = await _duplicateValidator.ValidateAndAddErrorsAsync(producerRows, errorStoreKey, errors, blobName);
+            await _groupedValidator.ValidateAndAddErrorsAsync(distinctRows, errorStoreKey, errors, blobName);
         }
     }
 }

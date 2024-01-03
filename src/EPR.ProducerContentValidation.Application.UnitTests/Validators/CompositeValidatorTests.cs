@@ -20,18 +20,18 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Validators;
 [TestClass]
 public class CompositeValidatorTests
 {
-    private const string BlobName = "some-blob-name";
+    private const string BlobName = "blobName";
+    private const string StoreKey = $"{BlobName}:error";
     private const string ErrorCodeOne = "1";
     private const string ProducerId = "000123";
 
     private readonly IMapper _mapper;
-    private readonly Mock<IErrorCountService> _errorCountServiceMock;
+    private readonly Mock<IIssueCountService> _issueCountServiceMock;
     private readonly Mock<IDuplicateValidator> _duplicateValidatorMock;
     private readonly Mock<IGroupedValidator> _groupedValidatorMock;
     private readonly Mock<IProducerRowValidatorFactory> _producerRowValidatorFactoryMock;
     private readonly Mock<IProducerRowWarningValidatorFactory> _producerRowWarningValidatorFactoryMock;
     private readonly Mock<IValidator<ProducerRow>> _producerRowValidatorMock;
-    private readonly Guid _submissionId = Guid.NewGuid();
     private readonly Mock<ValidationFailure> _validationFailureMock;
     private readonly Mock<ValidationResult> _validationResultMock;
 
@@ -43,7 +43,7 @@ public class CompositeValidatorTests
     {
         _options = new ValidationOptions { Disabled = false };
         _mapper = AutoMapperHelpers.GetMapper<ProducerProfile>();
-        _errorCountServiceMock = new Mock<IErrorCountService>();
+        _issueCountServiceMock = new Mock<IIssueCountService>();
         _duplicateValidatorMock = new Mock<IDuplicateValidator>();
         _groupedValidatorMock = new Mock<IGroupedValidator>();
         _producerRowValidatorFactoryMock = new Mock<IProducerRowValidatorFactory>();
@@ -61,7 +61,7 @@ public class CompositeValidatorTests
 
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
-            _errorCountServiceMock.Object,
+            _issueCountServiceMock.Object,
             _mapper,
             _producerRowValidatorFactoryMock.Object,
             _producerRowWarningValidatorFactoryMock.Object,
@@ -74,35 +74,35 @@ public class CompositeValidatorTests
     }
 
     [TestMethod]
-    public async Task ValidateAndFetchForErrorsAsync_DoesNotValidateRows_WhenTheMaxNumberOfErrorsForBlobNameHasAlreadyBeenProcessed()
+    public async Task ValidateAndFetchForErrorsAsync_DoesNotValidateRows_WhenTheMaxNumberOfErrorsForStoreKeyHasAlreadyBeenProcessed()
     {
         // Arrange
         var producerRows = new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) };
 
-        _errorCountServiceMock
-            .Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()))
+        _issueCountServiceMock
+            .Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
             .ReturnsAsync(0);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, StoreKey, BlobName);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>());
 
-        _errorCountServiceMock
-            .Verify(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()), Times.Once);
+        _issueCountServiceMock
+            .Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Once);
     }
 
     [TestMethod]
-    public async Task ValidateAndFetchForErrorsAsync_StopsAddingErrors_WhenTheMaxNumberOfErrorsForBlobNameHasBeenProcessed()
+    public async Task ValidateAndFetchForErrorsAsync_StopsAddingErrors_WhenTheMaxNumberOfErrorsForStoreKeyHasBeenProcessed()
     {
         // Arrange
         var producerRow = ModelGenerator.CreateProducerRow(1);
         var producerRowTwo = ModelGenerator.CreateProducerRow(2);
         var producerRows = new List<ProducerRow> { producerRow, producerRowTwo };
 
-        _errorCountServiceMock
-            .SetupSequence(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()))
+        _issueCountServiceMock
+            .SetupSequence(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
             .ReturnsAsync(1)
             .ReturnsAsync(0);
 
@@ -110,7 +110,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, StoreKey, BlobName);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>
@@ -134,21 +134,21 @@ public class CompositeValidatorTests
                 new List<string> { ErrorCodeOne })
         });
 
-        _errorCountServiceMock
-            .Verify(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()), Times.Exactly(2));
-        _errorCountServiceMock
-            .Verify(x => x.IncrementErrorCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
+        _issueCountServiceMock
+            .Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Exactly(2));
+        _issueCountServiceMock
+            .Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
     }
 
     [TestMethod]
-    public async Task ValidateAndFetchForErrorsAsync_StopsValidatingFurtherRows_WhenTheMaxNumberOfErrorsForBlobNameHasBeenProcessed()
+    public async Task ValidateAndFetchForErrorsAsync_StopsValidatingFurtherRows_WhenTheMaxNumberOfErrorsForStoreKeyHasBeenProcessed()
     {
         // Arrange
         var producerRowOne = ModelGenerator.CreateProducerRow(1);
         var producerRows = new List<ProducerRow> { producerRowOne, ModelGenerator.CreateProducerRow(2), ModelGenerator.CreateProducerRow(3) };
 
-        _errorCountServiceMock
-            .SetupSequence(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()))
+        _issueCountServiceMock
+            .SetupSequence(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
             .ReturnsAsync(1)
             .ReturnsAsync(0);
 
@@ -156,7 +156,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, StoreKey, BlobName);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>
@@ -180,31 +180,144 @@ public class CompositeValidatorTests
                 new List<string> { ErrorCodeOne })
         });
 
-        _errorCountServiceMock
-            .Verify(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()), Times.Exactly(2));
-        _errorCountServiceMock
-            .Verify(x => x.IncrementErrorCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
+        _issueCountServiceMock
+            .Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Exactly(2));
+        _issueCountServiceMock
+            .Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
     }
 
     [TestMethod]
-    public async Task ValidateAndFetchForWarningsAsync_ValidateAndFetchForWarningsAsync_ProcessesAtLeastOneWarningWithInconsistentData()
+    public async Task ValidateAndFetchForWarningsAsync_ProcessesAtLeastOneWarningWithInconsistentData()
     {
         // Arrange
         var producerRowOne = ModelGenerator.CreateProducerRow(1);
         var producerRows = new List<ProducerRow> { producerRowOne };
 
-        _errorCountServiceMock
-            .Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()))
+        _issueCountServiceMock
+            .Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
+            .ReturnsAsync(1);
+
+        _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ProducerRow>(), default))
+            .ReturnsAsync(_validationResultMock.Object);
+
+        // Act
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName);
+
+        // Assert
+        result.Count.Should().Be(1);
+    }
+
+    [TestMethod]
+    public async Task ValidateAndFetchForWarningsAsync_DoesNotValidateRows_WhenTheMaxNumberOfErrorsForStoreKeyHasAlreadyBeenProcessed()
+    {
+        // Arrange
+        var producerRows = new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) };
+
+        _issueCountServiceMock
+            .Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
+            .ReturnsAsync(0);
+
+        // Act
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName);
+
+        // Assert
+        result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>());
+
+        _issueCountServiceMock
+            .Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task ValidateAndFetchForWarningsAsync_StopsAddingErrors_WhenTheMaxNumberOfErrorsForStoreKeyHasBeenProcessed()
+    {
+        // Arrange
+        var producerRow = ModelGenerator.CreateProducerRow(1);
+        var producerRowTwo = ModelGenerator.CreateProducerRow(2);
+        var producerRows = new List<ProducerRow> { producerRow, producerRowTwo };
+
+        _issueCountServiceMock
+            .SetupSequence(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
+            .ReturnsAsync(1)
             .ReturnsAsync(0);
 
         _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ProducerRow>(), default))
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName);
 
         // Assert
-        result.Count.Should().Be(1);
+        result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>
+        {
+            new(
+                producerRow.SubsidiaryId,
+                producerRow.DataSubmissionPeriod,
+                producerRow.RowNumber,
+                ProducerId,
+                producerRow.ProducerType,
+                producerRow.ProducerSize,
+                producerRow.WasteType,
+                producerRow.PackagingCategory,
+                producerRow.MaterialType,
+                producerRow.MaterialSubType,
+                producerRow.FromHomeNation,
+                producerRow.ToHomeNation,
+                producerRow.QuantityKg,
+                producerRow.QuantityUnits,
+                BlobName,
+                new List<string> { ErrorCodeOne })
+        });
+
+        _issueCountServiceMock
+            .Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Exactly(2));
+        _issueCountServiceMock
+            .Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task ValidateAndFetchForWarningsAsync_StopsValidatingFurtherRows_WhenTheMaxNumberOfErrorsForStoreKeyHasBeenProcessed()
+    {
+        // Arrange
+        var producerRowOne = ModelGenerator.CreateProducerRow(1);
+        var producerRows = new List<ProducerRow> { producerRowOne, ModelGenerator.CreateProducerRow(2), ModelGenerator.CreateProducerRow(3) };
+
+        _issueCountServiceMock
+            .SetupSequence(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
+            .ReturnsAsync(1)
+            .ReturnsAsync(0);
+
+        _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ProducerRow>(), default))
+            .ReturnsAsync(_validationResultMock.Object);
+
+        // Act
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName);
+
+        // Assert
+        result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>
+        {
+            new(
+                producerRowOne.SubsidiaryId,
+                producerRowOne.DataSubmissionPeriod,
+                producerRowOne.RowNumber,
+                ProducerId,
+                producerRowOne.ProducerType,
+                producerRowOne.ProducerSize,
+                producerRowOne.WasteType,
+                producerRowOne.PackagingCategory,
+                producerRowOne.MaterialType,
+                producerRowOne.MaterialSubType,
+                producerRowOne.FromHomeNation,
+                producerRowOne.ToHomeNation,
+                producerRowOne.QuantityKg,
+                producerRowOne.QuantityUnits,
+                BlobName,
+                new List<string> { ErrorCodeOne })
+        });
+
+        _issueCountServiceMock
+            .Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Exactly(2));
+        _issueCountServiceMock
+            .Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
     }
 
     [TestMethod]
@@ -213,16 +326,15 @@ public class CompositeValidatorTests
         // Arrange
         var producerRowOne = ModelGenerator.CreateProducerRow(1);
         var producerRows = new List<ProducerRow> { producerRowOne };
-        var producer = new Producer(_submissionId, ProducerId, BlobName, producerRows);
         _options = new ValidationOptions { Disabled = true };
 
-        _errorCountServiceMock
-            .Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()))
+        _issueCountServiceMock
+            .Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
             .ReturnsAsync(5);
 
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
-            _errorCountServiceMock.Object,
+            _issueCountServiceMock.Object,
             _mapper,
             _producerRowValidatorFactoryMock.Object,
             _producerRowWarningValidatorFactoryMock.Object,
@@ -230,43 +342,42 @@ public class CompositeValidatorTests
             _duplicateValidatorMock.Object);
 
         // Act
-        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producer, It.IsAny<List<ProducerValidationEventIssueRequest>>());
+        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producerRows, StoreKey, It.IsAny<List<ProducerValidationEventIssueRequest>>(), BlobName);
 
         // Assert
-        _errorCountServiceMock
-            .Verify(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()), Times.Never);
-        _errorCountServiceMock
-            .Verify(x => x.IncrementErrorCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
+        _issueCountServiceMock
+            .Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Never);
+        _issueCountServiceMock
+            .Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
         _duplicateValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<Producer>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>()), Times.Never);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
         _groupedValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<Producer>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>()), Times.Never);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
-    public async Task ValidateAsync_DoesNotValidateForDuplicateRowsOrGroupedRows_WhenTheValidationDisabledFeatureFlagIsFalseButTheMaxNumberOfErrorsForBlobNameHasBeenProcessed()
+    public async Task ValidateAsync_DoesNotValidateForDuplicateRowsOrGroupedRows_WhenTheValidationDisabledFeatureFlagIsFalseButTheMaxNumberOfErrorsForStoreKeyHasBeenProcessed()
     {
         // Arrange
         var producerRows = new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) };
-        var producer = new Producer(_submissionId, ProducerId, BlobName, producerRows);
         _options = new ValidationOptions { Disabled = false };
 
-        _errorCountServiceMock
-            .Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()))
+        _issueCountServiceMock
+            .Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
             .ReturnsAsync(0);
 
         // Act
-        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producer, new List<ProducerValidationEventIssueRequest>());
+        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producerRows, StoreKey, new List<ProducerValidationEventIssueRequest>(), BlobName);
 
         // Assert
-        _errorCountServiceMock
-            .Verify(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()), Times.Once());
-        _errorCountServiceMock
-            .Verify(x => x.IncrementErrorCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
+        _issueCountServiceMock
+            .Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Once());
+        _issueCountServiceMock
+            .Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
         _duplicateValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<Producer>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>()), Times.Never);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
         _groupedValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<Producer>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>()), Times.Never);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
@@ -274,24 +385,23 @@ public class CompositeValidatorTests
     {
         // Arrange
         var producerRows = new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) };
-        var producer = new Producer(_submissionId, ProducerId, BlobName, producerRows);
         _options = new ValidationOptions { Disabled = false };
 
-        _errorCountServiceMock
-            .Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()))
+        _issueCountServiceMock
+            .Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
             .ReturnsAsync(2);
 
         // Act
-        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producer, new List<ProducerValidationEventIssueRequest>());
+        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producerRows, StoreKey, new List<ProducerValidationEventIssueRequest>(), BlobName);
 
         // Assert
-        _errorCountServiceMock
-            .Verify(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()), Times.Once());
-        _errorCountServiceMock
-            .Verify(x => x.IncrementErrorCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
+        _issueCountServiceMock
+            .Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Once());
+        _issueCountServiceMock
+            .Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
         _duplicateValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<Producer>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>()), Times.Once);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Once);
         _groupedValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<Producer>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>()), Times.Once);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Once);
     }
 }

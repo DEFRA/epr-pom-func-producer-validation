@@ -4,13 +4,14 @@ using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.EqualityComparers;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
+using EPR.ProducerContentValidation.Application.Validators.Interfaces;
 
 namespace EPR.ProducerContentValidation.Application.Validators;
 
 public class DuplicateValidator : IDuplicateValidator
 {
     private readonly IMapper _mapper;
-    private readonly IErrorCountService _errorCountService;
+    private readonly IIssueCountService _issueCountService;
 
     private readonly List<string> _skipRuleErrorCodes = new()
     {
@@ -28,21 +29,20 @@ public class DuplicateValidator : IDuplicateValidator
         ErrorCode.SubsidiaryIdInvalidErrorCode,
     };
 
-    public DuplicateValidator(IMapper mapper, IErrorCountService errorCountService)
+    public DuplicateValidator(IMapper mapper, IIssueCountService issueCountService)
     {
         _mapper = mapper;
-        _errorCountService = errorCountService;
+        _issueCountService = issueCountService;
     }
 
-    public async Task<List<ProducerRow>> ValidateAndAddErrorsAsync(Producer producer, string blobName, List<ProducerValidationEventIssueRequest> errorRows)
+    public async Task<List<ProducerRow>> ValidateAndAddErrorsAsync(IEnumerable<ProducerRow> producerRows, string errorStoreKey, List<ProducerValidationEventIssueRequest> errorRows, string blobName)
     {
         var rowsNumbersToExclude = errorRows
             .Where(x => x.ErrorCodes.Any(y => _skipRuleErrorCodes.Contains(y)))
             .Select(r => r.RowNumber)
             .ToList();
 
-        var rowsToValidate = producer
-            .Rows
+        var rowsToValidate = producerRows
             .Where(x => !rowsNumbersToExclude.Contains(x.RowNumber))
             .ToList();
 
@@ -63,7 +63,7 @@ public class DuplicateValidator : IDuplicateValidator
 
         var errorRowsNumber = errorRows.Select(x => x.RowNumber).ToList();
 
-        var remainingErrorCountToProcess = await _errorCountService.GetRemainingErrorCapacityAsync(blobName);
+        var remainingErrorCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey);
 
         var onlyWithDuplicateErrorRows = duplicateRows
             .Where(d => !errorRowsNumber.Contains(d.RowNumber))
@@ -74,7 +74,7 @@ public class DuplicateValidator : IDuplicateValidator
                 BlobName = blobName
             }).ToList();
 
-        await _errorCountService.IncrementErrorCountAsync(blobName, onlyWithDuplicateErrorRows.Count);
+        await _issueCountService.IncrementIssueCountAsync(errorStoreKey, onlyWithDuplicateErrorRows.Count);
 
         errorRows.AddRange(onlyWithDuplicateErrorRows);
 

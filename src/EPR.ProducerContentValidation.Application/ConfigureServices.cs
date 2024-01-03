@@ -31,7 +31,7 @@ public static class ConfigureServices
             .AddScoped<IValidationService, ValidationService>()
             .AddScoped<ISubmissionApiClient, SubmissionApiClient>()
             .AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisOptions.ConnectionString))
-            .AddSingleton<IErrorCountService, ErrorCountService>();
+            .AddSingleton<IIssueCountService, IssueCountService>();
     }
 
     private static IServiceCollection ConfigureOptions(this IServiceCollection services)

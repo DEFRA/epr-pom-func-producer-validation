@@ -3,32 +3,33 @@ using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
+using EPR.ProducerContentValidation.Application.Validators.Interfaces;
 
 namespace EPR.ProducerContentValidation.Application.Validators;
 
 public class GroupedValidator : IGroupedValidator
 {
     private readonly IMapper _mapper;
-    private readonly IErrorCountService _errorCountService;
+    private readonly IIssueCountService _issueCountService;
     private int _remainingErrorCount;
 
-    public GroupedValidator(IMapper mapper, IErrorCountService errorCountService)
+    public GroupedValidator(IMapper mapper, IIssueCountService issueCountService)
     {
         _mapper = mapper;
-        _errorCountService = errorCountService;
+        _issueCountService = issueCountService;
     }
 
-    public async Task ValidateAndAddErrorsAsync(Producer producer, string blobName, List<ProducerValidationEventIssueRequest> errorRows)
+    public async Task ValidateAndAddErrorsAsync(List<ProducerRow> producerRows, string errorStoreKey, List<ProducerValidationEventIssueRequest> errorRows, string blobName)
     {
-        Interlocked.Exchange(ref _remainingErrorCount, await _errorCountService.GetRemainingErrorCapacityAsync(blobName));
-        if (_remainingErrorCount <= 0)
+        Interlocked.Exchange(ref _remainingErrorCount, await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey));
+        if (_remainingErrorCount <= 0 || producerRows.Count <= 0)
         {
             return;
         }
 
-        var submissionPeriodsTask = ValidateConsistentDataSubmissionPeriods(producer, blobName, errorRows);
-        var selfManagedWasteTransfersTask = ValidateAndAddErrorForSelfManagedWasteTransfersAsync(producer, blobName, errorRows);
-        Task.WhenAll(submissionPeriodsTask, selfManagedWasteTransfersTask);
+        var submissionPeriodsTask = ValidateConsistentDataSubmissionPeriods(producerRows, errorStoreKey, errorRows, blobName);
+        var selfManagedWasteTransfersTask = ValidateAndAddErrorForSelfManagedWasteTransfersAsync(producerRows, errorStoreKey, errorRows, blobName);
+        await Task.WhenAll(submissionPeriodsTask, selfManagedWasteTransfersTask);
     }
 
     private static decimal ParseWeight(string quantityKg)
@@ -36,9 +37,9 @@ public class GroupedValidator : IGroupedValidator
         return decimal.TryParse(quantityKg, out var kg) ? kg : 0;
     }
 
-    private async Task ValidateAndAddErrorForSelfManagedWasteTransfersAsync(Producer producer, string blobName, List<ProducerValidationEventIssueRequest> errorRows)
+    private async Task ValidateAndAddErrorForSelfManagedWasteTransfersAsync(IEnumerable<ProducerRow> producerRows, string errorStoreKey, ICollection<ProducerValidationEventIssueRequest> errorRows, string blobName)
     {
-        var filteredRows = producer.Rows.Where(row => row.WasteType == PackagingType.SelfManagedConsumerWaste || row.WasteType == PackagingType.SelfManagedOrganisationWaste).ToList();
+        var filteredRows = producerRows.Where(row => row.WasteType == PackagingType.SelfManagedConsumerWaste || row.WasteType == PackagingType.SelfManagedOrganisationWaste).ToList();
 
         var groupedRows = filteredRows
             .GroupBy(row => new { row.SubsidiaryId, row.WasteType, row.MaterialType, row.FromHomeNation });
@@ -70,15 +71,14 @@ public class GroupedValidator : IGroupedValidator
             }
 
             var representativeRow = group.First();
-            FindAndAddError(representativeRow, blobName, errorRows, ErrorCode.SelfManagedWasteTransferInvalidErrorCode);
+            FindAndAddError(representativeRow, errorStoreKey, errorRows, ErrorCode.SelfManagedWasteTransferInvalidErrorCode, blobName);
         }
     }
 
-    private async Task ValidateConsistentDataSubmissionPeriods(Producer producer, string blobName, ICollection<ProducerValidationEventIssueRequest> errorRows)
+    private async Task ValidateConsistentDataSubmissionPeriods(IEnumerable<ProducerRow> producerRows, string errorStoreKey, ICollection<ProducerValidationEventIssueRequest> errorRows, string blobName)
     {
-        var firstProducerRow = producer.Rows.First();
-        var inconsistentDataSubmissionPeriodRow = producer
-            .Rows
+        var firstProducerRow = producerRows.First();
+        var inconsistentDataSubmissionPeriodRow = producerRows
             .FirstOrDefault(x => x.DataSubmissionPeriod != firstProducerRow.DataSubmissionPeriod);
 
         if (inconsistentDataSubmissionPeriodRow == null)
@@ -90,11 +90,11 @@ public class GroupedValidator : IGroupedValidator
 
         foreach (var row in rowsToReject.TakeWhile(_ => _remainingErrorCount > 0))
         {
-            FindAndAddError(row, blobName, errorRows, ErrorCode.DataSubmissionPeriodInconsistentErrorCode);
+            FindAndAddError(row, errorStoreKey, errorRows, ErrorCode.DataSubmissionPeriodInconsistentErrorCode, blobName);
         }
     }
 
-    private async Task FindAndAddError(ProducerRow row, string blobName, ICollection<ProducerValidationEventIssueRequest> errorRows, string errorCode)
+    private async Task FindAndAddError(ProducerRow row, string storeKey, ICollection<ProducerValidationEventIssueRequest> errorRows, string errorCode, string blobName)
     {
         var errorRow = errorRows
             .FirstOrDefault(x => x.RowNumber == row.RowNumber);
@@ -113,7 +113,7 @@ public class GroupedValidator : IGroupedValidator
             errorRow.ErrorCodes.Add(errorCode);
         }
 
-        await _errorCountService.IncrementErrorCountAsync(blobName, 1);
-        Interlocked.Exchange(ref _remainingErrorCount, await _errorCountService.GetRemainingErrorCapacityAsync(blobName));
+        await _issueCountService.IncrementIssueCountAsync(storeKey, 1);
+        Interlocked.Exchange(ref _remainingErrorCount, await _issueCountService.GetRemainingIssueCapacityAsync(storeKey));
     }
 }

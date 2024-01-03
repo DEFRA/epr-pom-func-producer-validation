@@ -34,10 +34,10 @@ public class ValidationServiceTests
         _mapper = AutoMapperHelpers.GetMapper<ProducerProfile>();
 
         _compositeValidatorMock
-            .Setup(x => x.ValidateAndFetchForErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>()))
+            .Setup(x => x.ValidateAndFetchForErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new List<ProducerValidationEventIssueRequest>());
         _compositeValidatorMock
-            .Setup(x => x.ValidateAndFetchForWarningsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>()))
+            .Setup(x => x.ValidateAndFetchForWarningsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new List<ProducerValidationEventIssueRequest>());
     }
 
@@ -48,60 +48,63 @@ public class ValidationServiceTests
         var producerRows = new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) with { QuantityKg = "80" } };
         var producer = new Producer(_submissionId, ProducerId, BlobName, producerRows);
 
-        var errorCodes = new List<string>();
-        errorCodes.Add("99");
+        var errorCodes = new List<string> { "99" };
 
-        var eventErrorRequests = new List<ProducerValidationEventIssueRequest>();
-        eventErrorRequests.Add(new ProducerValidationEventIssueRequest(
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            1,
-            ProducerId,
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            errorCodes));
+        var eventErrorRequests = new List<ProducerValidationEventIssueRequest>
+        {
+            new(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                1,
+                ProducerId,
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                errorCodes)
+        };
 
-        var eventWarningRequests = new List<ProducerValidationEventIssueRequest>();
-        eventWarningRequests.Add(new ProducerValidationEventIssueRequest(
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            1,
-            ProducerId,
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            errorCodes));
+        var eventWarningRequests = new List<ProducerValidationEventIssueRequest>
+        {
+            new(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                1,
+                ProducerId,
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                errorCodes)
+        };
 
         _compositeValidatorMock
-            .Setup(x => x.ValidateAndFetchForErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>()))
+            .Setup(x => x.ValidateAndFetchForErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(eventErrorRequests);
         _compositeValidatorMock
-            .Setup(x => x.ValidateAndFetchForWarningsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>()))
+            .Setup(x => x.ValidateAndFetchForWarningsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(eventWarningRequests);
 
         // Act
         var result = await CreateSystemUnderTest().ValidateAsync(producer);
 
         // Assert
-        _compositeValidatorMock.Verify(x => x.ValidateAndFetchForErrorsAsync(producerRows, It.IsAny<string>()), Times.Once);
-        _compositeValidatorMock.Verify(x => x.ValidateAndFetchForWarningsAsync(producerRows, It.IsAny<string>()), Times.Once);
+        _compositeValidatorMock.Verify(x => x.ValidateAndFetchForErrorsAsync(producerRows, $"{BlobName}:Errors", producer.BlobName), Times.Once);
+        _compositeValidatorMock.Verify(x => x.ValidateAndFetchForWarningsAsync(producerRows, $"{BlobName}:Warnings", producer.BlobName), Times.Once);
         result.ValidationWarnings.Count.Should().Be(1);
         result.ValidationErrors.Count.Should().Be(1);
     }

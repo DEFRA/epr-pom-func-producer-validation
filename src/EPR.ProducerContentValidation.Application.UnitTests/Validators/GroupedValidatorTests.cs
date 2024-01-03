@@ -14,20 +14,21 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Validators;
 [TestClass]
 public class GroupedValidatorTests
 {
+    private const string StoreKey = "storeKey";
     private readonly GroupedValidator _systemUnderTest;
-    private readonly Mock<IErrorCountService> _errorCountServiceMock;
+    private readonly Mock<IIssueCountService> _errorCountServiceMock;
     private int _rowNumber = 1;
 
     public GroupedValidatorTests()
     {
-        _errorCountServiceMock = new Mock<IErrorCountService>();
+        _errorCountServiceMock = new Mock<IIssueCountService>();
         _systemUnderTest = new GroupedValidator(AutoMapperHelpers.GetMapper<ProducerProfile>(), _errorCountServiceMock.Object);
     }
 
     [TestInitialize]
     public void TestInitialize()
     {
-        _errorCountServiceMock.Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>())).ReturnsAsync(10);
+        _errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(10);
     }
 
     [TestMethod]
@@ -40,7 +41,7 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(dataSubmissionPeriod: "2023-P2"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(2);
@@ -63,7 +64,7 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(dataSubmissionPeriod: "2023-P3"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(2);
@@ -80,7 +81,21 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(dataSubmissionPeriod: "2023-P1"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+
+        // Assert
+        errors.Should().HaveCount(0);
+    }
+
+    [TestMethod]
+    public async Task ValidateAndAddErrors_AddsNoErrors_IfThereAreNoRows()
+    {
+        // Arrange
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var producer = BuildProducer();
+
+        // Act
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(0);
@@ -99,7 +114,7 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(dataSubmissionPeriod: "2023-P1"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(0);
@@ -114,10 +129,10 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(dataSubmissionPeriod: "2023-P1"));
         producer.Rows.Add(BuildProducerRow(dataSubmissionPeriod: "2023-P2"));
 
-        _errorCountServiceMock.Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>())).ReturnsAsync(0);
+        _errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(0);
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(0);
@@ -132,17 +147,17 @@ public class GroupedValidatorTests
 
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedConsumerWaste, fromHomeNation: "EN", toHomeNation: string.Empty, quantityKg: "600"));
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedConsumerWaste, fromHomeNation: "EN", toHomeNation: "WS", quantityKg: "700"));
-        _errorCountServiceMock.SetupSequence(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()))
+        _errorCountServiceMock.SetupSequence(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
             .ReturnsAsync(1)
             .ReturnsAsync(0);
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(1).And.Subject.First().ErrorCodes.Should().HaveCount(1).And.Contain(ErrorCode.SelfManagedWasteTransferInvalidErrorCode);
-        _errorCountServiceMock.Verify(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()), Times.Exactly(2));
-        _errorCountServiceMock.Verify(x => x.IncrementErrorCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Once());
+        _errorCountServiceMock.Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Exactly(2));
+        _errorCountServiceMock.Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Once());
     }
 
     [TestMethod]
@@ -154,17 +169,17 @@ public class GroupedValidatorTests
 
         producer.Rows.Add(BuildProducerRow(dataSubmissionPeriod: "2023-P1"));
         producer.Rows.Add(BuildProducerRow(dataSubmissionPeriod: "2023-P2"));
-        _errorCountServiceMock.SetupSequence(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()))
+        _errorCountServiceMock.SetupSequence(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
             .ReturnsAsync(1)
             .ReturnsAsync(0);
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(1).And.Subject.First().ErrorCodes.Should().HaveCount(1).And.Contain(ErrorCode.DataSubmissionPeriodInconsistentErrorCode);
-        _errorCountServiceMock.Verify(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>()), Times.Exactly(2));
-        _errorCountServiceMock.Verify(x => x.IncrementErrorCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Once());
+        _errorCountServiceMock.Verify(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()), Times.Exactly(2));
+        _errorCountServiceMock.Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Once());
     }
 
     [TestMethod]
@@ -197,7 +212,7 @@ public class GroupedValidatorTests
             }).ToList();
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(2);
@@ -219,7 +234,7 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(subsidiaryId: "subsidiaryId2", packagingType: PackagingType.SelfManagedConsumerWaste, fromHomeNation: "EN", toHomeNation: "SC", quantityKg: "500"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(2);
@@ -237,7 +252,7 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedOrganisationWaste, fromHomeNation: "EN", toHomeNation: "SC", quantityKg: "2300"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(1);
@@ -258,7 +273,7 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedOrganisationWaste, fromHomeNation: "EN", toHomeNation: "SC", quantityKg: "2200"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(0);
@@ -273,16 +288,16 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedConsumerWaste, fromHomeNation: "EN", toHomeNation: string.Empty, quantityKg: "500"));
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedConsumerWaste, fromHomeNation: "EN", toHomeNation: "WS", quantityKg: "600"));
 
-        _errorCountServiceMock.Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>())).ReturnsAsync(10);
+        _errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(10);
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(1);
         errors.First().ErrorCodes.Should().Contain(ErrorCode.SelfManagedWasteTransferInvalidErrorCode);
 
-        _errorCountServiceMock.Verify(x => x.IncrementErrorCountAsync(It.IsAny<string>(), 1), Times.Once());
+        _errorCountServiceMock.Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), 1), Times.Once());
     }
 
     [TestMethod]
@@ -300,10 +315,10 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedConsumerWaste, materialType: MaterialType.Wood, fromHomeNation: "EN", toHomeNation: string.Empty, quantityKg: "300"));
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedConsumerWaste, materialType: MaterialType.Wood, fromHomeNation: "EN", toHomeNation: "WS", quantityKg: "200"));
 
-        _errorCountServiceMock.Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>())).ReturnsAsync(10);
+        _errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(10);
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(1);
@@ -311,7 +326,7 @@ public class GroupedValidatorTests
         error.ErrorCodes.Should().Contain(ErrorCode.SelfManagedWasteTransferInvalidErrorCode);
         error.MaterialType.Should().Be(MaterialType.Plastic); // Ensure the error is specific to the Plastic material type
 
-        _errorCountServiceMock.Verify(x => x.IncrementErrorCountAsync(It.IsAny<string>(), 1), Times.Once());
+        _errorCountServiceMock.Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), 1), Times.Once());
     }
 
     [TestMethod]
@@ -329,15 +344,15 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedConsumerWaste, materialType: MaterialType.Glass, fromHomeNation: "EN", toHomeNation: string.Empty, quantityKg: "500"));
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedConsumerWaste, materialType: MaterialType.Glass, fromHomeNation: "EN", toHomeNation: "DE", quantityKg: "400"));
 
-        _errorCountServiceMock.Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>())).ReturnsAsync(10);
+        _errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(10);
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty(); // No errors should be added as the transferred weights for Aluminium are less than or equal to the collected weights
 
-        _errorCountServiceMock.Verify(x => x.IncrementErrorCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never());
+        _errorCountServiceMock.Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never());
     }
 
     [TestMethod]
@@ -352,7 +367,7 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedConsumerWaste, fromHomeNation: "EN", toHomeNation: string.Empty, quantityKg: "500"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty("because the transferred weight is equal to the collected weight");
@@ -367,7 +382,7 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedConsumerWaste, fromHomeNation: "EN", toHomeNation: "WS", quantityKg: "600"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().ContainSingle();
@@ -396,8 +411,7 @@ public class GroupedValidatorTests
         producer.Rows.Add(BuildProducerRow(subsidiaryId: "4", packagingType: PackagingType.SelfManagedConsumerWaste, materialType: MaterialType.Plastic, fromHomeNation: "NI", toHomeNation: "SC", quantityKg: "1000"));
 
         // Act
-        // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty("because rows with null and empty subsidiaryId should not generate errors");

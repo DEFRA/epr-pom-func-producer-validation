@@ -15,14 +15,15 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services;
 [TestClass]
 public class ValidatorsPerformanceTests
 {
+    private readonly string errorStoreKey = "error-store-key";
     private readonly DuplicateValidator _systemUnderDuplicateValidatorTest;
     private readonly GroupedValidator _systemUnderGroupValidatorTest;
-    private readonly Mock<IErrorCountService> _errorCountServiceMock;
+    private readonly Mock<IIssueCountService> _errorCountServiceMock;
 
     public ValidatorsPerformanceTests()
     {
-        _errorCountServiceMock = new Mock<IErrorCountService>();
-        _errorCountServiceMock.Setup(x => x.GetRemainingErrorCapacityAsync(It.IsAny<string>())).ReturnsAsync(200);
+        _errorCountServiceMock = new Mock<IIssueCountService>();
+        _errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(200);
         _systemUnderDuplicateValidatorTest = new DuplicateValidator(AutoMapperHelpers.GetMapper<ProducerProfile>(), _errorCountServiceMock.Object);
         _systemUnderGroupValidatorTest = new GroupedValidator(AutoMapperHelpers.GetMapper<ProducerProfile>(), _errorCountServiceMock.Object);
     }
@@ -37,8 +38,8 @@ public class ValidatorsPerformanceTests
 
         // Act
         stopwatch.Start();
-        var duplicateValidationTask = _systemUnderDuplicateValidatorTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
-        var groupedValidationTask = _systemUnderGroupValidatorTest.ValidateAndAddErrorsAsync(producer, producer.BlobName, errors);
+        var duplicateValidationTask = _systemUnderDuplicateValidatorTest.ValidateAndAddErrorsAsync(producer.Rows, errorStoreKey, errors, producer.BlobName);
+        var groupedValidationTask = _systemUnderGroupValidatorTest.ValidateAndAddErrorsAsync(producer.Rows, errorStoreKey, errors, producer.BlobName);
 
         await Task.WhenAll(duplicateValidationTask, groupedValidationTask);
         stopwatch.Stop();
@@ -54,7 +55,7 @@ public class ValidatorsPerformanceTests
         var producerRows = new List<ProducerRow>();
         int remainingRows = totalRows - inconsistentPeriodRows - selfManagedWasteRows - duplicateRows;
 
-    // rows for inconsistent data submission periods
+        // rows for inconsistent data submission periods
         for (int i = 0; i < inconsistentPeriodRows; i++)
         {
             var period = i % 2 == 0 ? "2023" : "2022";
