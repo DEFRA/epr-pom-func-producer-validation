@@ -197,14 +197,57 @@ public class CompositeValidatorTests
             .Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
             .ReturnsAsync(1);
 
-        _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ProducerRow>(), default))
+        _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<ProducerRow>>(), default))
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName, null);
 
         // Assert
         result.Count.Should().Be(1);
+    }
+
+    [TestMethod]
+    public async Task ValidateAndFetchForWarningsAsync_ExistingErrorsAreAddedToValidationContext()
+    {
+        // Arrange
+        var producerRowOne = ModelGenerator.CreateProducerRow(1);
+        var producerRows = new List<ProducerRow> { producerRowOne };
+        var validResult = new ValidationResult();
+        var existingError = new ProducerValidationEventIssueRequest(
+                producerRowOne.SubsidiaryId,
+                producerRowOne.DataSubmissionPeriod,
+                producerRowOne.RowNumber,
+                ProducerId,
+                producerRowOne.ProducerType,
+                producerRowOne.ProducerSize,
+                producerRowOne.WasteType,
+                producerRowOne.PackagingCategory,
+                producerRowOne.MaterialType,
+                producerRowOne.MaterialSubType,
+                producerRowOne.FromHomeNation,
+                producerRowOne.ToHomeNation,
+                producerRowOne.QuantityKg,
+                producerRowOne.QuantityUnits,
+                BlobName,
+                new List<string> { ErrorCode.ValidationContextErrorKey });
+
+        _issueCountServiceMock
+            .Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
+            .ReturnsAsync(1);
+
+        _producerRowValidatorMock
+            .Setup(x =>
+                x.ValidateAsync(It.Is<ValidationContext<ProducerRow>>(ctx => ctx.RootContextData != null && ctx.RootContextData.ContainsKey(ErrorCode.ValidationContextErrorKey)), default))
+            .ReturnsAsync(validResult);
+
+        // Act
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName, new List<ProducerValidationEventIssueRequest> { existingError });
+
+        // Assert
+        result.Count.Should().Be(0);
+
+        _producerRowValidatorMock.VerifyAll();
     }
 
     [TestMethod]
@@ -218,7 +261,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(0);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName, null);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>());
@@ -240,11 +283,11 @@ public class CompositeValidatorTests
             .ReturnsAsync(1)
             .ReturnsAsync(0);
 
-        _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ProducerRow>(), default))
+        _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<ProducerRow>>(), default))
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName, null);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>
@@ -286,11 +329,11 @@ public class CompositeValidatorTests
             .ReturnsAsync(1)
             .ReturnsAsync(0);
 
-        _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ProducerRow>(), default))
+        _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<ProducerRow>>(), default))
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName, null);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>

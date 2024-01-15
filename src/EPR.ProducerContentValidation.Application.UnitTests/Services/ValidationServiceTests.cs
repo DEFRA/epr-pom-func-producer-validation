@@ -37,7 +37,7 @@ public class ValidationServiceTests
             .Setup(x => x.ValidateAndFetchForErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(new List<ProducerValidationEventIssueRequest>());
         _compositeValidatorMock
-            .Setup(x => x.ValidateAndFetchForWarningsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.ValidateAndFetchForWarningsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>()))
             .ReturnsAsync(new List<ProducerValidationEventIssueRequest>());
     }
 
@@ -96,7 +96,7 @@ public class ValidationServiceTests
             .Setup(x => x.ValidateAndFetchForErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(eventErrorRequests);
         _compositeValidatorMock
-            .Setup(x => x.ValidateAndFetchForWarningsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.ValidateAndFetchForWarningsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>()))
             .ReturnsAsync(eventWarningRequests);
 
         // Act
@@ -104,7 +104,7 @@ public class ValidationServiceTests
 
         // Assert
         _compositeValidatorMock.Verify(x => x.ValidateAndFetchForErrorsAsync(producerRows, $"{BlobName}:Errors", producer.BlobName), Times.Once);
-        _compositeValidatorMock.Verify(x => x.ValidateAndFetchForWarningsAsync(producerRows, $"{BlobName}:Warnings", producer.BlobName), Times.Once);
+        _compositeValidatorMock.Verify(x => x.ValidateAndFetchForWarningsAsync(producerRows, $"{BlobName}:Warnings", producer.BlobName, It.IsAny<List<ProducerValidationEventIssueRequest>>()), Times.Once);
         result.ValidationWarnings.Count.Should().Be(1);
         result.ValidationErrors.Count.Should().Be(1);
     }

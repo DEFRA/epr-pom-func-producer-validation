@@ -2,6 +2,7 @@
 
 public static class ErrorCode
 {
+    public const string ValidationContextErrorKey = "errors";
     public const string ProducerIdInvalidErrorCode = "01";
     public const string ProducerTypeInvalidErrorCode = "02";
     public const string PackagingTypeInvalidErrorCode = "03";

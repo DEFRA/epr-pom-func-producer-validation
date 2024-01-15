@@ -1,4 +1,5 @@
-﻿using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
+﻿using System.Collections.Generic;
+using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using FluentValidation.Results;
 
@@ -8,7 +9,7 @@ public interface ICompositeValidator
 {
     Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForErrorsAsync(IEnumerable<ProducerRow> producerRows, string errorStoreKey, string blobName);
 
-    Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForWarningsAsync(IEnumerable<ProducerRow> producerRows, string warningStoreKey, string blobName);
+    Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForWarningsAsync(IEnumerable<ProducerRow> producerRows, string warningStoreKey, string blobName, List<ProducerValidationEventIssueRequest> errors);
 
     Task ValidateDuplicatesAndGroupedData(IEnumerable<ProducerRow> producerRows, string errorStoreKey, List<ProducerValidationEventIssueRequest> errors, string blobName);
 }

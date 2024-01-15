@@ -1,4 +1,7 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using AutoMapper;
+using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
@@ -70,14 +73,20 @@ public class CompositeValidator : ICompositeValidator
         return errors;
     }
 
-    public async Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForWarningsAsync(IEnumerable<ProducerRow> producerRows, string warningStoreKey, string blobName)
+    public async Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForWarningsAsync(IEnumerable<ProducerRow> producerRows, string warningStoreKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows)
     {
         var warnings = new List<ProducerValidationEventIssueRequest>();
         var remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(warningStoreKey);
 
         foreach (var row in producerRows.TakeWhile(_ => remainingWarningCountToProcess > 0))
         {
-            var rowValidationResult = await _producerRowWarningValidator.ValidateAsync(row);
+            var context = new ValidationContext<ProducerRow>(row);
+            context.RootContextData[ErrorCode.ValidationContextErrorKey] = errorRows?
+                .Where(errorRow => errorRow.RowNumber == row.RowNumber)
+                .SelectMany(errorRow => errorRow.ErrorCodes)
+                .ToList();
+
+            var rowValidationResult = await _producerRowWarningValidator.ValidateAsync(context);
 
             if (rowValidationResult.IsValid)
             {

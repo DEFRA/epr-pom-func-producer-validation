@@ -38,7 +38,7 @@ public class ValidationService : IValidationService
         var warningStoreKey = FormatStoreKey(producer.BlobName, IssueType.Warning);
 
         var errors = await _compositeValidator.ValidateAndFetchForErrorsAsync(producer.Rows, errorStoreKey, producer.BlobName);
-        var warnings = await _compositeValidator.ValidateAndFetchForWarningsAsync(producer.Rows, warningStoreKey, producer.BlobName);
+        var warnings = await _compositeValidator.ValidateAndFetchForWarningsAsync(producer.Rows, warningStoreKey, producer.BlobName, errors);
 
         await _compositeValidator.ValidateDuplicatesAndGroupedData(producer.Rows, errorStoreKey, errors, producer.BlobName);
 

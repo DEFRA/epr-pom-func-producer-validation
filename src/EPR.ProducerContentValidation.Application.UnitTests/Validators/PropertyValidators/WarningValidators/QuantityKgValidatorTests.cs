@@ -1,11 +1,14 @@
-﻿using EPR.ProducerContentValidation.Application.Constants;
-using EPR.ProducerContentValidation.Application.Models;
+﻿namespace EPR.ProducerContentValidation.Application.UnitTests.Validators.PropertyValidators.WarningValidators;
+
+using Constants;
 using EPR.ProducerContentValidation.Application.Validators;
 using EPR.ProducerContentValidation.Application.Validators.PropertyValidators.WarningValidators;
+using FluentAssertions;
+using FluentValidation;
+using FluentValidation.Results;
 using FluentValidation.TestHelper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace EPR.ProducerContentValidation.Application.UnitTests.Validators.PropertyValidators.WarningValidators;
+using Models;
 
 [TestClass]
 public class QuantityKgValidatorTests : QuantityKgValidator
@@ -62,6 +65,93 @@ public class QuantityKgValidatorTests : QuantityKgValidator
         result
             .ShouldHaveValidationErrorFor(x => x.QuantityKg)
             .WithErrorCode(ErrorCode.WarningPackagingMaterialWeightLessThan100);
+    }
+
+    [TestMethod]
+    public void PreValidate_ReturnsFalse_WhenValidationContextErrorKeyOccured()
+    {
+        // Arrange
+        var model = BuildProducerRow("1");
+        var validationContext = new ValidationContext<ProducerRow>(model)
+        {
+            RootContextData =
+            {
+                [ErrorCode.ValidationContextErrorKey] = new List<string>
+                {
+                    ErrorCode.QuantityKgInvalidErrorCode
+                }
+            }
+        };
+
+        var validationResult = new ValidationResult();
+
+        // Act
+        var result = PreValidate(validationContext, validationResult);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void PreValidate_ReturnsFalse_WhenValidationContextHasErrorsButNotInDefinedSkipCodes()
+    {
+        // Arrange
+        var model = BuildProducerRow("1");
+        var validationContext = new ValidationContext<ProducerRow>(model)
+        {
+            RootContextData =
+            {
+                [ErrorCode.ValidationContextErrorKey] = new List<string>
+                {
+                    ErrorCode.DataSubmissionPeriodInvalidErrorCode
+                }
+            }
+        };
+
+        var validationResult = new ValidationResult();
+
+        // Act
+        var result = PreValidate(validationContext, validationResult);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void PreValidate_ReturnsTrue_WhenErrorsExistOnContextButNull()
+    {
+        // Arrange
+        var model = BuildProducerRow("1");
+        var validationContext = new ValidationContext<ProducerRow>(model)
+        {
+            RootContextData =
+            {
+                [ErrorCode.ValidationContextErrorKey] = null
+            }
+        };
+        var validationResult = new ValidationResult();
+
+        // Act
+        var result = PreValidate(validationContext, validationResult);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void PreValidate_ReturnsTrue_WhenNoValidationContextErrorOccured()
+    {
+        // Arrange
+        var model = BuildProducerRow("1");
+        var validationContext = new ValidationContext<ProducerRow>(model);
+
+        var validationResult = new ValidationResult();
+
+        // Act
+        var result = PreValidate(validationContext, validationResult);
+
+        // Assert
+        result.Should().BeTrue();
     }
 
     private static ProducerRow BuildProducerRow(string quantityKg)

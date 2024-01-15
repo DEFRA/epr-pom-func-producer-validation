@@ -137,6 +137,77 @@ public class DrinksContainerQuantityUnitWeightValidatorTests : DrinksContainerQu
         result.Should().BeFalse();
     }
 
+    [TestMethod]
+    [DataRow(ErrorCode.QuantityKgInvalidErrorCode)]
+    [DataRow(ErrorCode.QuantityUnitsInvalidErrorCode)]
+    public void PreValidate_ReturnsFalse_WhenSkipErrorCodeExists(string skipCode)
+    {
+        // Arrange
+        var model = BuildProducerRow("1", "1", PackagingType.HouseholdDrinksContainers);
+        var validationContext = new ValidationContext<ProducerRow>(model)
+        {
+            RootContextData =
+            {
+                [ErrorCode.ValidationContextErrorKey] = new List<string>
+                {
+                    skipCode
+                }
+            }
+        };
+        var validationResult = new ValidationResult();
+
+        // Act
+        var result = PreValidate(validationContext, validationResult);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void PreValidate_ReturnsTrue_WhenErrorsExistOnContextButNotInSkipCodes()
+    {
+        // Arrange
+        var model = BuildProducerRow("1", "1", PackagingType.HouseholdDrinksContainers);
+        var validationContext = new ValidationContext<ProducerRow>(model)
+        {
+            RootContextData =
+            {
+                [ErrorCode.ValidationContextErrorKey] = new List<string>
+                {
+                    ErrorCode.DuplicateEntryErrorCode
+                }
+            }
+        };
+        var validationResult = new ValidationResult();
+
+        // Act
+        var result = PreValidate(validationContext, validationResult);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void PreValidate_ReturnsTrue_WhenErrorsExistOnContextButNull()
+    {
+        // Arrange
+        var model = BuildProducerRow("1", "1", PackagingType.HouseholdDrinksContainers);
+        var validationContext = new ValidationContext<ProducerRow>(model)
+        {
+            RootContextData =
+            {
+                [ErrorCode.ValidationContextErrorKey] = null
+            }
+        };
+        var validationResult = new ValidationResult();
+
+        // Act
+        var result = PreValidate(validationContext, validationResult);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
     private static ProducerRow BuildProducerRow(string quantityUnits, string quantityKg, string wasteType)
     {
         return new ProducerRow(
