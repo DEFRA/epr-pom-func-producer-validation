@@ -14,7 +14,6 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Validators;
 [TestClass]
 public class DuplicateValidatorTests
 {
-    private const string StoreKey = "storeKey";
     private readonly DuplicateValidator _systemUnderTest;
     private readonly Mock<IIssueCountService> _errorCountServiceMock;
     private int _rowNumber = 1;
@@ -36,7 +35,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow());
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(2);
@@ -71,7 +70,7 @@ public class DuplicateValidatorTests
             }).ToList();
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(2);
@@ -89,7 +88,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(producerType: ProducerType.Importer));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty();
@@ -105,7 +104,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(packagingType: PackagingType.SelfManagedOrganisationWaste));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty();
@@ -121,7 +120,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(packagingCategory: PackagingClass.SecondaryPackaging));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty();
@@ -137,7 +136,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(materialType: MaterialType.Glass));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty();
@@ -153,7 +152,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(fromHomeNation: "NI"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty();
@@ -169,7 +168,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(toHomeNation: "NI"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty();
@@ -185,7 +184,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(producerId: "Producer 2"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(2);
@@ -202,7 +201,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(quantityKg: "9876 kg"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(2);
@@ -219,7 +218,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(quantityUnits: "9876"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(2);
@@ -237,7 +236,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(dataSubmissionPeriod: DataSubmissionPeriod.Year2023P3));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty();
@@ -253,7 +252,7 @@ public class DuplicateValidatorTests
         producer.Rows.Add(BuildProducerRow(subsidiaryId: "xyz789"));
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().BeEmpty();
@@ -271,7 +270,7 @@ public class DuplicateValidatorTests
         _errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(1);
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(1);
@@ -294,10 +293,53 @@ public class DuplicateValidatorTests
         producer.Rows.Add(duplicateRow);
 
         // Act
-        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, StoreKey, errors, producer.BlobName);
+        await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
 
         // Assert
         errors.Should().HaveCount(2, "duplicate rows");
+    }
+
+    [TestMethod]
+    public async Task ValidateAndAddError_ReturnsDistinctRows_WhenDuplicatesAreFound()
+    {
+        // Arrange
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var producer = BuildProducer();
+
+        // Adding duplicate rows
+        var duplicateRow = BuildProducerRow();
+        producer.Rows.Add(duplicateRow);
+        producer.Rows.Add(duplicateRow);
+
+        // Act
+        var result = await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
+
+        // Assert
+        result.Should().HaveCount(1);
+        result.Should().BeEquivalentTo(new List<ProducerRow> { duplicateRow });
+    }
+
+    [TestMethod]
+    public async Task ValidateAndAddError_ReturnsDistinctRowsWithExcludedRows_WhenRowsAreExcludedDueToSkipCodes()
+    {
+        // Arrange
+        var mapper = AutoMapperHelpers.GetMapper<ProducerProfile>();
+        var producer = BuildProducer();
+        producer.Rows.Add(BuildProducerRow());
+        producer.Rows.Add(BuildProducerRow());
+        var errors = producer
+            .Rows
+            .Select(x => mapper.Map<ProducerValidationEventIssueRequest>(x) with
+            {
+                ErrorCodes = new List<string> { ErrorCode.MaterialTypeInvalidErrorCode }
+            })
+            .ToList();
+
+        // Act
+        var result = await _systemUnderTest.ValidateAndAddErrorsAsync(producer.Rows, errors, producer.BlobName);
+
+        // Assert
+        result.Should().HaveCount(2);
     }
 
     private static Producer BuildProducer()

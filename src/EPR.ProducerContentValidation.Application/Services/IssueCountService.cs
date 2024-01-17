@@ -1,9 +1,9 @@
-﻿namespace EPR.ProducerContentValidation.Application.Services;
-
-using Interfaces;
+﻿using EPR.ProducerContentValidation.Application.Options;
+using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using Microsoft.Extensions.Options;
-using Options;
 using StackExchange.Redis;
+
+namespace EPR.ProducerContentValidation.Application.Services;
 
 public class IssueCountService : IIssueCountService
 {
@@ -25,9 +25,16 @@ public class IssueCountService : IIssueCountService
 
     public async Task<int> GetRemainingIssueCapacityAsync(string key)
     {
-        var redisValue = await _redisDatabase.StringGetAsync(key);
-        var currentCount = redisValue.HasValue ? (int)redisValue : 0;
+        var currentCount = await FetchRedisValue(key);
         var remaining = _validationOptions.MaxIssuesToProcess - currentCount;
         return remaining <= 0 ? 0 : remaining;
+    }
+
+    private async Task<int> FetchRedisValue(string key)
+    {
+        var redisValue = await _redisDatabase.StringGetAsync(key);
+        var currentCount = redisValue.HasValue ? (int)redisValue : 0;
+
+        return currentCount;
     }
 }

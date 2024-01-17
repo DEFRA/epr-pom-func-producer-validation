@@ -5,5 +5,5 @@ namespace EPR.ProducerContentValidation.Application.Validators.Interfaces;
 
 public interface IGroupedValidator
 {
-    Task ValidateAndAddErrorsAsync(List<ProducerRow> producerRows, string errorStoreKey, List<ProducerValidationEventIssueRequest> errorRows, string blobName);
+    Task ValidateAndAddErrorsAsync(List<ProducerRow> producerRows, List<ProducerValidationEventIssueRequest> errorRows, List<ProducerValidationEventIssueRequest> warningRows, string blobName);
 }

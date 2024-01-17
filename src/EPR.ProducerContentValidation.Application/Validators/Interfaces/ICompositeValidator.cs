@@ -7,9 +7,9 @@ namespace EPR.ProducerContentValidation.Application.Validators.Interfaces;
 
 public interface ICompositeValidator
 {
-    Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForErrorsAsync(IEnumerable<ProducerRow> producerRows, string errorStoreKey, string blobName);
+    Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForErrorsAsync(IEnumerable<ProducerRow> producerRows, string blobName);
 
-    Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForWarningsAsync(IEnumerable<ProducerRow> producerRows, string warningStoreKey, string blobName, List<ProducerValidationEventIssueRequest> errors);
+    Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForWarningsAsync(IEnumerable<ProducerRow> producerRows, string blobName, List<ProducerValidationEventIssueRequest> errors);
 
-    Task ValidateDuplicatesAndGroupedData(IEnumerable<ProducerRow> producerRows, string errorStoreKey, List<ProducerValidationEventIssueRequest> errors, string blobName);
+    Task ValidateDuplicatesAndGroupedData(IEnumerable<ProducerRow> producerRows, List<ProducerValidationEventIssueRequest> errors, List<ProducerValidationEventIssueRequest> warnings, string blobName);
 }

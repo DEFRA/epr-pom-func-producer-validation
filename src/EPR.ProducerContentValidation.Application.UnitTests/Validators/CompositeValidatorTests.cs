@@ -21,7 +21,6 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Validators;
 public class CompositeValidatorTests
 {
     private const string BlobName = "blobName";
-    private const string StoreKey = $"{BlobName}:error";
     private const string ErrorCodeOne = "1";
     private const string ProducerId = "000123";
 
@@ -84,7 +83,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(0);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, StoreKey, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, BlobName);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>());
@@ -110,7 +109,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, StoreKey, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, BlobName);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>
@@ -156,7 +155,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, StoreKey, BlobName);
+        var result = await _serviceUnderTest.ValidateAndFetchForErrorsAsync(producerRows, BlobName);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>
@@ -201,7 +200,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName, null);
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, BlobName, null);
 
         // Assert
         result.Count.Should().Be(1);
@@ -242,7 +241,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(validResult);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName, new List<ProducerValidationEventIssueRequest> { existingError });
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, BlobName, new List<ProducerValidationEventIssueRequest> { existingError });
 
         // Assert
         result.Count.Should().Be(0);
@@ -261,7 +260,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(0);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName, null);
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, BlobName, null);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>());
@@ -287,7 +286,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName, null);
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, BlobName, null);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>
@@ -333,7 +332,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(_validationResultMock.Object);
 
         // Act
-        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, StoreKey, BlobName, null);
+        var result = await _serviceUnderTest.ValidateAndFetchForWarningsAsync(producerRows, BlobName, null);
 
         // Assert
         result.Should().BeEquivalentTo(new List<ProducerValidationEventIssueRequest>
@@ -385,7 +384,7 @@ public class CompositeValidatorTests
             _duplicateValidatorMock.Object);
 
         // Act
-        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producerRows, StoreKey, It.IsAny<List<ProducerValidationEventIssueRequest>>(), BlobName);
+        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producerRows, It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), BlobName);
 
         // Assert
         _issueCountServiceMock
@@ -393,9 +392,9 @@ public class CompositeValidatorTests
         _issueCountServiceMock
             .Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
         _duplicateValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
         _groupedValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
@@ -410,7 +409,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(0);
 
         // Act
-        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producerRows, StoreKey, new List<ProducerValidationEventIssueRequest>(), BlobName);
+        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producerRows, new List<ProducerValidationEventIssueRequest>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), BlobName);
 
         // Assert
         _issueCountServiceMock
@@ -418,9 +417,9 @@ public class CompositeValidatorTests
         _issueCountServiceMock
             .Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
         _duplicateValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
         _groupedValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
@@ -435,7 +434,7 @@ public class CompositeValidatorTests
             .ReturnsAsync(2);
 
         // Act
-        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producerRows, StoreKey, new List<ProducerValidationEventIssueRequest>(), BlobName);
+        await _serviceUnderTest.ValidateDuplicatesAndGroupedData(producerRows, new List<ProducerValidationEventIssueRequest>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), BlobName);
 
         // Assert
         _issueCountServiceMock
@@ -443,8 +442,8 @@ public class CompositeValidatorTests
         _issueCountServiceMock
             .Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
         _duplicateValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Once);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Once);
         _groupedValidatorMock
-            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<string>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Once);
+            .Verify(x => x.ValidateAndAddErrorsAsync(It.IsAny<List<ProducerRow>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<string>()), Times.Once);
     }
 }

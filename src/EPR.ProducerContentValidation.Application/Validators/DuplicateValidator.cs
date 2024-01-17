@@ -35,8 +35,9 @@ public class DuplicateValidator : IDuplicateValidator
         _issueCountService = issueCountService;
     }
 
-    public async Task<List<ProducerRow>> ValidateAndAddErrorsAsync(IEnumerable<ProducerRow> producerRows, string errorStoreKey, List<ProducerValidationEventIssueRequest> errorRows, string blobName)
+    public async Task<List<ProducerRow>> ValidateAndAddErrorsAsync(IEnumerable<ProducerRow> producerRows, List<ProducerValidationEventIssueRequest> errorRows, string blobName)
     {
+        var errorStoreKey = StoreKey.FetchStoreKey(blobName, IssueType.Error);
         var rowsNumbersToExclude = errorRows
             .Where(x => x.ErrorCodes.Any(y => _skipRuleErrorCodes.Contains(y)))
             .Select(r => r.RowNumber)
@@ -78,8 +79,13 @@ public class DuplicateValidator : IDuplicateValidator
 
         errorRows.AddRange(onlyWithDuplicateErrorRows);
 
+        // Any rows that were left excluded due to skip codes in this validation get re-added
+        var excludedRows = producerRows
+            .Where(x => rowsNumbersToExclude.Contains(x.RowNumber));
+
         var distinctRows = duplicateRowsGroupings
             .Select(group => group.First())
+            .Concat(excludedRows)
             .ToList();
 
         return distinctRows;
