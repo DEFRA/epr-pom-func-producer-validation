@@ -27,12 +27,13 @@ public class SinglePackagingMaterialGroupedValidator : AbstractGroupedValidator
 
         foreach (var group in groupedRowsBySubsidiaryId.TakeWhile(_ => remainingWarningCountToProcess > 0))
         {
-            var associatedErrorRows = errorRows
-                .Where(x => group.Any(y => y.RowNumber == x.RowNumber));
-            var shouldSkip = associatedErrorRows
+            var associatedErrorRows = errorRows?
+                .Where(x => group.Any(y => y.RowNumber == x.RowNumber))
+                .ToList();
+            var shouldSkip = associatedErrorRows?
                 .Any(x => x.ErrorCodes.Any(y => _skipRuleErrorCodes.Contains(y)));
 
-            if (shouldSkip)
+            if (shouldSkip == true)
             {
                 continue;
             }
