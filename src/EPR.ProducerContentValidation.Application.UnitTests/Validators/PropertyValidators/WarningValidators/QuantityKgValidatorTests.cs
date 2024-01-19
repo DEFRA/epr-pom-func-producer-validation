@@ -163,7 +163,7 @@ public class QuantityKgValidatorTests : QuantityKgValidator
             1,
             null,
             null,
-            null,
+            PackagingType.SelfManagedConsumerWaste,
             null,
             null,
             null,
