@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
+using Bogus;
 using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Profiles;
+using EPR.ProducerContentValidation.Application.ReferenceData;
 using EPR.ProducerContentValidation.Application.Services;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Validators;
@@ -48,6 +50,7 @@ public class ValidatorsPerformanceTests
             loggerMock.Object,
             compositeValidatorUnderTest,
             AutoMapperHelpers.GetMapper<ProducerProfile>(),
+            errorCountServiceMock.Object,
             Microsoft.Extensions.Options.Options.Create(new StorageAccountOptions { PomContainer = "ContainerName" }));
     }
 
@@ -60,131 +63,52 @@ public class ValidatorsPerformanceTests
 
         // Act
         stopwatch.Start();
-        await _validationServiceUnderTest.ValidateAsync(producer);
+        var result = await _validationServiceUnderTest.ValidateAsync(producer);
         stopwatch.Stop();
 
         // Assert
         var elapsedTime = stopwatch.ElapsedMilliseconds;
-        Console.WriteLine($"Validation of {producer.Rows.Count} rows took {elapsedTime} milliseconds.");
+        var numberOfErrors = result.ValidationErrors.Count;
+        var numberOfWarnings = result.ValidationWarnings.Count;
+        Console.WriteLine($"Validation of {producer.Rows.Count} rows took {elapsedTime} milliseconds, producing {numberOfErrors} rows containing errors and {numberOfWarnings} rows containing warnings.");
         elapsedTime.Should().BeLessThan(1000, $"Expected validation time to be less than 1000 milliseconds, but was {elapsedTime} milliseconds.");
     }
 
-    private static Producer CreateProducerRows(int totalRows = 1100, int inconsistentPeriodRows = 300, int selfManagedWasteRows = 300, int singlePackagingRows = 300, int duplicateRows = 100)
+    private static Producer CreateProducerRows(int totalRows = 1100, int duplicateRows = 100)
     {
-        var producerRows = new List<ProducerRow>();
-        var remainingRows = totalRows - inconsistentPeriodRows - selfManagedWasteRows - singlePackagingRows - duplicateRows;
+        var submissionPeriods = new List<string>
+        {
+            SubmissionPeriod.SubmissionPeriodP1,
+            SubmissionPeriod.SubmissionPeriodP2,
+            SubmissionPeriod.SubmissionPeriodP3,
+        }.ToArray();
+
         var rowNumber = 0;
+        var testProducerRows = new Faker<ProducerRow>()
+            .StrictMode(true)
+            .CustomInstantiator(f => CreateProducerRowObject(rowNumber))
+            .RuleFor(x => x.SubsidiaryId, f => f.Random.Number(1, 100).ToString())
+            .RuleFor(x => x.DataSubmissionPeriod, f => f.Random.ArrayElement(ReferenceDataGenerator.DataSubmissionPeriods.ToArray()))
+            .RuleFor(x => x.ProducerId, f => "100180")
+            .RuleFor(x => x.ProducerType, f => null)
+            .RuleFor(x => x.ProducerSize, f => ProducerSize.Large)
+            .RuleFor(x => x.RowNumber, f => rowNumber++)
+            .RuleFor(x => x.WasteType, f => f.Random.ArrayElement(ReferenceDataGenerator.PackagingTypes.ToArray()))
+            .RuleFor(x => x.PackagingCategory, f => f.Random.ArrayElement(ReferenceDataGenerator.PackagingCategories.ToArray()))
+            .RuleFor(x => x.MaterialType, f => f.Random.ArrayElement(ReferenceDataGenerator.MaterialTypes.ToArray()))
+            .RuleFor(x => x.MaterialSubType, f => null)
+            .RuleFor(x => x.FromHomeNation, f => f.Random.ArrayElement(ReferenceDataGenerator.HomeNations.ToArray()))
+            .RuleFor(x => x.ToHomeNation, f => f.Random.ArrayElement(ReferenceDataGenerator.HomeNations.ToArray()))
+            .RuleFor(x => x.QuantityKg, f => f.Random.Number(50, 1000).ToString())
+            .RuleFor(x => x.QuantityUnits, f => f.Random.Number(750, 1500).ToString())
+            .RuleFor(x => x.SubmissionPeriod, f => f.Random.ArrayElement(submissionPeriods));
 
-        // rows for inconsistent data submission periods
-        for (var i = 0; i < inconsistentPeriodRows; i++)
-        {
-            var period = i % 2 == 0 ? "2023" : "2022";
-            producerRows.Add(new ProducerRow(
-                SubsidiaryId: $"Sub_{i}",
-                DataSubmissionPeriod: period,
-                ProducerId: $"Producer_{i}",
-                RowNumber: rowNumber++,
-                ProducerType: "Type_" + i,
-                ProducerSize: "Size_" + i,
-                WasteType: "Waste_" + i,
-                PackagingCategory: "Category_" + i,
-                MaterialType: "Material_" + i,
-                MaterialSubType: "SubType_" + i,
-                FromHomeNation: "Nation_" + i,
-                ToHomeNation: "NationTo_" + i,
-                QuantityKg: $"{i * 10}",
-                QuantityUnits: $"{i * 5}",
-                SubmissionPeriod: "Period" + period));
-        }
+        var producerRows = testProducerRows.Generate(totalRows - duplicateRows);
 
-        // rows for self-managed waste transfer error
-        for (var i = 0; i < selfManagedWasteRows; i++)
-        {
-            var wasteType = i % 2 == 0 ? PackagingType.SelfManagedConsumerWaste : PackagingType.SelfManagedOrganisationWaste;
-            producerRows.Add(new ProducerRow(
-                SubsidiaryId: $"Sub_{i}",
-                DataSubmissionPeriod: "2023",
-                ProducerId: $"Producer_{i}",
-                RowNumber: rowNumber++,
-                ProducerType: "Type_" + i,
-                ProducerSize: "Size_" + i,
-                WasteType: wasteType,
-                PackagingCategory: "Category_" + i,
-                MaterialType: "Material_" + i,
-                MaterialSubType: "SubType_" + i,
-                FromHomeNation: "Nation_" + i,
-                ToHomeNation: i % 5 == 0 ? string.Empty : "NationTo_" + i,
-                QuantityKg: $"{i * 20}",
-                QuantityUnits: $"{i * 10}",
-                SubmissionPeriod: "Period2023"));
-        }
-
-        // rows for single packaging warning
-        for (var i = 0; i < singlePackagingRows; i++)
-        {
-            var random = new Random();
-            var subsidiaryId = random.Next(10000, 10005);
-            var materialType = subsidiaryId % 2 == 0 ? MaterialType.Aluminium : MaterialType.Other;
-            producerRows.Add(new ProducerRow(
-                SubsidiaryId: $"Sub_{subsidiaryId}",
-                DataSubmissionPeriod: "2023",
-                ProducerId: $"Producer_{i}",
-                RowNumber: rowNumber++,
-                ProducerType: "Type_" + i,
-                ProducerSize: "Size_" + i,
-                WasteType: PackagingType.SelfManagedOrganisationWaste,
-                PackagingCategory: "Category_" + i,
-                MaterialType: materialType,
-                MaterialSubType: MaterialSubType.Plastic,
-                FromHomeNation: "Nation_" + i,
-                ToHomeNation: i % 5 == 0 ? string.Empty : "NationTo_" + i,
-                QuantityKg: $"{i * 20}",
-                QuantityUnits: $"{i * 10}",
-                SubmissionPeriod: "Period2023"));
-        }
-
-        // duplicate rows
         for (var i = 0; i < duplicateRows; i++)
         {
-            var index = i % 10; // To create duplicates
-            producerRows.Add(new ProducerRow(
-                SubsidiaryId: $"Sub_{index}",
-                DataSubmissionPeriod: "2023",
-                ProducerId: $"Producer_{index}",
-                RowNumber: rowNumber++,
-                ProducerType: "Type_" + index,
-                ProducerSize: "Size_" + index,
-                WasteType: "Waste_" + index,
-                PackagingCategory: "Category_" + index,
-                MaterialType: "Material_" + index,
-                MaterialSubType: "SubType_" + index,
-                FromHomeNation: "Nation_" + index,
-                ToHomeNation: "NationTo_" + index,
-                QuantityKg: $"{index * 10}",
-                QuantityUnits: $"{index * 5}",
-                SubmissionPeriod: "Period2023"));
-        }
-
-        // remaining rows
-        for (var i = 0; i < remainingRows; i++)
-        {
-            var index = inconsistentPeriodRows + selfManagedWasteRows + singlePackagingRows + duplicateRows + i;
-            producerRows.Add(new ProducerRow(
-                SubsidiaryId: $"Sub_{index}",
-                DataSubmissionPeriod: "2023",
-                ProducerId: $"Producer_{index}",
-                RowNumber: rowNumber++,
-                ProducerType: "Type_" + index,
-                ProducerSize: "Size_" + index,
-                WasteType: "Waste_" + index,
-                PackagingCategory: "Category_" + index,
-                MaterialType: "Material_" + index,
-                MaterialSubType: "SubType_" + index,
-                FromHomeNation: "Nation_" + index,
-                ToHomeNation: "NationTo_" + index,
-                QuantityKg: $"{index * 10}",
-                QuantityUnits: $"{index * 5}",
-                SubmissionPeriod: "Period2023"));
+            var duplicateProducerRows = testProducerRows.Generate();
+            producerRows.Add(duplicateProducerRows);
         }
 
         return new Producer(
@@ -192,5 +116,25 @@ public class ValidatorsPerformanceTests
             ProducerId: "TestProducer",
             BlobName: "test-blob",
             Rows: producerRows);
+    }
+
+    private static ProducerRow CreateProducerRowObject(int rowNumber)
+    {
+        return new ProducerRow(
+            null,
+            null,
+            null,
+            rowNumber,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
     }
 }

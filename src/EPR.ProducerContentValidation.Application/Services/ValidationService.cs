@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Extensions;
 using EPR.ProducerContentValidation.Application.Models;
@@ -15,17 +16,20 @@ public class ValidationService : IValidationService
     private readonly ILogger<ValidationService> _logger;
     private readonly ICompositeValidator _compositeValidator;
     private readonly IMapper _mapper;
+    private readonly IIssueCountService _issueCountService;
     private readonly StorageAccountOptions _storageAccountOptions;
 
     public ValidationService(
         ILogger<ValidationService> logger,
         ICompositeValidator compositeValidator,
         IMapper mapper,
+        IIssueCountService issueCountService,
         IOptions<StorageAccountOptions> storageAccountOptions)
     {
         _logger = logger;
         _compositeValidator = compositeValidator;
         _mapper = mapper;
+        _issueCountService = issueCountService;
         _storageAccountOptions = storageAccountOptions.Value;
     }
 
@@ -33,15 +37,28 @@ public class ValidationService : IValidationService
     {
         _logger.LogEnter();
 
-        var errors = await _compositeValidator.ValidateAndFetchForErrorsAsync(producer.Rows, producer.BlobName);
-        var warnings = await _compositeValidator.ValidateAndFetchForWarningsAsync(producer.Rows, producer.BlobName, errors);
+        var errorStoreKey = StoreKey.FetchStoreKey(producer.BlobName, IssueType.Error);
+        var warningStoreKey = StoreKey.FetchStoreKey(producer.BlobName, IssueType.Warning);
 
-        await _compositeValidator.ValidateDuplicatesAndGroupedData(producer.Rows, errors, warnings, producer.BlobName);
+        var remainingErrorCapacity = await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey);
+        var remainingWarningCapacity = await _issueCountService.GetRemainingIssueCapacityAsync(warningStoreKey);
 
         var producerValidationOutRequest = _mapper.Map<SubmissionEventRequest>(producer) with
         {
             BlobContainerName = _storageAccountOptions.PomContainer
         };
+
+        if (remainingErrorCapacity == 0 && remainingWarningCapacity == 0)
+        {
+            _logger.LogInformation("No capacity left to process issues. Exiting");
+            return producerValidationOutRequest;
+        }
+
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var warnings = new List<ProducerValidationEventIssueRequest>();
+
+        await _compositeValidator.ValidateAndFetchForIssuesAsync(producer.Rows, errors, warnings, producer.BlobName);
+        await _compositeValidator.ValidateDuplicatesAndGroupedData(producer.Rows, errors, warnings, producer.BlobName);
 
         producerValidationOutRequest.ValidationErrors.AddRange(errors);
         producerValidationOutRequest.ValidationWarnings.AddRange(warnings);

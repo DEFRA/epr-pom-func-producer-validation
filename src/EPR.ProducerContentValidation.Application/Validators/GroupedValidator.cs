@@ -24,25 +24,54 @@ public class GroupedValidator : IGroupedValidator
     {
         var errorStoreKey = StoreKey.FetchStoreKey(blobName, IssueType.Error);
         var warningStoreKey = StoreKey.FetchStoreKey(blobName, IssueType.Warning);
+
         var remainingErrorCount = await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey);
-        if (remainingErrorCount <= 0 || producerRows.Count <= 0)
+        var remainingWarningCount = await _issueCountService.GetRemainingIssueCapacityAsync(warningStoreKey);
+
+        if (producerRows.Count <= 0)
         {
             return;
         }
 
-        // Error Validators
-        var submissionPeriodValidator = new ConsistentDataSubmissionPeriodsGroupedValidator(_mapper, _issueCountService);
-        var selfManagedWasteTransferValidator = new SelfManagedWasteTransfersGroupedValidator(_mapper, _issueCountService);
+        var groupedValidatorTasks = new List<Task>();
 
-        // Warning Validators
-        var singlePackagingMaterialValidator = new SinglePackagingMaterialGroupedValidator(_mapper, _issueCountService);
+        if (remainingErrorCount > 0)
+        {
+            // Error Validators
+            var submissionPeriodValidator = new ConsistentDataSubmissionPeriodsGroupedValidator(_mapper, _issueCountService);
+            var selfManagedWasteTransferValidator = new SelfManagedWasteTransfersGroupedValidator(_mapper, _issueCountService);
 
-        var submissionPeriodsTask = submissionPeriodValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
-        var selfManagedWasteTransfersTask = selfManagedWasteTransferValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
-        var singlePackagingMaterialTask = singlePackagingMaterialValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
-        await Task.WhenAll(
-            submissionPeriodsTask,
-            selfManagedWasteTransfersTask,
-            singlePackagingMaterialTask);
+            var submissionPeriodsTask = submissionPeriodValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
+            var selfManagedWasteTransfersTask = selfManagedWasteTransferValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
+
+            groupedValidatorTasks.AddRange(new List<Task>
+            {
+                submissionPeriodsTask,
+                selfManagedWasteTransfersTask
+            });
+        }
+
+        if (remainingWarningCount > 0)
+        {
+            // Warning Validators
+            var singlePackagingMaterialValidator = new SinglePackagingMaterialGroupedValidator(_mapper, _issueCountService);
+            var totalPackagingMaterialValidator = new TotalPackagingMaterialValidator(_mapper, _issueCountService);
+
+            var singlePackagingMaterialTask = singlePackagingMaterialValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
+            var totalPackagingMaterialValidatorTask = totalPackagingMaterialValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
+
+            groupedValidatorTasks.AddRange(new List<Task>
+            {
+                singlePackagingMaterialTask,
+                totalPackagingMaterialValidatorTask
+            });
+        }
+
+        if (groupedValidatorTasks.Count == 0)
+        {
+            return;
+        }
+
+        await Task.WhenAll(groupedValidatorTasks);
     }
 }

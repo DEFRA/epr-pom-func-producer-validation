@@ -16,7 +16,7 @@ public class SelfManagedWasteTransfersGroupedValidator : AbstractGroupedValidato
         _issueCountService = issueCountService;
     }
 
-    public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows = null, List<ProducerValidationEventIssueRequest> warningRows = null)
+    public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows, List<ProducerValidationEventIssueRequest>? warningRows = null)
     {
         var filteredRows = producerRows.Where(row => (row.WasteType == PackagingType.SelfManagedConsumerWaste || row.WasteType == PackagingType.SelfManagedOrganisationWaste) && !string.IsNullOrEmpty(row.FromHomeNation)).ToList();
 

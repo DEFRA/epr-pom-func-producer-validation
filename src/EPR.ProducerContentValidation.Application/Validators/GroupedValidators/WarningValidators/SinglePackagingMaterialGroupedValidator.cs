@@ -20,20 +20,20 @@ public class SinglePackagingMaterialGroupedValidator : AbstractGroupedValidator
         _issueCountService = issueCountService;
     }
 
-    public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows = null, List<ProducerValidationEventIssueRequest> warningRows = null)
+    public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows, List<ProducerValidationEventIssueRequest>? warningRows = null)
     {
         var groupedRowsBySubsidiaryId = producerRows.GroupBy(row => row.SubsidiaryId);
         var remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
 
         foreach (var group in groupedRowsBySubsidiaryId.TakeWhile(_ => remainingWarningCountToProcess > 0))
         {
-            var associatedErrorRows = errorRows?
+            var associatedErrorRows = errorRows
                 .Where(x => group.Any(y => y.RowNumber == x.RowNumber))
                 .ToList();
-            var shouldSkip = associatedErrorRows?
+            var shouldSkip = associatedErrorRows
                 .Any(x => x.ErrorCodes.Any(y => _skipRuleErrorCodes.Contains(y)));
 
-            if (shouldSkip == true)
+            if (shouldSkip)
             {
                 continue;
             }

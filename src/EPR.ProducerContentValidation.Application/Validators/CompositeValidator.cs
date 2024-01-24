@@ -40,74 +40,14 @@ public class CompositeValidator : ICompositeValidator
         _duplicateValidator = duplicateValidator;
     }
 
-    public async Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForErrorsAsync(IEnumerable<ProducerRow> producerRows, string blobName)
+    public async Task ValidateAndFetchForIssuesAsync(IEnumerable<ProducerRow> producerRows, List<ProducerValidationEventIssueRequest> errors, List<ProducerValidationEventIssueRequest> warnings, string blobName)
     {
-        var errors = new List<ProducerValidationEventIssueRequest>();
-        var errorStoreKey = StoreKey.FetchStoreKey(blobName, IssueType.Error);
-        var remainingErrorCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey);
-
-        foreach (var row in producerRows.TakeWhile(_ => remainingErrorCountToProcess > 0))
-        {
-            var rowValidationResult = await _producerRowValidator.ValidateAsync(row);
-
-            if (rowValidationResult.IsValid)
-            {
-                continue;
-            }
-
-            var errorCodes = rowValidationResult.Errors.Select(x => x.ErrorCode)
-                .Take(remainingErrorCountToProcess)
-                .ToList();
-
-            await _issueCountService.IncrementIssueCountAsync(errorStoreKey, errorCodes.Count);
-            remainingErrorCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey);
-
-            errors.Add(_mapper.Map<ProducerValidationEventIssueRequest>(row) with
-            {
-                ErrorCodes = errorCodes,
-                BlobName = blobName
-            });
-        }
-
-        return errors;
-    }
-
-    public async Task<List<ProducerValidationEventIssueRequest>> ValidateAndFetchForWarningsAsync(IEnumerable<ProducerRow> producerRows, string blobName, List<ProducerValidationEventIssueRequest> errors)
-    {
-        var warnings = new List<ProducerValidationEventIssueRequest>();
-        var warningStoreKey = StoreKey.FetchStoreKey(blobName, IssueType.Warning);
-        var remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(warningStoreKey);
-
-        foreach (var row in producerRows.TakeWhile(_ => remainingWarningCountToProcess > 0))
+        foreach (var row in producerRows)
         {
             var context = new ValidationContext<ProducerRow>(row);
-            context.RootContextData[ErrorCode.ValidationContextErrorKey] = errors?
-                .Where(errorRow => errorRow.RowNumber == row.RowNumber)
-                .SelectMany(errorRow => errorRow.ErrorCodes)
-                .ToList();
-
-            var rowValidationResult = await _producerRowWarningValidator.ValidateAsync(context);
-
-            if (rowValidationResult.IsValid)
-            {
-                continue;
-            }
-
-            var errorCodes = rowValidationResult.Errors.Select(x => x.ErrorCode)
-                .Take(remainingWarningCountToProcess)
-                .ToList();
-
-            await _issueCountService.IncrementIssueCountAsync(warningStoreKey, errorCodes.Count);
-            remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(warningStoreKey);
-
-            warnings.Add(_mapper.Map<ProducerValidationEventIssueRequest>(row) with
-            {
-                ErrorCodes = errorCodes,
-                BlobName = blobName
-            });
+            await ValidateIssue(row, errors, blobName, IssueType.Error, context);
+            await ValidateIssue(row, warnings, blobName, IssueType.Warning, context);
         }
-
-        return warnings;
     }
 
     public async Task ValidateDuplicatesAndGroupedData(IEnumerable<ProducerRow> producerRows, List<ProducerValidationEventIssueRequest> errors, List<ProducerValidationEventIssueRequest> warnings, string blobName)
@@ -117,12 +57,44 @@ public class CompositeValidator : ICompositeValidator
             return;
         }
 
-        var errorStoreKey = StoreKey.FetchStoreKey(blobName, IssueType.Error);
-        var remainingErrorCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey);
-        if (remainingErrorCountToProcess > 0)
+        var distinctRows = await _duplicateValidator.ValidateAndAddErrorsAsync(producerRows, errors, blobName);
+        await _groupedValidator.ValidateAndAddErrorsAsync(distinctRows, errors, warnings, blobName);
+    }
+
+    private async Task ValidateIssue(ProducerRow row, ICollection<ProducerValidationEventIssueRequest> issues, string blobName, string issueType, IValidationContext context)
+    {
+        var storeKey = StoreKey.FetchStoreKey(blobName, issueType);
+        var remainingIssueCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
+
+        if (remainingIssueCountToProcess <= 0)
         {
-            var distinctRows = await _duplicateValidator.ValidateAndAddErrorsAsync(producerRows, errors, blobName);
-            await _groupedValidator.ValidateAndAddErrorsAsync(distinctRows, errors, warnings, blobName);
+            return;
+        }
+
+        var rowValidationErrorResult = issueType == IssueType.Error
+            ? await _producerRowValidator.ValidateAsync(row)
+            : await _producerRowWarningValidator.ValidateAsync(context);
+
+        if (rowValidationErrorResult.IsValid)
+        {
+            return;
+        }
+
+        var issueCodes = rowValidationErrorResult.Errors.Select(x => x.ErrorCode)
+            .Take(remainingIssueCountToProcess)
+            .ToList();
+
+        await _issueCountService.IncrementIssueCountAsync(storeKey, issueCodes.Count);
+
+        issues.Add(_mapper.Map<ProducerValidationEventIssueRequest>(row) with
+        {
+            ErrorCodes = issueCodes,
+            BlobName = blobName
+        });
+
+        if (issueType == IssueType.Error)
+        {
+            context.RootContextData[ErrorCode.ValidationContextErrorKey] = issueCodes;
         }
     }
 }

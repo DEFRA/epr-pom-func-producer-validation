@@ -17,7 +17,7 @@ public abstract class AbstractGroupedValidator : IAbstractGroupedValidator
         _issueCountService = issueCountService;
     }
 
-    public abstract Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows = null, List<ProducerValidationEventIssueRequest> warningRows = null);
+    public abstract Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows, List<ProducerValidationEventIssueRequest>? warningRows = null);
 
     protected async Task FindAndAddError(ProducerRow row, string storeKey, ICollection<ProducerValidationEventIssueRequest> issueRows, string errorCode, string blobName)
     {
