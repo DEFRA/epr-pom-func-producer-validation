@@ -52,7 +52,7 @@ public class SinglePackagingMaterialGroupedValidator : AbstractGroupedValidator
             var packagingMaterial = representativeRow.MaterialType;
             if (packagingMaterial != MaterialType.Other)
             {
-                FindAndAddError(representativeRow, storeKey, warningRows, ErrorCode.WarningOnlyOnePackagingMaterialReported, blobName);
+                await FindAndAddErrorAsync(representativeRow, storeKey, warningRows, ErrorCode.WarningOnlyOnePackagingMaterialReported, blobName);
                 remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
                 continue;
             }
@@ -67,7 +67,7 @@ public class SinglePackagingMaterialGroupedValidator : AbstractGroupedValidator
                 continue;
             }
 
-            FindAndAddError(representativeRow, storeKey, warningRows, ErrorCode.WarningOnlyOnePackagingMaterialReported, blobName);
+            await FindAndAddErrorAsync(representativeRow, storeKey, warningRows, ErrorCode.WarningOnlyOnePackagingMaterialReported, blobName);
             remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
         }
     }

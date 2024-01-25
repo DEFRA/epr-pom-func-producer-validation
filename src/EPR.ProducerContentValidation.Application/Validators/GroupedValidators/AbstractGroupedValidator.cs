@@ -19,7 +19,7 @@ public abstract class AbstractGroupedValidator : IAbstractGroupedValidator
 
     public abstract Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows, List<ProducerValidationEventIssueRequest>? warningRows = null);
 
-    protected async Task FindAndAddError(ProducerRow row, string storeKey, ICollection<ProducerValidationEventIssueRequest> issueRows, string errorCode, string blobName)
+    protected async Task FindAndAddErrorAsync(ProducerRow row, string storeKey, ICollection<ProducerValidationEventIssueRequest> issueRows, string errorCode, string blobName)
     {
         var errorRow = issueRows.FirstOrDefault(x => x.RowNumber == row.RowNumber);
 
@@ -37,6 +37,6 @@ public abstract class AbstractGroupedValidator : IAbstractGroupedValidator
             errorRow.ErrorCodes.Add(errorCode);
         }
 
-        _issueCountService.IncrementIssueCountAsync(storeKey, 1);
+        await _issueCountService.IncrementIssueCountAsync(storeKey, 1);
     }
 }

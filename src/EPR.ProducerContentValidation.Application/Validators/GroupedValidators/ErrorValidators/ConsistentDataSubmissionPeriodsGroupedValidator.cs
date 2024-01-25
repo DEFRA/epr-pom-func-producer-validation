@@ -32,7 +32,7 @@ public class ConsistentDataSubmissionPeriodsGroupedValidator : AbstractGroupedVa
 
         foreach (var row in rowsToReject.TakeWhile(_ => remainingErrorCount > 0))
         {
-            await FindAndAddError(row, storeKey, errorRows, ErrorCode.DataSubmissionPeriodInconsistentErrorCode, blobName);
+            await FindAndAddErrorAsync(row, storeKey, errorRows, ErrorCode.DataSubmissionPeriodInconsistentErrorCode, blobName);
             remainingErrorCount = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
         }
     }

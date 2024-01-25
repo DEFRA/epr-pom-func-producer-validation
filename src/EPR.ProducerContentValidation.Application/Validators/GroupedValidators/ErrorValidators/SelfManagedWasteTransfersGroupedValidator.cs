@@ -52,7 +52,7 @@ public class SelfManagedWasteTransfersGroupedValidator : AbstractGroupedValidato
             }
 
             var representativeRow = group.First();
-            FindAndAddError(representativeRow, storeKey, errorRows, ErrorCode.SelfManagedWasteTransferInvalidErrorCode, blobName);
+            await FindAndAddErrorAsync(representativeRow, storeKey, errorRows, ErrorCode.SelfManagedWasteTransferInvalidErrorCode, blobName);
             remainingErrorCount = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
         }
     }

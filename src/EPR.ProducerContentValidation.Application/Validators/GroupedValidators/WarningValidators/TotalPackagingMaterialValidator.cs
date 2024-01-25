@@ -59,7 +59,7 @@ public class TotalPackagingMaterialValidator : AbstractGroupedValidator
             return;
         }
 
-        FindAndAddError(representativeRow, storeKey, warningRows, ErrorCode.WarningPackagingMaterialWeightLessThanLimitKg, blobName);
+        await FindAndAddErrorAsync(representativeRow, storeKey, warningRows, ErrorCode.WarningPackagingMaterialWeightLessThanLimitKg, blobName);
     }
 
     private static decimal ParseWeight(string quantityKg)
