@@ -17,12 +17,14 @@ public class CompositeValidator : ICompositeValidator
     private readonly IValidator<ProducerRow> _producerRowWarningValidator;
     private readonly IGroupedValidator _groupedValidator;
     private readonly IDuplicateValidator _duplicateValidator;
+    private readonly IOptions<SubmissionConfig> submissionConfigOptions;
     private readonly IIssueCountService _issueCountService;
     private readonly IMapper _mapper;
     private readonly ValidationOptions _validationOptions;
 
     public CompositeValidator(
         IOptions<ValidationOptions> validationOptions,
+        IOptions<SubmissionConfig> submissionConfigOptions,
         IIssueCountService issueCountService,
         IMapper mapper,
         IProducerRowValidatorFactory producerRowValidatorFactory,
@@ -30,6 +32,7 @@ public class CompositeValidator : ICompositeValidator
         IGroupedValidator groupedValidator,
         IDuplicateValidator duplicateValidator)
     {
+        this.submissionConfigOptions = submissionConfigOptions;
         _issueCountService = issueCountService;
         _mapper = mapper;
         _validationOptions = validationOptions.Value;
@@ -45,6 +48,11 @@ public class CompositeValidator : ICompositeValidator
         foreach (var row in producerRows)
         {
             var context = new ValidationContext<ProducerRow>(row);
+
+            var config = submissionConfigOptions.Value;
+
+            context.RootContextData.Add(typeof(SubmissionConfig).Name, config);
+
             await ValidateIssue(row, errors, blobName, IssueType.Error, context);
             await ValidateIssue(row, warnings, blobName, IssueType.Warning, context);
         }
@@ -72,7 +80,7 @@ public class CompositeValidator : ICompositeValidator
         }
 
         var rowValidationErrorResult = issueType == IssueType.Error
-            ? await _producerRowValidator.ValidateAsync(row)
+            ? await _producerRowValidator.ValidateAsync(context)
             : await _producerRowWarningValidator.ValidateAsync(context);
 
         if (rowValidationErrorResult.IsValid)

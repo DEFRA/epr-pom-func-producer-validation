@@ -1,76 +1,57 @@
-﻿using System.Globalization;
-using System.Xml.Schema;
+﻿namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
 
-namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
-
-using Constants;
-using CustomValidators;
 using FluentValidation;
+using FluentValidation.Results;
 using Models;
-using ReferenceData;
 
 public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
 {
-    private static readonly Dictionary<string, string> DataSubmissionMappings = new()
-    {
-        { DataSubmissionPeriod.Year2023P1, SubmissionPeriod.SubmissionPeriodP1 },
-        { DataSubmissionPeriod.Year2023P2, SubmissionPeriod.SubmissionPeriodP2 },
-        { DataSubmissionPeriod.Year2023P3, SubmissionPeriod.SubmissionPeriodP3 }
-    };
-
     public DataSubmissionPeriodValidator()
     {
         RuleFor(x => x.DataSubmissionPeriod)
-            .IsInAllowedValues(ReferenceDataGenerator.DataSubmissionPeriods)
-            .WithErrorCode(ErrorCode.DataSubmissionPeriodInvalidErrorCode);
-
-        RuleFor(x => x.DataSubmissionPeriod)
-            .Must((row, submissionPeriod) =>
+            .Must((row, dataSubmissionPeriod, context) =>
             {
-                if (string.IsNullOrWhiteSpace(submissionPeriod) || row.DataSubmissionPeriod == null)
+                if (string.IsNullOrWhiteSpace(dataSubmissionPeriod) || row.DataSubmissionPeriod == null)
                 {
                     return false;
                 }
 
-                if (!DataSubmissionMappings.TryGetValue(row.DataSubmissionPeriod, out var expectedSubmissionPeriod))
+                var configSectionName = typeof(SubmissionConfig).Name;
+
+                if (!context.RootContextData.TryGetValue(configSectionName, out var submissionPeriodConfig))
                 {
                     return false;
                 }
 
-                if (expectedSubmissionPeriod == SubmissionPeriod.SubmissionPeriodP1 ||
-                    expectedSubmissionPeriod == SubmissionPeriod.SubmissionPeriodP2)
+                var submissionConfig = submissionPeriodConfig as SubmissionConfig;
+
+                if (submissionConfig == null)
                 {
-                    return string.Equals(row.SubmissionPeriod, SubmissionPeriod.SubmissionPeriodP1, StringComparison.OrdinalIgnoreCase) ||
-                           string.Equals(row.SubmissionPeriod, SubmissionPeriod.SubmissionPeriodP2, StringComparison.OrdinalIgnoreCase);
+                    return false;
+                }
+
+                var expectedSubmissionPeriod = submissionConfig
+                    .SubmissionPeriods
+                    .Find(p => p.SubmissionPeriod.Equals(row.SubmissionPeriod, StringComparison.InvariantCultureIgnoreCase));
+
+                if (expectedSubmissionPeriod == null)
+                {
+                    // A configuration must exist for the submission period
+                    return false;
+                }
+
+                if (!expectedSubmissionPeriod.PeriodCodes.Exists(p => p.Equals(row.DataSubmissionPeriod, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    var failure = new ValidationFailure();
+                    failure.ErrorCode = expectedSubmissionPeriod.ErrorCode;
+                    failure.AttemptedValue = dataSubmissionPeriod;
+                    failure.PropertyName = context.PropertyName;
+                    context.AddFailure(failure);
+
+                    return false;
                 }
 
                 return true;
-            })
-            .WithErrorCode(ErrorCode.InvalidSubmissionPeriodFor2023P3)
-            .When(row => row.DataSubmissionPeriod != null &&
-                         DataSubmissionMappings.ContainsKey(row.DataSubmissionPeriod) &&
-                         (DataSubmissionMappings[row.DataSubmissionPeriod] == SubmissionPeriod.SubmissionPeriodP1 ||
-                          DataSubmissionMappings[row.DataSubmissionPeriod] == SubmissionPeriod.SubmissionPeriodP2));
-
-        RuleFor(x => x.DataSubmissionPeriod)
-            .Must((row, submissionPeriod) =>
-            {
-                if (string.IsNullOrWhiteSpace(submissionPeriod) || row.DataSubmissionPeriod == null)
-                {
-                    return false;
-                }
-
-                if (!DataSubmissionMappings.TryGetValue(row.DataSubmissionPeriod, out var expectedSubmissionPeriod))
-                {
-                    return false;
-                }
-
-                return expectedSubmissionPeriod == SubmissionPeriod.SubmissionPeriodP3 &&
-                       string.Equals(row.SubmissionPeriod, SubmissionPeriod.SubmissionPeriodP3, StringComparison.OrdinalIgnoreCase);
-            })
-            .WithErrorCode(ErrorCode.InvalidSubmissionPeriodFor2023P1P2)
-            .When(row => row.DataSubmissionPeriod != null &&
-                         DataSubmissionMappings.ContainsKey(row.DataSubmissionPeriod) &&
-                         DataSubmissionMappings[row.DataSubmissionPeriod] == SubmissionPeriod.SubmissionPeriodP3);
+            });
     }
 }

@@ -42,6 +42,7 @@ public static class ConfigureServices
         services.ConfigureSection<StorageAccountOptions>(StorageAccountOptions.Section);
         services.ConfigureSection<RedisOptions>(RedisOptions.Section);
 
+        // @@@@ services.ConfigureSection<List<SubmissionPeriod>>();
         return services;
     }
 

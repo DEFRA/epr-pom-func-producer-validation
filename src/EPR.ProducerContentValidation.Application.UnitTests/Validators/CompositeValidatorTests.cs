@@ -12,6 +12,7 @@ using EPR.ProducerContentValidation.TestSupport;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -66,6 +67,8 @@ public class CompositeValidatorTests
             .Setup(x => x.GetRemainingIssueCapacityAsync(_warningStoreKey))
             .ReturnsAsync(500);
 
+        var submissionConfigOptions = new SubmissionConfig();
+
         _producerRowValidatorFactoryMock.Setup(x => x.GetInstance()).Returns(_producerRowValidatorMock.Object);
         _producerRowWarningValidatorFactoryMock.Setup(x => x.GetInstance()).Returns(_producerRowValidatorMock.Object);
 
@@ -81,6 +84,7 @@ public class CompositeValidatorTests
 
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
+            Microsoft.Extensions.Options.Options.Create(submissionConfigOptions),
             _issueCountServiceMock.Object,
             _mapper,
             _producerRowValidatorFactoryMock.Object,
@@ -425,9 +429,11 @@ public class CompositeValidatorTests
         var producerRowOne = ModelGenerator.CreateProducerRow(1);
         var producerRows = new List<ProducerRow> { producerRowOne };
         _options = new ValidationOptions { Disabled = true };
+        var submissionConfigOptions = new Mock<IOptions<SubmissionConfig>>();
 
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
+            submissionConfigOptions.Object,
             _issueCountServiceMock.Object,
             _mapper,
             _producerRowValidatorFactoryMock.Object,
