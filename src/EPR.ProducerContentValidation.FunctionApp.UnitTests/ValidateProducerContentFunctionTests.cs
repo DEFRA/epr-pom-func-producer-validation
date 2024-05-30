@@ -91,6 +91,25 @@ public class ValidateProducerContentFunctionTests
     }
 
     [TestMethod]
+    public async Task RunAsync_CatchesAndLogsSubmissionApiClientUnexpectedException_WhenThrown()
+    {
+        // Arrange
+        const string exceptionErrorMessage = "Error message from submission client exception";
+        var request = DtoGenerator.ValidProducerValidationInRequest();
+
+        _submissionApiClientMock
+            .Setup(x => x.PostEventAsync(
+                request.OrganisationId, request.UserId, request.SubmissionId, It.IsAny<SubmissionEventRequest>()))
+            .ThrowsAsync(new Exception(exceptionErrorMessage));
+
+        // Act
+        await _systemUnderTest.RunAsync(request, _loggerMock.Object);
+
+        // Assert
+        _loggerMock.VerifyLog(logger => logger.LogError(exceptionErrorMessage), Times.Once);
+    }
+
+    [TestMethod]
     public async Task RunAsync_UncaughtValidationExceptionTriggersSubmissionApiValidationEventCall()
     {
         // Arrange
