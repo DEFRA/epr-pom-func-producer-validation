@@ -11,7 +11,7 @@ public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
         RuleFor(x => x.DataSubmissionPeriod)
             .Must((row, dataSubmissionPeriod, context) =>
             {
-                if (string.IsNullOrWhiteSpace(dataSubmissionPeriod) || row.DataSubmissionPeriod == null)
+                if (string.IsNullOrWhiteSpace(dataSubmissionPeriod))
                 {
                     return false;
                 }

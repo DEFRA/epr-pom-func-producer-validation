@@ -94,4 +94,67 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
         // Assert
         result.IsValid.Should().BeTrue(because);
     }
+
+    [TestMethod]
+    [DataRow("", "Data submission period is empty")]
+    [DataRow(" ", "Data submission period is whitespace")]
+    public void ShouldFailValidation_WhenSubmissionPeriodIsInvalid(string dataSubmissionPeriod, string because)
+    {
+        // Arrange
+        fixture.Customize<ProducerRow>(c =>
+            c.With(r => r.DataSubmissionPeriod, dataSubmissionPeriod));
+
+        var model = fixture.Create<ProducerRow>();
+
+        var context = new ValidationContext<ProducerRow>(model);
+
+        var validator = new DataSubmissionPeriodValidator();
+
+        // Act
+        var result = validator.TestValidate(context);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.DataSubmissionPeriod);
+    }
+
+    [TestMethod]
+    public void ShouldFailValidation_WhenRootContextMissing()
+    {
+        // Arrange
+        var model = fixture.Create<ProducerRow>();
+
+        var context = new ValidationContext<ProducerRow>(model);
+
+        var validator = new DataSubmissionPeriodValidator();
+
+        // Act
+        var result = validator.TestValidate(context);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.DataSubmissionPeriod);
+    }
+
+    [TestMethod]
+    public void ShouldFailValidation_WhenConfigMissingForValidationPeriod()
+    {
+        // Arrange
+        var model = fixture.Create<ProducerRow>();
+
+        var config = fixture.Create<SubmissionConfig>();
+
+        var context = new ValidationContext<ProducerRow>(model);
+
+        context.RootContextData[typeof(SubmissionConfig).Name] = config;
+
+        var validator = new DataSubmissionPeriodValidator();
+
+        // Act
+        var result = validator.TestValidate(context);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.DataSubmissionPeriod);
+    }
 }
