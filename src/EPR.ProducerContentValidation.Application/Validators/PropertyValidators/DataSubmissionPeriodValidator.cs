@@ -45,7 +45,8 @@ public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
                     failure.PropertyName = context.PropertyName;
                     context.AddFailure(failure);
 
-                    return false;
+                    // The error caught, so dont raise another unknown error by returning false here
+                    return true;
                 }
 
                 return true;
