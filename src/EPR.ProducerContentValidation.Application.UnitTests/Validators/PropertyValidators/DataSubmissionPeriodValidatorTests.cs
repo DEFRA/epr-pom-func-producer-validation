@@ -54,6 +54,8 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
         var result = validator.TestValidate(context);
 
         // Assert
+        result.Errors.Should().HaveCount(1);
+
         result
             .ShouldHaveValidationErrorFor(x => x.DataSubmissionPeriod)
             .WithErrorCode(expectedErrorCode);
