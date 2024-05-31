@@ -34,19 +34,19 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
 
         var model = fixture.Create<ProducerRow>();
 
-        var periodDetails = new SubmissionPeriodDetails()
+        var config = new List<SubmissionPeriodOption>()
         {
-            SubmissionPeriod = submissionPeriod,
-            PeriodCodes = periodCodes.Split(',').ToList(),
-            ErrorCode = expectedErrorCode
+            new SubmissionPeriodOption()
+            {
+                SubmissionPeriod = submissionPeriod,
+                PeriodCodes = periodCodes.Split(',').ToList(),
+                ErrorCode = expectedErrorCode
+            }
         };
-
-        var config = fixture.Create<SubmissionConfig>();
-        config.SubmissionPeriods.Add(periodDetails);
 
         var context = new ValidationContext<ProducerRow>(model);
 
-        context.RootContextData[typeof(SubmissionConfig).Name] = config;
+        context.RootContextData[SubmissionPeriodOption.Section] = config;
 
         var validator = new DataSubmissionPeriodValidator();
 
@@ -73,18 +73,18 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
 
         var model = fixture.Create<ProducerRow>();
 
-        var periodDetails = new SubmissionPeriodDetails()
+        var config = new List<SubmissionPeriodOption>()
         {
-            SubmissionPeriod = submissionPeriod,
-            PeriodCodes = periodCodes.Split(',').ToList(),
+            new SubmissionPeriodOption()
+            {
+                SubmissionPeriod = submissionPeriod,
+                PeriodCodes = periodCodes.Split(',').ToList(),
+            }
         };
-
-        var config = fixture.Create<SubmissionConfig>();
-        config.SubmissionPeriods.Add(periodDetails);
 
         var context = new ValidationContext<ProducerRow>(model);
 
-        context.RootContextData[typeof(SubmissionConfig).Name] = config;
+        context.RootContextData[SubmissionPeriodOption.Section] = config;
 
         var validator = new DataSubmissionPeriodValidator();
 
@@ -142,11 +142,9 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
         // Arrange
         var model = fixture.Create<ProducerRow>();
 
-        var config = fixture.Create<SubmissionConfig>();
-
         var context = new ValidationContext<ProducerRow>(model);
 
-        context.RootContextData[typeof(SubmissionConfig).Name] = config;
+        context.RootContextData[SubmissionPeriodOption.Section] = new List<SubmissionPeriodOption>();
 
         var validator = new DataSubmissionPeriodValidator();
 

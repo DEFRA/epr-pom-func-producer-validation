@@ -16,23 +16,20 @@ public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
                     return false;
                 }
 
-                var configSectionName = typeof(SubmissionConfig).Name;
-
-                if (!context.RootContextData.TryGetValue(configSectionName, out var submissionPeriodConfig))
+                if (!context.RootContextData.TryGetValue(SubmissionPeriodOption.Section, out var submissionPeriodConfig))
                 {
                     return false;
                 }
 
-                var submissionConfig = submissionPeriodConfig as SubmissionConfig;
+                var submissionPeriods = submissionPeriodConfig as List<SubmissionPeriodOption>;
 
-                if (submissionConfig == null)
+                if (submissionPeriods == null)
                 {
                     return false;
                 }
 
-                var expectedSubmissionPeriod = submissionConfig
-                    .SubmissionPeriods
-                    .Find(p => p.SubmissionPeriod.Equals(row.SubmissionPeriod, StringComparison.InvariantCultureIgnoreCase));
+                var expectedSubmissionPeriod = submissionPeriods.Find(
+                    p => p.SubmissionPeriod.Equals(row.SubmissionPeriod, StringComparison.InvariantCultureIgnoreCase));
 
                 if (expectedSubmissionPeriod == null)
                 {

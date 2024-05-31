@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Services;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
@@ -41,8 +42,7 @@ public static class ConfigureServices
         services.ConfigureSection<ServiceBusOptions>(ServiceBusOptions.Section);
         services.ConfigureSection<StorageAccountOptions>(StorageAccountOptions.Section);
         services.ConfigureSection<RedisOptions>(RedisOptions.Section);
-
-        // @@@@ services.ConfigureSection<List<SubmissionPeriod>>();
+        services.ConfigureSection<List<SubmissionPeriodOption>>(SubmissionPeriodOption.Section);
         return services;
     }
 
@@ -67,7 +67,8 @@ public static class ConfigureServices
 
         services.AddOptions<TOptions>().Configure(delegate(TOptions options, IConfiguration config)
         {
-            config.GetSection(sectionKey).Bind(options);
+            var section = config.GetSection(sectionKey);
+            section.Bind(options);
 
             if (validate)
             {

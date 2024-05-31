@@ -67,7 +67,7 @@ public class CompositeValidatorTests
             .Setup(x => x.GetRemainingIssueCapacityAsync(_warningStoreKey))
             .ReturnsAsync(500);
 
-        var submissionConfigOptions = new SubmissionConfig();
+        var submissionPeriodOptions = new List<SubmissionPeriodOption>();
 
         _producerRowValidatorFactoryMock.Setup(x => x.GetInstance()).Returns(_producerRowValidatorMock.Object);
         _producerRowWarningValidatorFactoryMock.Setup(x => x.GetInstance()).Returns(_producerRowValidatorMock.Object);
@@ -84,7 +84,7 @@ public class CompositeValidatorTests
 
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
-            Microsoft.Extensions.Options.Options.Create(submissionConfigOptions),
+            Microsoft.Extensions.Options.Options.Create(submissionPeriodOptions),
             _issueCountServiceMock.Object,
             _mapper,
             _producerRowValidatorFactoryMock.Object,
@@ -429,11 +429,11 @@ public class CompositeValidatorTests
         var producerRowOne = ModelGenerator.CreateProducerRow(1);
         var producerRows = new List<ProducerRow> { producerRowOne };
         _options = new ValidationOptions { Disabled = true };
-        var submissionConfigOptions = new Mock<IOptions<SubmissionConfig>>();
+        var submissionPeriodOptions = new Mock<IOptions<List<SubmissionPeriodOption>>>();
 
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
-            submissionConfigOptions.Object,
+            submissionPeriodOptions.Object,
             _issueCountServiceMock.Object,
             _mapper,
             _producerRowValidatorFactoryMock.Object,

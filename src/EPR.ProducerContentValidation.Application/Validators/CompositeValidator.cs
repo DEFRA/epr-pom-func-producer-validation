@@ -17,14 +17,14 @@ public class CompositeValidator : ICompositeValidator
     private readonly IValidator<ProducerRow> _producerRowWarningValidator;
     private readonly IGroupedValidator _groupedValidator;
     private readonly IDuplicateValidator _duplicateValidator;
-    private readonly IOptions<SubmissionConfig> submissionConfigOptions;
+    private readonly IOptions<List<SubmissionPeriodOption>> submissionOptions;
     private readonly IIssueCountService _issueCountService;
     private readonly IMapper _mapper;
     private readonly ValidationOptions _validationOptions;
 
     public CompositeValidator(
         IOptions<ValidationOptions> validationOptions,
-        IOptions<SubmissionConfig> submissionConfigOptions,
+        IOptions<List<SubmissionPeriodOption>> submissionOptions,
         IIssueCountService issueCountService,
         IMapper mapper,
         IProducerRowValidatorFactory producerRowValidatorFactory,
@@ -32,7 +32,7 @@ public class CompositeValidator : ICompositeValidator
         IGroupedValidator groupedValidator,
         IDuplicateValidator duplicateValidator)
     {
-        this.submissionConfigOptions = submissionConfigOptions;
+        this.submissionOptions = submissionOptions;
         _issueCountService = issueCountService;
         _mapper = mapper;
         _validationOptions = validationOptions.Value;
@@ -49,9 +49,7 @@ public class CompositeValidator : ICompositeValidator
         {
             var context = new ValidationContext<ProducerRow>(row);
 
-            var config = submissionConfigOptions.Value;
-
-            context.RootContextData.Add(typeof(SubmissionConfig).Name, config);
+            context.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
 
             await ValidateIssue(row, errors, blobName, IssueType.Error, context);
             await ValidateIssue(row, warnings, blobName, IssueType.Warning, context);

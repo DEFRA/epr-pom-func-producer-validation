@@ -3,8 +3,10 @@
 using System.Diagnostics.CodeAnalysis;
 
 [ExcludeFromCodeCoverage]
-public class SubmissionPeriodDetails
+public class SubmissionPeriodOption
 {
+    public const string Section = "SubmissionPeriods";
+
     /// <summary>
     /// Gets the date period for a submission.
     /// E.g. "January to June 2024".

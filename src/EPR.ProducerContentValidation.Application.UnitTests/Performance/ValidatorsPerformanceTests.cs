@@ -29,7 +29,7 @@ public class ValidatorsPerformanceTests
         Mock<IIssueCountService> errorCountServiceMock = new();
         Mock<ILogger<ValidationService>> loggerMock = new();
 
-        var submissionConfigOptions = new Mock<IOptions<SubmissionConfig>>();
+        var submissionConfigOptions = new Mock<IOptions<List<SubmissionPeriodOption>>>();
 
         validationOptionsMock.Setup(x => x.Value).Returns(new ValidationOptions { Disabled = false });
         errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(1000);
