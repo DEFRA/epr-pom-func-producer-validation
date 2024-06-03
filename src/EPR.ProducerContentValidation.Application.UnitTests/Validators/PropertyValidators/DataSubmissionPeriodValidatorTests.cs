@@ -160,7 +160,7 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
 
     [TestMethod]
     [DataRow("2024-P4", "January to June 2024", "July to December 2024", "2024-P4", "77", "Data submission period does not exist")]
-    [DataRow("2024-P4", "July to December 2024", "2024-P1,2024-P2,2024-P3", "2024-P4", "77", "Data submission period does not exist")]
+    [DataRow("2024-P4", "July to December 2024", "January to June 2024", "2024-P4", "77", "Data submission period does not exist")]
     public void ShouldThrowMissingSubmissionConfidurationException_WhenPeriodMissing(
         string dataSubmissionPeriod, string expectedSubmissionPeriod, string actualSubmissionPeriod, string periodCodes, string expectedErrorCode, string because)
     {
