@@ -1,76 +1,75 @@
-﻿using System.Globalization;
-using System.Xml.Schema;
+﻿namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
 
-namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
-
-using Constants;
-using CustomValidators;
+using System;
+using EPR.ProducerContentValidation.Application.Constants;
+using EPR.ProducerContentValidation.Application.Exceptions;
 using FluentValidation;
+using FluentValidation.Results;
 using Models;
-using ReferenceData;
 
 public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
 {
-    private static readonly Dictionary<string, string> DataSubmissionMappings = new()
-    {
-        { DataSubmissionPeriod.Year2023P1, SubmissionPeriod.SubmissionPeriodP1 },
-        { DataSubmissionPeriod.Year2023P2, SubmissionPeriod.SubmissionPeriodP2 },
-        { DataSubmissionPeriod.Year2023P3, SubmissionPeriod.SubmissionPeriodP3 }
-    };
-
     public DataSubmissionPeriodValidator()
     {
+        // The data submission period must be one of the configured period codes
+        // E.g. "P1-2024" must be in the configured periods
         RuleFor(x => x.DataSubmissionPeriod)
-            .IsInAllowedValues(ReferenceDataGenerator.DataSubmissionPeriods)
-            .WithErrorCode(ErrorCode.DataSubmissionPeriodInvalidErrorCode);
-
-        RuleFor(x => x.DataSubmissionPeriod)
-            .Must((row, submissionPeriod) =>
+            .Must((row, dataSubmissionPeriod, context) =>
             {
-                if (string.IsNullOrWhiteSpace(submissionPeriod) || row.DataSubmissionPeriod == null)
-                {
-                    return false;
-                }
+                return DataSubmissionPeriodExists(dataSubmissionPeriod, context);
+            })
+            .WithErrorCode(ErrorCode.DataSubmissionPeriodInvalidErrorCode)
+            .When((row, context) => TryGetSubmissionPeriods(context, out var _));
 
-                if (!DataSubmissionMappings.TryGetValue(row.DataSubmissionPeriod, out var expectedSubmissionPeriod))
-                {
-                    return false;
-                }
+        // The rows Data submission period must be one of the period codes for the rows submission period
+        // E.g. Data Submission period "P1-2024" should be in the configured period codes for the submission period "January to June 2024"
+        RuleFor(x => x.DataSubmissionPeriod)
+            .Must((row, dataSubmissionPeriod, context) =>
+            {
+                TryGetSubmissionPeriods(context, out var submissionPeriods);
 
-                if (expectedSubmissionPeriod == SubmissionPeriod.SubmissionPeriodP1 ||
-                    expectedSubmissionPeriod == SubmissionPeriod.SubmissionPeriodP2)
+                var expectedSubmissionPeriod = submissionPeriods.Find(
+                    p => p.SubmissionPeriod.Equals(row.SubmissionPeriod, StringComparison.InvariantCultureIgnoreCase))
+                    ?? throw new MissingSubmissionConfidurationException(dataSubmissionPeriod);
+
+                if (!expectedSubmissionPeriod.PeriodCodes.Exists(p => p.Equals(dataSubmissionPeriod, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    return string.Equals(row.SubmissionPeriod, SubmissionPeriod.SubmissionPeriodP1, StringComparison.OrdinalIgnoreCase) ||
-                           string.Equals(row.SubmissionPeriod, SubmissionPeriod.SubmissionPeriodP2, StringComparison.OrdinalIgnoreCase);
+                    var failure = new ValidationFailure();
+                    failure.ErrorCode = expectedSubmissionPeriod.ErrorCode;
+                    failure.AttemptedValue = dataSubmissionPeriod;
+                    failure.PropertyName = context.PropertyName;
+                    context.AddFailure(failure);
+
+                    // The error caught, so dont raise another unknown error by returning false here
+                    return true;
                 }
 
                 return true;
             })
-            .WithErrorCode(ErrorCode.InvalidSubmissionPeriodFor2023P3)
-            .When(row => row.DataSubmissionPeriod != null &&
-                         DataSubmissionMappings.ContainsKey(row.DataSubmissionPeriod) &&
-                         (DataSubmissionMappings[row.DataSubmissionPeriod] == SubmissionPeriod.SubmissionPeriodP1 ||
-                          DataSubmissionMappings[row.DataSubmissionPeriod] == SubmissionPeriod.SubmissionPeriodP2));
+            .When((row, context) => row.DataSubmissionPeriod != null && DataSubmissionPeriodExists(row.DataSubmissionPeriod, context));
+    }
 
-        RuleFor(x => x.DataSubmissionPeriod)
-            .Must((row, submissionPeriod) =>
-            {
-                if (string.IsNullOrWhiteSpace(submissionPeriod) || row.DataSubmissionPeriod == null)
-                {
-                    return false;
-                }
+    private static bool DataSubmissionPeriodExists(string dataSubmissionPeriod, ValidationContext<ProducerRow> context)
+    {
+        if(TryGetSubmissionPeriods(context, out var submissionPeriods))
+        {
+            var periodCodes = submissionPeriods.SelectMany(sp => sp.PeriodCodes);
 
-                if (!DataSubmissionMappings.TryGetValue(row.DataSubmissionPeriod, out var expectedSubmissionPeriod))
-                {
-                    return false;
-                }
+            return periodCodes.Contains(dataSubmissionPeriod);
+        }
 
-                return expectedSubmissionPeriod == SubmissionPeriod.SubmissionPeriodP3 &&
-                       string.Equals(row.SubmissionPeriod, SubmissionPeriod.SubmissionPeriodP3, StringComparison.OrdinalIgnoreCase);
-            })
-            .WithErrorCode(ErrorCode.InvalidSubmissionPeriodFor2023P1P2)
-            .When(row => row.DataSubmissionPeriod != null &&
-                         DataSubmissionMappings.ContainsKey(row.DataSubmissionPeriod) &&
-                         DataSubmissionMappings[row.DataSubmissionPeriod] == SubmissionPeriod.SubmissionPeriodP3);
+        return false;
+    }
+
+    private static bool TryGetSubmissionPeriods(ValidationContext<ProducerRow> context, out List<SubmissionPeriodOption>? submissionPeriods)
+    {
+        submissionPeriods = null;
+
+        if (context.RootContextData.TryGetValue(SubmissionPeriodOption.Section, out var submissionPeriodConfig))
+        {
+            submissionPeriods = submissionPeriodConfig as List<SubmissionPeriodOption>;
+        }
+
+        return submissionPeriods is not null;
     }
 }

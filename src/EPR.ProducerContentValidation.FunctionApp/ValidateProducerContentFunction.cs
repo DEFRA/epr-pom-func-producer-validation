@@ -41,7 +41,7 @@ public class ValidateProducerContentFunction
         ILogger logger)
     {
         logger.LogInformation("Entering function");
-        logger.LogWarning("Validation.Disabled: {}", _validationOptions.Disabled);
+        logger.LogWarning("Validation.Disabled: {0}", _validationOptions.Disabled);
 
         try
         {
@@ -49,7 +49,7 @@ public class ValidateProducerContentFunction
         }
         catch (Exception e)
         {
-            logger.LogError("{ExceptionMessage}", e.Message);
+            logger.LogError(e, e.Message);
         }
         finally
         {
