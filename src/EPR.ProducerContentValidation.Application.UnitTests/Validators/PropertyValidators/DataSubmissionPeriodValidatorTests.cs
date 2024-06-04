@@ -39,7 +39,7 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
 
         var config = new List<SubmissionPeriodOption>()
         {
-            new SubmissionPeriodOption()
+            new ()
             {
                 SubmissionPeriod = submissionPeriod,
                 PeriodCodes = periodCodes.Split(',').ToList(),
@@ -74,13 +74,13 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
 
         var config = new List<SubmissionPeriodOption>()
         {
-            new SubmissionPeriodOption()
+            new ()
             {
                 SubmissionPeriod = submissionPeriod,
                 PeriodCodes = periodCodes1.Split(',').ToList(),
                 ErrorCode = expectedErrorCode
             },
-            new SubmissionPeriodOption()
+            new ()
             {
                 SubmissionPeriod = "jan to June 26",
                 PeriodCodes = periodCodes2.Split(',').ToList(),
@@ -127,13 +127,13 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
 
         var config = new List<SubmissionPeriodOption>()
         {
-            new SubmissionPeriodOption()
+            new ()
             {
                 SubmissionPeriod = submissionPeriod,
                 PeriodCodes = periodCodes1.Split(',').ToList(),
                 ErrorCode = "99"
             },
-            new SubmissionPeriodOption()
+            new ()
             {
                 SubmissionPeriod = "June to December 2024",
                 PeriodCodes = periodCodes2.Split(',').ToList(),
@@ -173,7 +173,7 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
 
         var config = new List<SubmissionPeriodOption>()
         {
-            new SubmissionPeriodOption()
+            new ()
             {
                 SubmissionPeriod = actualSubmissionPeriod,
                 PeriodCodes = periodCodes.Split(',').ToList(),

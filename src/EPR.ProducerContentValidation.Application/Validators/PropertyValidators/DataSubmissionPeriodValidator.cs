@@ -29,13 +29,8 @@ public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
                 TryGetSubmissionPeriods(context, out var submissionPeriods);
 
                 var expectedSubmissionPeriod = submissionPeriods.Find(
-                    p => p.SubmissionPeriod.Equals(row.SubmissionPeriod, StringComparison.InvariantCultureIgnoreCase));
-
-                if (expectedSubmissionPeriod == null)
-                {
-                    // A configuration must exist for the submission period
-                    throw new MissingSubmissionConfidurationException(dataSubmissionPeriod);
-                }
+                    p => p.SubmissionPeriod.Equals(row.SubmissionPeriod, StringComparison.InvariantCultureIgnoreCase))
+                    ?? throw new MissingSubmissionConfidurationException(dataSubmissionPeriod);
 
                 if (!expectedSubmissionPeriod.PeriodCodes.Exists(p => p.Equals(dataSubmissionPeriod, StringComparison.InvariantCultureIgnoreCase)))
                 {

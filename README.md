@@ -52,6 +52,36 @@ In order to run the service you will need the following dependencies:
 - Redis
 - Azure CLI
 
+### developer configuration
+
+You will need a configuration for the periods being validated.
+The configuration periods should be added to the Values collection of the local settings.
+``` json
+{
+  "Values": {
+    "SubmissionPeriods:0:SubmissionPeriod": "January to June 2023",
+    "SubmissionPeriods:0:PeriodCodes:0": "2023-P1",
+    "SubmissionPeriods:0:PeriodCodes:1": "2023-P2",
+    "SubmissionPeriods:0:ErrorCode": "54",
+
+    "SubmissionPeriods:1:SubmissionPeriod": "July to December 2023",
+    "SubmissionPeriods:1:PeriodCodes:0": "2023-P3",
+    "SubmissionPeriods:1:ErrorCode": "55",
+
+    "SubmissionPeriods:2:SubmissionPeriod": "January to June 2024",
+    "SubmissionPeriods:2:PeriodCodes:0": "2024-P1",
+    "SubmissionPeriods:2:PeriodCodes:1": "2024-P2",
+    "SubmissionPeriods:2:PeriodCodes:2": "2024-P3",
+    "SubmissionPeriods:2:ErrorCode": "65",
+
+    "SubmissionPeriods:3:SubmissionPeriod": "July to December 2024",
+    "SubmissionPeriods:3:PeriodCodes:0": "2024-P4",
+    "SubmissionPeriods:3:ErrorCode": "66"
+  }
+}
+```
+
+
 ### Run
 Go to `src/EPR.ProducerContentValidation.FunctionApp` directory and execute:
 
