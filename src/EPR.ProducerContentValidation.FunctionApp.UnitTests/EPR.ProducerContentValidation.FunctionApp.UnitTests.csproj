@@ -2,6 +2,7 @@
     <PropertyGroup>
         <IsPackable>false</IsPackable>
         <SonarQubeTestProject>true</SonarQubeTestProject>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
