@@ -20,8 +20,8 @@ public class ConsistentDataSubmissionPeriodsGroupedValidator : AbstractGroupedVa
     {
         var remainingErrorCount = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
 
-        var firstProducerRow = producerRows.First();
-        var inconsistentDataSubmissionPeriodRow = producerRows.FirstOrDefault(x => x.DataSubmissionPeriod != firstProducerRow.DataSubmissionPeriod);
+        var firstProducerRow = producerRows[0];
+        var inconsistentDataSubmissionPeriodRow = producerRows.Find(x => x.DataSubmissionPeriod != firstProducerRow.DataSubmissionPeriod);
 
         if (inconsistentDataSubmissionPeriodRow == null)
         {

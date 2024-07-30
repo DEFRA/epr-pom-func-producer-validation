@@ -20,7 +20,7 @@ public class SinglePackagingMaterialGroupedValidator : AbstractGroupedValidator
         _issueCountService = issueCountService;
     }
 
-    public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows, List<ProducerValidationEventIssueRequest>? warningRows = null)
+    public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows = null, List<ProducerValidationEventIssueRequest>? warningRows = null)
     {
         var groupedRowsBySubsidiaryId = producerRows.GroupBy(row => row.SubsidiaryId);
         var remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
@@ -31,7 +31,7 @@ public class SinglePackagingMaterialGroupedValidator : AbstractGroupedValidator
                 .Where(x => group.Any(y => y.RowNumber == x.RowNumber))
                 .ToList();
             var shouldSkip = associatedErrorRows
-                .Any(x => x.ErrorCodes.Any(y => _skipRuleErrorCodes.Contains(y)));
+                .Exists(x => x.ErrorCodes.Exists(y => _skipRuleErrorCodes.Contains(y)));
 
             if (shouldSkip)
             {
@@ -48,7 +48,7 @@ public class SinglePackagingMaterialGroupedValidator : AbstractGroupedValidator
             }
 
             // Two First() methods called as we need the first item of the first group of data (only one group exists)
-            var representativeRow = distinctPackagingMaterialRows.First().First();
+            var representativeRow = distinctPackagingMaterialRows[0].First();
             var packagingMaterial = representativeRow.MaterialType;
             if (packagingMaterial != MaterialType.Other)
             {
@@ -57,8 +57,7 @@ public class SinglePackagingMaterialGroupedValidator : AbstractGroupedValidator
                 continue;
             }
 
-            var packagingMaterialSubtypes = distinctPackagingMaterialRows
-                .First()
+            var packagingMaterialSubtypes = distinctPackagingMaterialRows[0]
                 .GroupBy(row => row.MaterialSubType)
                 .ToList();
 

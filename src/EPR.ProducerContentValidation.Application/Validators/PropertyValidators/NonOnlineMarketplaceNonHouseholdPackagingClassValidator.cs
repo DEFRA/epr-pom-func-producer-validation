@@ -45,7 +45,7 @@ public class NonOnlineMarketplaceNonHouseholdPackagingClassValidator : AbstractV
     {
         var producerLine = context.InstanceToValidate;
 
-        return !result.Errors.Any(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && _applicableProducerTypes.Contains(producerLine.ProducerType)
                && PackagingType.NonHousehold.Equals(producerLine.WasteType);
     }

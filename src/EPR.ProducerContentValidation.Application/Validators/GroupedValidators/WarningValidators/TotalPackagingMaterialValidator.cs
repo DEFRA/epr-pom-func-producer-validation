@@ -32,10 +32,10 @@ public class TotalPackagingMaterialValidator : AbstractGroupedValidator
     public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows, List<ProducerValidationEventIssueRequest>? warningRows = null)
     {
         var associatedErrorRows = errorRows
-            .Where(x => producerRows.Any(y => y.RowNumber == x.RowNumber))
+            .Where(x => producerRows.Exists(y => y.RowNumber == x.RowNumber))
             .ToList();
         var shouldSkip = associatedErrorRows
-            .Any(x => x.ErrorCodes.Any(y => _skipRuleErrorCodes.Contains(y)));
+            .Exists(x => x.ErrorCodes.Exists(y => _skipRuleErrorCodes.Contains(y)));
         var remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
 
         if (shouldSkip || remainingWarningCountToProcess == 0)

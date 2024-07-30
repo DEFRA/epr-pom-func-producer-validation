@@ -23,7 +23,7 @@ public class NonHouseholdDrinksContainerPackagingClassValidator : AbstractValida
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
-        return !result.Errors.Any(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && PackagingType.NonHouseholdDrinksContainers.Equals(context.InstanceToValidate.WasteType);
     }
 }
