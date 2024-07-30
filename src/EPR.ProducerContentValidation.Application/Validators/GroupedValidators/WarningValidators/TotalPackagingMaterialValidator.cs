@@ -29,7 +29,7 @@ public class TotalPackagingMaterialValidator : AbstractGroupedValidator
         _issueCountService = issueCountService;
     }
 
-    public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows, List<ProducerValidationEventIssueRequest>? warningRows = null)
+    public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows = null, List<ProducerValidationEventIssueRequest>? warningRows = null)
     {
         var associatedErrorRows = errorRows
             .Where(x => producerRows.Exists(y => y.RowNumber == x.RowNumber))

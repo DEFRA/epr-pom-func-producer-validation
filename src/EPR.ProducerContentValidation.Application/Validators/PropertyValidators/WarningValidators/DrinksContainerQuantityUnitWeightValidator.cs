@@ -32,7 +32,7 @@ public class DrinksContainerQuantityUnitWeightValidator : AbstractValidator<Prod
         if (context.RootContextData.ContainsKey(ErrorCode.ValidationContextErrorKey))
         {
             var errors = context.RootContextData[ErrorCode.ValidationContextErrorKey] as List<string>;
-            if (errors != null && errors.Any(code => _skipRuleErrorCodes.Contains(code)))
+            if (errors != null && errors.Exists(code => _skipRuleErrorCodes.Contains(code)))
             {
                 return false;
             }
