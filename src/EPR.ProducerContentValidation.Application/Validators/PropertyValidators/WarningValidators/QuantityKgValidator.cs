@@ -26,7 +26,7 @@ public class QuantityKgValidator : AbstractValidator<ProducerRow>
         if (context.RootContextData.ContainsKey(ErrorCode.ValidationContextErrorKey))
         {
             var errors = context.RootContextData[ErrorCode.ValidationContextErrorKey] as List<string>;
-            return !errors?.Any(code => _skipRuleErrorCodes.Contains(code)) ?? true;
+            return !errors?.Exists(code => _skipRuleErrorCodes.Contains(code)) ?? true;
         }
 
         return true;
