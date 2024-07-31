@@ -1,17 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <IsPackable>false</IsPackable>
         <SonarQubeTestProject>true</SonarQubeTestProject>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="AutoFixture" Version="4.18.1" />
-        <PackageReference Include="Bogus" Version="35.4.0" />
-        <PackageReference Include="coverlet.collector" Version="3.2.0" />
-        <PackageReference Include="coverlet.msbuild" Version="3.2.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PackageReference Include="Bogus" Version="35.5.1" />
+        <PackageReference Include="coverlet.collector" Version="6.0.2">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="FluentAssertions" Version="6.8.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
