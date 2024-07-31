@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\EPR.ProducerContentValidation.Application\EPR.ProducerContentValidation.Application.csproj"/>
+    <ProjectReference Include="..\EPR.ProducerContentValidation.Application\EPR.ProducerContentValidation.Application.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
     <SonarQubeExclude>true</SonarQubeExclude>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 </Project>
