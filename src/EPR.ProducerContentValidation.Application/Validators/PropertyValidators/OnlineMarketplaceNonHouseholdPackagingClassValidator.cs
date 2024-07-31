@@ -25,7 +25,7 @@ public class OnlineMarketplaceNonHouseholdPackagingClassValidator : AbstractVali
     {
         var producerRow = context.InstanceToValidate;
 
-        return !result.Errors.Any(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && ProducerType.SoldThroughOnlineMarketplaceYouOwn.Equals(producerRow.ProducerType)
                && PackagingType.NonHousehold.Equals(producerRow.WasteType);
     }

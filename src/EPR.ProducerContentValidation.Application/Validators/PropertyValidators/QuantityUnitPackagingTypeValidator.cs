@@ -33,7 +33,7 @@ public class QuantityUnitPackagingTypeValidator : AbstractValidator<ProducerRow>
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
-        return !result.Errors.Any(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && context.InstanceToValidate.QuantityUnits != null;
     }
 }

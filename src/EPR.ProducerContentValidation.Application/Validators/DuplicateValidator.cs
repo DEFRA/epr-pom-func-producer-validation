@@ -39,7 +39,7 @@ public class DuplicateValidator : IDuplicateValidator
     {
         var errorStoreKey = StoreKey.FetchStoreKey(blobName, IssueType.Error);
         var rowsNumbersToExclude = errorRows
-            .Where(x => x.ErrorCodes.Any(y => _skipRuleErrorCodes.Contains(y)))
+            .Where(x => x.ErrorCodes.Exists(y => _skipRuleErrorCodes.Contains(y)))
             .Select(r => r.RowNumber)
             .ToList();
 

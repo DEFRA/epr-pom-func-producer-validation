@@ -16,12 +16,17 @@ public class ConsistentDataSubmissionPeriodsGroupedValidator : AbstractGroupedVa
         _issueCountService = issueCountService;
     }
 
-    public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows, List<ProducerValidationEventIssueRequest>? warningRows = null)
+    public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows = null, List<ProducerValidationEventIssueRequest>? warningRows = null)
     {
         var remainingErrorCount = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
 
-        var firstProducerRow = producerRows.First();
-        var inconsistentDataSubmissionPeriodRow = producerRows.FirstOrDefault(x => x.DataSubmissionPeriod != firstProducerRow.DataSubmissionPeriod);
+        if (producerRows == null || producerRows.Count == 0)
+        {
+            return;
+        }
+
+        var firstProducerRow = producerRows[0];
+        var inconsistentDataSubmissionPeriodRow = producerRows.Find(x => x.DataSubmissionPeriod != firstProducerRow.DataSubmissionPeriod);
 
         if (inconsistentDataSubmissionPeriodRow == null)
         {

@@ -34,7 +34,7 @@ public class CompletedFromHomeNationPackagingTypeValidator : AbstractValidator<P
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
         var producerRow = context.InstanceToValidate;
-        return !result.Errors.Any(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && producerRow.FromHomeNation != null;
     }
 }

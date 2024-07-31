@@ -169,6 +169,20 @@ public class ConsistentDataSubmissionPeriodsGroupedValidatorTests
         errors.SelectMany(x => x.ErrorCodes).Should().Contain(errorCode);
     }
 
+    [TestMethod]
+    public async Task ValidateAndAddErrors_NoRecords()
+    {
+        // Arrange
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var producer = BuildProducer();
+
+        // Act
+        await _systemUnderTest.ValidateAsync(producer.Rows, StoreKey, producer.BlobName, errors);
+
+        // Assert
+        errors.Should().HaveCount(0);
+    }
+
     private static Producer BuildProducer()
     {
         return new Producer(

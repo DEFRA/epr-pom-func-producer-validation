@@ -30,7 +30,7 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
-        return !result.Errors.Any(x => ErrorCode.MaterialTypeInvalidErrorCode.Equals(x.ErrorCode));
+        return !result.Errors.Exists(x => ErrorCode.MaterialTypeInvalidErrorCode.Equals(x.ErrorCode));
     }
 
     private static bool IsInvalidMaterialSubType(string subType)

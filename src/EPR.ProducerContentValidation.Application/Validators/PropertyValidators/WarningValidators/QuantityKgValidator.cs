@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using EPR.ProducerContentValidation.Application.Constants;
+﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Validators.CustomValidators;
 using FluentValidation;
@@ -26,7 +25,7 @@ public class QuantityKgValidator : AbstractValidator<ProducerRow>
         if (context.RootContextData.ContainsKey(ErrorCode.ValidationContextErrorKey))
         {
             var errors = context.RootContextData[ErrorCode.ValidationContextErrorKey] as List<string>;
-            return !errors?.Any(code => _skipRuleErrorCodes.Contains(code)) ?? true;
+            return !errors?.Exists(code => _skipRuleErrorCodes.Contains(code)) ?? true;
         }
 
         return true;

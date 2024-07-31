@@ -24,7 +24,7 @@ public class SelfManagedConsumerWastePackagingClassValidator : AbstractValidator
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
         var producerLine = context.InstanceToValidate;
-        return !result.Errors.Any(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && PackagingType.SelfManagedConsumerWaste.Equals(producerLine.WasteType);
     }
 }

@@ -25,7 +25,7 @@ public class PackagingClassPublicBinsValidator : AbstractValidator<ProducerRow>
     {
         var producerRow = context.InstanceToValidate;
 
-        return !result.Errors.Any(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && !PackagingClass.PublicBin.Equals(producerRow.PackagingCategory);
     }
 }

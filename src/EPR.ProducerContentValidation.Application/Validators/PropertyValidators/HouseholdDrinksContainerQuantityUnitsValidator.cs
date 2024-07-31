@@ -27,7 +27,7 @@ public class HouseholdDrinksContainerQuantityUnitsValidator : AbstractValidator<
     {
         var producerRow = context.InstanceToValidate;
 
-        return !result.Errors.Any(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && PackagingType.HouseholdDrinksContainers.Equals(producerRow.WasteType);
     }
 }

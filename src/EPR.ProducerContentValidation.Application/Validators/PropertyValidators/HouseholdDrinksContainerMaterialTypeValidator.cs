@@ -4,7 +4,6 @@ namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidator
 
 using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.Models;
-using EPR.ProducerContentValidation.Application.ReferenceData;
 using EPR.ProducerContentValidation.Application.Validators.CustomValidators;
 using FluentValidation;
 using FluentValidation.Results;
@@ -37,7 +36,7 @@ public class HouseholdDrinksContainerMaterialTypeValidator : AbstractValidator<P
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
         var producerLine = context.InstanceToValidate;
-        return !result.Errors.Any(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && PackagingType.HouseholdDrinksContainers.Equals(producerLine.WasteType);
     }
 }

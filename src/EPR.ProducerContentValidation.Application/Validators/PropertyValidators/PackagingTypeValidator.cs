@@ -61,6 +61,6 @@ public class PackagingTypeValidator : AbstractValidator<ProducerRow>
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
-        return !result.Errors.Any(x => x.ErrorCode == ErrorCode.ProducerTypeInvalidErrorCode);
+        return !result.Errors.Exists(x => x.ErrorCode == ErrorCode.ProducerTypeInvalidErrorCode);
     }
 }
