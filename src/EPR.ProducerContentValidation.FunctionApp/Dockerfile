@@ -1,4 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS installer-env
+# FROM defradigital/dotnetcore-development:dotnet8.0 AS installer-env
 
 # Build requires 3.1 SDK
 #COPY --from=mcr.microsoft.com/dotnet/core/sdk:3.1 /usr/share/dotnet /usr/share/dotnet
@@ -14,6 +15,7 @@ RUN dotnet publish EPR.ProducerContentValidation.FunctionApp/*.csproj --output /
 # To enable ssh & remote debugging on app service change the base image to the one below
 # FROM mcr.microsoft.com/azure-functions/dotnet:4-appservice
 FROM mcr.microsoft.com/azure-functions/dotnet:4-dotnet8
+# FROM defradigital/dotnetcore:dotnet8.0
 
 # Create a non-root user and set permissions
 RUN groupadd -r dotnet && \
