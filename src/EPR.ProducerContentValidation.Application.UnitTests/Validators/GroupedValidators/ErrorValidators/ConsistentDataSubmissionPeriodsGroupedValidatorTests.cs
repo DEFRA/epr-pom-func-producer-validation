@@ -183,6 +183,20 @@ public class ConsistentDataSubmissionPeriodsGroupedValidatorTests
         errors.Should().HaveCount(0);
     }
 
+    [TestMethod]
+    public async Task ValidateAndAddErrors_ProducerRowsIsEmoty()
+    {
+        // Arrange
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var producer = new Producer(Guid.NewGuid(), string.Empty, string.Empty, new List<ProducerRow>());
+
+        // Act
+        await _systemUnderTest.ValidateAsync(producer.Rows, StoreKey, producer.BlobName, errors);
+
+        // Assert
+        errors.Should().HaveCount(0);
+    }
+
     private static Producer BuildProducer()
     {
         return new Producer(
