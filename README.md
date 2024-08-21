@@ -48,7 +48,7 @@ An example of payload passed into the Azure service bus can be seen below.
 ### Prerequisites
 In order to run the service you will need the following dependencies:
 
-- .NET 6
+- .NET 8
 - Redis
 - Azure CLI
 
