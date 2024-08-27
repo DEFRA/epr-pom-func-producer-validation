@@ -26,13 +26,9 @@ public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
         RuleFor(x => x.DataSubmissionPeriod)
             .Must((row, dataSubmissionPeriod, context) =>
             {
-                TryGetSubmissionPeriods(context, out var submissionPeriods);
+                var expectedSubmissionPeriod = GetSubmissionPeriodOption(context, row, dataSubmissionPeriod);
 
-                var expectedSubmissionPeriod = submissionPeriods.Find(
-                    p => p.SubmissionPeriod.Equals(row.SubmissionPeriod, StringComparison.InvariantCultureIgnoreCase))
-                    ?? throw new MissingSubmissionConfidurationException(dataSubmissionPeriod);
-
-                if (!expectedSubmissionPeriod.PeriodCodes.Exists(p => p.Equals(dataSubmissionPeriod, StringComparison.InvariantCultureIgnoreCase)))
+                if (CheckPeriod(expectedSubmissionPeriod, dataSubmissionPeriod))
                 {
                     var failure = new ValidationFailure();
                     failure.ErrorCode = expectedSubmissionPeriod.ErrorCode;
@@ -47,6 +43,19 @@ public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
                 return true;
             })
             .When((row, context) => row.DataSubmissionPeriod != null && DataSubmissionPeriodExists(row.DataSubmissionPeriod, context));
+    }
+
+    private static SubmissionPeriodOption GetSubmissionPeriodOption(ValidationContext<ProducerRow> context, ProducerRow row, string dataSubmissionPeriod)
+    {
+        TryGetSubmissionPeriods(context, out var submissionPeriods);
+        return submissionPeriods.Find(
+            p => p.SubmissionPeriod.Equals(row.SubmissionPeriod, StringComparison.InvariantCultureIgnoreCase))
+            ?? throw new MissingSubmissionConfidurationException(dataSubmissionPeriod);
+    }
+
+    private static bool CheckPeriod(SubmissionPeriodOption expectedSubmissionPeriod, string dataSubmissionPeriod)
+    {
+        return !expectedSubmissionPeriod.PeriodCodes.Exists(p => p.Equals(dataSubmissionPeriod, StringComparison.InvariantCultureIgnoreCase));
     }
 
     private static bool DataSubmissionPeriodExists(string dataSubmissionPeriod, ValidationContext<ProducerRow> context)

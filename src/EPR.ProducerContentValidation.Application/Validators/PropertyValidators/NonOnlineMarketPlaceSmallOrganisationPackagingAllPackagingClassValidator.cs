@@ -46,7 +46,7 @@ public class NonOnlineMarketPlaceSmallOrganisationPackagingAllPackagingClassVali
     {
         var producerLine = context.InstanceToValidate;
 
-        return !result.Errors.Any(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && _producerTypes.Contains(producerLine.ProducerType)
                && PackagingType.SmallOrganisationPackagingAll.Equals(producerLine.WasteType);
     }
