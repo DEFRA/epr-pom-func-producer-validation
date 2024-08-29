@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <AzureFunctionsVersion>V4</AzureFunctionsVersion>
+        <AzureFunctionsVersion>v4</AzureFunctionsVersion>
         <SonarQubeTestProject>false</SonarQubeTestProject>
         <!-- SonarCloud does not recognise file-scoped namespaces in current version. -->
         <NoWarn>S3903</NoWarn>
