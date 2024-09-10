@@ -3,4 +3,4 @@ variables:
   docker.imageName: 'producervalidation'
   acr.azureContainerRegistryName: 'devrwdinfac1401'
   acr.repositoryName: 'producervalidationrepository'
-  serviceName: 'devrwdwebfa9402'
+  serviceName: 'devrwdwebfa94mic02'
