@@ -46,5 +46,6 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new NonHouseholdDrinksContainerPackagingClassValidator());
         Include(new DataSubmissionPeriodValidator());
         Include(new SubsidiaryIdValidator());
+        Include(new PreviouslyPaidPackagingMaterialUnitsValidator());
     }
 }
