@@ -16,4 +16,4 @@ public record ProducerRow(
     string? QuantityKg,
     string? QuantityUnits,
     string? SubmissionPeriod,
-    string? PreviouslyPaidPackagingMaterialUnits);
+    string? PreviouslyPaidPackagingMaterialUnits = null);

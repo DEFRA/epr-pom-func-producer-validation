@@ -7,4 +7,6 @@ public class ValidationOptions
     public bool Disabled { get; set; }
 
     public int MaxIssuesToProcess { get; set; }
+
+    public bool IsLatest { get; set; }
 }
