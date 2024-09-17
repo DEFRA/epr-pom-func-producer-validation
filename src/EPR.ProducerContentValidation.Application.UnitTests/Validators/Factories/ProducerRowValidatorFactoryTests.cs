@@ -50,4 +50,32 @@ public class ProducerRowValidatorFactoryTests
         // Assert
         _producerRowValidator.Should().BeOfType<ProducerRowValidator>();
     }
+
+    [TestMethod]
+    public async Task ProducerRowValidator_IsNotMinimal_WhenValidationEnabled_AndNotIsLatest()
+    {
+        // Arrange
+        _options = new ValidationOptions { Disabled = false, IsLatest = false };
+        _systemUnderTest = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options));
+
+        // Act
+        _producerRowValidator = _systemUnderTest.GetInstance();
+
+        // Assert
+        _producerRowValidator.Should().BeOfType<ProducerRowValidator>();
+    }
+
+    [TestMethod]
+    public async Task ProducerRowValidator_Is13ColumnVersion_WhenValidationEnabled_AndIsLatest()
+    {
+        // Arrange
+        _options = new ValidationOptions { Disabled = false, IsLatest = true };
+        _systemUnderTest = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options));
+
+        // Act
+        _producerRowValidator = _systemUnderTest.GetInstance();
+
+        // Assert
+        _producerRowValidator.Should().BeOfType<Producer13ColumnRowValidator>();
+    }
 }

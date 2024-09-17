@@ -15,4 +15,5 @@ public record ProducerRow(
     string? ToHomeNation,
     string? QuantityKg,
     string? QuantityUnits,
-    string? SubmissionPeriod);
+    string? SubmissionPeriod,
+    string? PreviouslyPaidPackagingMaterialUnits = null);
