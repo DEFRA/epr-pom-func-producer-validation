@@ -10,8 +10,7 @@ public class PreviouslyPaidPackagingMaterialUnitsValidator : AbstractValidator<P
     public PreviouslyPaidPackagingMaterialUnitsValidator()
     {
         RuleFor(x => x.PreviouslyPaidPackagingMaterialUnits)
-            .NotNull()
-            .IsLongAndGreaterThan(0)
+            .IsLongAndGreaterThanOrNull(0)
             .WithErrorCode(ErrorCode.PreviouslyPaidPackagingMaterialUnitsInvalidErrorCode);
     }
 }
