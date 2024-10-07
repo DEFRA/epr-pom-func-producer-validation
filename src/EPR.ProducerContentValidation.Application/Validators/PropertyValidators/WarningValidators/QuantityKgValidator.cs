@@ -22,9 +22,9 @@ public class QuantityKgValidator : AbstractValidator<ProducerRow>
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
-        if (context.RootContextData.ContainsKey(ErrorCode.ValidationContextErrorKey))
+        if (context.RootContextData.TryGetValue(ErrorCode.ValidationContextErrorKey, out var value))
         {
-            var errors = context.RootContextData[ErrorCode.ValidationContextErrorKey] as List<string>;
+            var errors = value as List<string>;
             return !errors?.Exists(code => _skipRuleErrorCodes.Contains(code)) ?? true;
         }
 

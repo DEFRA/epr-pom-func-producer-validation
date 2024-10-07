@@ -82,6 +82,7 @@ public class SubmissionApiClientTests
                 StatusCode = httpStatusCode
             })
             .Verifiable();
+
         var httpClient = new HttpClient(handlerMock.Object)
         {
             BaseAddress = new Uri("http://localhost:5087/")

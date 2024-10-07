@@ -55,15 +55,8 @@ public static class ConfigureServices
     private static void ConfigureSection<TOptions>(this IServiceCollection services, string sectionKey, bool validate = true)
         where TOptions : class, new()
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
-        if (sectionKey == null)
-        {
-            throw new ArgumentNullException(nameof(sectionKey));
-        }
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(sectionKey);
 
         services.AddOptions<TOptions>().Configure(delegate(TOptions options, IConfiguration config)
         {
