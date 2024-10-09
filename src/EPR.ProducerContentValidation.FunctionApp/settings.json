@@ -9,6 +9,6 @@
     "StorageAccount:PomContainer": "pom-upload-container",
     "Validation:MaxIssuesToProcess": 1000,
     "Redis:ConnectionString": "https://localhost:1234",
-    "Validation:IsLatest": true
+    "Validation:IsLatest": false
   }
 }
