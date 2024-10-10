@@ -47,12 +47,24 @@ public class CompositeValidator : ICompositeValidator
     {
         foreach (var row in producerRows)
         {
-            var context = new ValidationContext<ProducerRow>(row);
+            var errorContext = new ValidationContext<ProducerRow>(row);
+            var warningContext = new ValidationContext<ProducerRow>(row);
 
-            context.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
+            errorContext.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
+            warningContext.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
 
-            await ValidateIssue(row, errors, blobName, IssueType.Error, context);
-            await ValidateIssue(row, warnings, blobName, IssueType.Warning, context);
+            // Validate any errors
+            await ValidateIssue(row, errors, blobName, IssueType.Error, errorContext);
+
+            // Cannot re-use the same context. Internally FluentValidation uses the existing context error collection:  var result = new ValidationResult(context.Failures);
+            // So, for warnings use a seperate context, but copy the rootcontexterrorkey data into the new context (the warning validation classes use these in the PreValidate method)
+            if (errorContext.RootContextData.ContainsKey(ErrorCode.ValidationContextErrorKey))
+            {
+                warningContext.RootContextData[ErrorCode.ValidationContextErrorKey] = errorContext.RootContextData[ErrorCode.ValidationContextErrorKey];
+            }
+
+            // Validate any warnings
+            await ValidateIssue(row, warnings, blobName, IssueType.Warning, warningContext);
         }
     }
 
