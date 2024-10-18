@@ -6,6 +6,7 @@ using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Validators;
+using EPR.ProducerContentValidation.Application.Validators.Factories;
 using EPR.ProducerContentValidation.Application.Validators.Factories.Interfaces;
 using EPR.ProducerContentValidation.Application.Validators.Interfaces;
 using EPR.ProducerContentValidation.TestSupport;
@@ -358,6 +359,61 @@ public class CompositeValidatorTests
             .Verify(x => x.GetRemainingIssueCapacityAsync(_warningStoreKey), Times.Exactly(2));
         _issueCountServiceMock
             .Verify(x => x.IncrementIssueCountAsync(_warningStoreKey, It.IsAny<int>()), Times.Once);
+    }
+
+    /// <summary>
+    /// This test uses non-mocked versions of the rowValidator and rowWarningValidator factories - the mocked versions don't get into a state with the re-used
+    /// context that this bug is testing for.
+    /// </summary>
+    /// <returns>Task.</returns>
+    [TestMethod]
+    public async Task ValidateAndFetchForIssuesAsync_ErrorsAreNotAddedToWarningsList()
+    {
+        // Arrange
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var warnings = new List<ProducerValidationEventIssueRequest>();
+
+        // Specific object is created (rather than using ModelGenerator.CreateProducerRow(1); which will produce one genuinue warning.
+        // We want to check for the existing of zero warnings with this test - so we set QuantityKg to be > 100
+        var producerRowOne = new ProducerRow(
+            "SubsidiaryId",
+            "DataSubmissionPeriod",
+            "000123",
+            1,
+            "ProducerType",
+            "ProducerSize",
+            "WasteType",
+            "Category",
+            "MaterialType",
+            "MaterialSubType",
+            "FromHomeNation",
+            "ToHomeNation",
+            "100",
+            "1",
+            "SubmissionPeriod");
+
+        var producerRows = new List<ProducerRow> { producerRowOne };
+
+        var submissionPeriodOptions = new List<SubmissionPeriodOption>();
+        var producerRowValidatorFactory = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options));
+        var producerRowWarningValidatorFactory = new ProducerRowWarningValidatorFactory();
+
+        var compositeValidator = new CompositeValidator(
+            Microsoft.Extensions.Options.Options.Create(_options),
+            Microsoft.Extensions.Options.Options.Create(submissionPeriodOptions),
+            _issueCountServiceMock.Object,
+            _mapper,
+            producerRowValidatorFactory,
+            producerRowWarningValidatorFactory,
+            _groupedValidatorMock.Object,
+            _duplicateValidatorMock.Object);
+
+        // Act
+        await compositeValidator.ValidateAndFetchForIssuesAsync(producerRows, errors, warnings, BlobName);
+
+        // Assert
+        errors.Count.Should().Be(1);
+        warnings.Count.Should().Be(0);
     }
 
     [TestMethod]

@@ -47,12 +47,20 @@ public class CompositeValidator : ICompositeValidator
     {
         foreach (var row in producerRows)
         {
-            var context = new ValidationContext<ProducerRow>(row);
+            var errorContext = new ValidationContext<ProducerRow>(row);
+            var warningContext = new ValidationContext<ProducerRow>(row);
 
-            context.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
+            errorContext.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
+            warningContext.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
 
-            await ValidateIssue(row, errors, blobName, IssueType.Error, context);
-            await ValidateIssue(row, warnings, blobName, IssueType.Warning, context);
+            await ValidateIssue(row, errors, blobName, IssueType.Error, errorContext);
+
+            if (errorContext.RootContextData.TryGetValue(ErrorCode.ValidationContextErrorKey, out var validationContextErrorKey))
+            {
+                warningContext.RootContextData[ErrorCode.ValidationContextErrorKey] = validationContextErrorKey;
+            }
+
+            await ValidateIssue(row, warnings, blobName, IssueType.Warning, warningContext);
         }
     }
 
