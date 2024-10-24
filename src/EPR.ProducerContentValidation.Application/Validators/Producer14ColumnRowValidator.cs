@@ -8,6 +8,6 @@ public class Producer14ColumnRowValidator : ProducerRowValidator
 {
     public Producer14ColumnRowValidator()
     {
-        Include(new PreviouslyPaidPackagingMaterialUnitsValidator());
+        Include(new TransitionalPackagingUnitsValidator());
     }
 }
