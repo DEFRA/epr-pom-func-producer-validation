@@ -18,7 +18,7 @@ public class ProducerRowValidatorFactory : IProducerRowValidatorFactory
         }
         else
         {
-            _producerRowValidator = validationOptions.Value.IsLatest ? new Producer13ColumnRowValidator() : new ProducerRowValidator();
+            _producerRowValidator = validationOptions.Value.IsLatest ? new Producer14ColumnRowValidator() : new ProducerRowValidator();
         }
     }
 

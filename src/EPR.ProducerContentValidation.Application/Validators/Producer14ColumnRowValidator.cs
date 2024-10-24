@@ -4,9 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 using EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
 
 [ExcludeFromCodeCoverage]
-public class Producer13ColumnRowValidator : ProducerRowValidator
+public class Producer14ColumnRowValidator : ProducerRowValidator
 {
-    public Producer13ColumnRowValidator()
+    public Producer14ColumnRowValidator()
     {
         Include(new PreviouslyPaidPackagingMaterialUnitsValidator());
     }

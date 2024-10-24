@@ -76,6 +76,6 @@ public class ProducerRowValidatorFactoryTests
         _producerRowValidator = _systemUnderTest.GetInstance();
 
         // Assert
-        _producerRowValidator.Should().BeOfType<Producer13ColumnRowValidator>();
+        _producerRowValidator.Should().BeOfType<Producer14ColumnRowValidator>();
     }
 }
