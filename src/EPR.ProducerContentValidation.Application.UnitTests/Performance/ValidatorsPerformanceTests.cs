@@ -105,7 +105,7 @@ public class ValidatorsPerformanceTests
             .RuleFor(x => x.QuantityKg, f => f.Random.Number(50, 1000).ToString())
             .RuleFor(x => x.QuantityUnits, f => f.Random.Number(750, 1500).ToString())
             .RuleFor(x => x.SubmissionPeriod, f => f.Random.ArrayElement(submissionPeriods))
-            .RuleFor(x => x.PreviouslyPaidPackagingMaterialUnits, f => f.Random.Number(1, 100).ToString());
+            .RuleFor(x => x.TransitionalPackagingUnits, f => f.Random.Number(1, 100).ToString());
 
         var producerRows = testProducerRows.Generate(totalRows - duplicateRows);
 
