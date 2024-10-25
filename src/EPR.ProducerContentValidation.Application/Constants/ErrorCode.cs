@@ -46,7 +46,7 @@ public static class ErrorCode
     public const string PackagingTypeForLargeProducerInvalidErrorCode = "53";
     public const string InvalidSubmissionPeriodFor2023P1P2 = "54";
     public const string InvalidSubmissionPeriodFor2023P3 = "55";
-    public const string PreviouslyPaidPackagingMaterialUnitsInvalidErrorCode = "83";
+    public const string TransitionalPackagingUnitsInvalidErrorCode = "90";
 
     /* Issue codes for warnings */
     public const string WarningPackagingMaterialWeightLessThan100 = "59";
