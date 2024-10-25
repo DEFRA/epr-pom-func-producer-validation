@@ -5,6 +5,7 @@ using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Services;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
+using EPR.ProducerContentValidation.Application.Services.Subsidiary;
 using EPR.ProducerContentValidation.Application.Validators;
 using EPR.ProducerContentValidation.Application.Validators.Factories;
 using EPR.ProducerContentValidation.Application.Validators.Factories.Interfaces;
@@ -88,6 +89,7 @@ public static class ConfigureServices
         services.AddScoped<ICompositeValidator, CompositeValidator>();
         services.AddScoped<IGroupedValidator, GroupedValidator>();
         services.AddScoped<IDuplicateValidator, DuplicateValidator>();
+        services.AddScoped<ISubsidiaryDetailsRequestBuilder, SubsidiaryDetailsRequestBuilder>();
 
         return services;
     }

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Bogus;
+using EPR.ProducerContentValidation.Application.Clients;
 using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
@@ -7,12 +8,14 @@ using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.ReferenceData;
 using EPR.ProducerContentValidation.Application.Services;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
+using EPR.ProducerContentValidation.Application.Services.Subsidiary;
 using EPR.ProducerContentValidation.Application.Validators;
 using EPR.ProducerContentValidation.Application.Validators.Factories;
 using EPR.ProducerContentValidation.TestSupport;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -28,6 +31,9 @@ public class ValidatorsPerformanceTests
         Mock<IOptions<ValidationOptions>> validationOptionsMock = new();
         Mock<IIssueCountService> errorCountServiceMock = new();
         Mock<ILogger<ValidationService>> loggerMock = new();
+        Mock<IFeatureManager> featureManagerMock = new();
+        Mock<ISubsidiaryDetailsRequestBuilder> subsidiaryDetailsRequestBuilderMock = new();
+        Mock<ICompanyDetailsApiClient> companyDetailsApiClientMock = new();
 
         var submissionConfigOptions = new Mock<IOptions<List<SubmissionPeriodOption>>>();
 
@@ -54,7 +60,10 @@ public class ValidatorsPerformanceTests
             compositeValidatorUnderTest,
             AutoMapperHelpers.GetMapper<ProducerProfile>(),
             errorCountServiceMock.Object,
-            Microsoft.Extensions.Options.Options.Create(new StorageAccountOptions { PomContainer = "ContainerName" }));
+            Microsoft.Extensions.Options.Options.Create(new StorageAccountOptions { PomContainer = "ContainerName" }),
+            featureManagerMock.Object,
+            subsidiaryDetailsRequestBuilderMock.Object,
+            companyDetailsApiClientMock.Object);
     }
 
     [TestMethod]

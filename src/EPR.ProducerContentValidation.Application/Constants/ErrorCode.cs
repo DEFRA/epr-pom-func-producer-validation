@@ -54,6 +54,8 @@ public static class ErrorCode
     public const string WarningOnlyOnePackagingMaterialReported = "62";
     public const string WarningPackagingTypePackagingMaterial = "63";
     public const string WarningPackagingTypeQuantityUnitsLessThanQuantityKgs = "64";
+    public const string SubsidiaryIdDoesNotExist = "70";
+    public const string SubsidiaryIdIsAssignedToADifferentOrganisation = "71";
 
     /* Issue codes 80 through 89 should be reserved for Issues from the Check Splitter API */
     public const string UncaughtExceptionErrorCode = "99";

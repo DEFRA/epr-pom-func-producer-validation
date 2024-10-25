@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
+using EPR.ProducerContentValidation.Application.Clients;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.Services;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
+using EPR.ProducerContentValidation.Application.Services.Subsidiary;
 using EPR.ProducerContentValidation.Application.Validators.Interfaces;
 using EPR.ProducerContentValidation.TestSupport;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.FeatureManagement;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -29,6 +32,9 @@ public class ValidationServiceTests
     private Mock<ICompositeValidator> _compositeValidatorMock;
     private Mock<IIssueCountService> _issueCountServiceMock;
     private Mock<ILogger<ValidationService>> _loggerMock;
+    private Mock<IFeatureManager> _featureManagerMock;
+    private Mock<ISubsidiaryDetailsRequestBuilder> _subsidiaryDetailsRequestBuilderMock;
+    private Mock<ICompanyDetailsApiClient> _companyDetailsApiClientMock;
 
     [TestInitialize]
     public void TestInitialize()
@@ -37,6 +43,9 @@ public class ValidationServiceTests
         _loggerMock = new Mock<ILogger<ValidationService>>();
         _issueCountServiceMock = new Mock<IIssueCountService>();
         _mapper = AutoMapperHelpers.GetMapper<ProducerProfile>();
+        _featureManagerMock = new Mock<IFeatureManager>();
+        _subsidiaryDetailsRequestBuilderMock = new Mock<ISubsidiaryDetailsRequestBuilder>();
+        _companyDetailsApiClientMock = new Mock<ICompanyDetailsApiClient>();
 
         _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(ErrorStoreKey))
             .ReturnsAsync(100);
@@ -88,5 +97,8 @@ public class ValidationServiceTests
             _compositeValidatorMock.Object,
             _mapper,
             _issueCountServiceMock.Object,
-            Microsoft.Extensions.Options.Options.Create(new StorageAccountOptions { PomContainer = ContainerName }));
+            Microsoft.Extensions.Options.Options.Create(new StorageAccountOptions { PomContainer = ContainerName }),
+            _featureManagerMock.Object,
+            _subsidiaryDetailsRequestBuilderMock.Object,
+            _companyDetailsApiClientMock.Object);
 }
