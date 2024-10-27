@@ -122,7 +122,7 @@ public class ValidationService : IValidationService
                     var error = CreateSubValidationError(rows[i], ErrorCode.SubsidiaryIdDoesNotExist);
                     var errorMessage = $"Subsidiary ID does not exist";
 
-                    LogValidationWarning(i + 1, errorMessage, ErrorCode.SubsidiaryIdDoesNotExist);   // Idris - remove?
+                    LogValidationWarning(i + 1, errorMessage, ErrorCode.SubsidiaryIdDoesNotExist);
                     validationErrors.Add(error);
                     continue;
                 }
