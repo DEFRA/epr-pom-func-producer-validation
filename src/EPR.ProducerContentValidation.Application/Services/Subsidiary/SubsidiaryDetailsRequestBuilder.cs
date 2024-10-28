@@ -11,6 +11,7 @@ namespace EPR.ProducerContentValidation.Application.Services.Subsidiary
             {
                 SubsidiaryOrganisationDetails = rows
                  .GroupBy(row => row.ProducerId)
+                 .Where(group => group.Any(row => !string.IsNullOrEmpty(row.SubsidiaryId)))
                  .Select(group => new SubsidiaryOrganisationDetail
                  {
                      OrganisationReference = group.Key,
