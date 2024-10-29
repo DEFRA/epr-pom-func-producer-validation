@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPR.ProducerContentValidation.Application.Clients;
+using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
@@ -144,7 +145,7 @@ public class ValidationServiceTests
     }
 
     [TestMethod]
-    public async Task ValidateSubsidiaryAsync_InvalidRequest_ReturnsEmptyList()
+    public async Task ValidateSubsidiaryAsyncInvalidRequestReturnsEmptyList()
     {
         // Arrange
         var row = ModelGenerator.CreateProducerRow(1) with
@@ -310,6 +311,60 @@ public class ValidationServiceTests
                 It.Is<Exception>(ex => ex == exception),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.Once);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_WhenFeatureFlagIsOff_DoesNotPerformSubsidiaryValidation()
+    {
+        // Arrange
+        var producer = new Producer(Guid.NewGuid(), "000123", "test-blob", new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidation)).ReturnsAsync(false);
+
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateAsync(producer);
+
+        // Assert
+        _subsidiaryDetailsRequestBuilderMock.Verify(x => x.CreateRequest(It.IsAny<List<ProducerRow>>()), Times.Never);
+        _companyDetailsApiClientMock.Verify(x => x.GetSubsidiaryDetails(It.IsAny<SubsidiaryDetailsRequest>()), Times.Never);
+        Assert.IsNotNull(result);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_WhenRemainingWarningCapacityIsZero_OnlyErrorsAreValidated()
+    {
+        // Arrange
+        var producer = new Producer(Guid.NewGuid(), "000123", "test-blob", new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) });
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync("test-blob:error")).ReturnsAsync(100);
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync("test-blob:warning")).ReturnsAsync(0);
+
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateAsync(producer);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.ValidationWarnings.Count == 0);
+    }
+
+    [TestMethod]
+    public async Task ValidateSubsidiaryAsync_InvalidRequest_ReturnsEmptyList()
+    {
+        // Arrange
+        var rows = new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) };
+        var subsidiaryDetailsRequest = new SubsidiaryDetailsRequest();
+        _subsidiaryDetailsRequestBuilderMock.Setup(x => x.CreateRequest(rows)).Returns(subsidiaryDetailsRequest);
+        _requestValidatorMock.Setup(x => x.IsInvalidRequest(subsidiaryDetailsRequest)).Returns(true);
+
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateSubsidiaryAsync(rows);
+
+        // Assert
+        Assert.AreEqual(0, result.Count);
     }
 
     private ValidationService CreateSystemUnderTest() =>
