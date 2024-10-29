@@ -17,9 +17,13 @@ namespace EPR.ProducerContentValidation.UnitTest.Services.Subsidiary
         [TestMethod]
         public void CreateRequest_ShouldReturnEmptyRequest_WhenRowsIsEmpty()
         {
+            // Arrange
             var rows = new List<ProducerRow>();
+
+            // Act
             var result = _subsidiaryDetailsRequestBuilder.CreateRequest(rows);
 
+            // Assert
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.SubsidiaryOrganisationDetails);
             Assert.AreEqual(0, result.SubsidiaryOrganisationDetails.Count);
@@ -30,40 +34,40 @@ namespace EPR.ProducerContentValidation.UnitTest.Services.Subsidiary
         {
             // Arrange
             var rows = new List<ProducerRow>
-            {
-                new ProducerRow(
-                    SubsidiaryId: "Subsidiary Id 1",
-                    DataSubmissionPeriod: "Period 1",
-                    ProducerId: "1",
-                    RowNumber: 1,
-                    ProducerType: "Type 1",
-                    ProducerSize: "Size 1",
-                    WasteType: "Waste 1",
-                    PackagingCategory: "Category 1",
-                    MaterialType: "Type 1",
-                    MaterialSubType: "SubType 1",
-                    FromHomeNation: "Nation 1",
-                    ToHomeNation: "Nation 1",
-                    QuantityKg: "100",
-                    QuantityUnits: "500",
-                    SubmissionPeriod: "Period 1"),
-                new ProducerRow(
-                    SubsidiaryId: string.Empty,
-                    DataSubmissionPeriod: "Period 2",
-                    ProducerId: "1",
-                    RowNumber: 2,
-                    ProducerType: "Type 2",
-                    ProducerSize: "Size 2",
-                    WasteType: "Waste 2",
-                    PackagingCategory: "Category 2",
-                    MaterialType: "Type 2",
-                    MaterialSubType: "SubType 2",
-                    FromHomeNation: "Nation 2",
-                    ToHomeNation: "Nation 2",
-                    QuantityKg: "200",
-                    QuantityUnits: "1000",
-                    SubmissionPeriod: "Period 2")
-            };
+        {
+            new ProducerRow(
+                SubsidiaryId: "Subsidiary Id 1",
+                DataSubmissionPeriod: "Period 1",
+                ProducerId: "1",
+                RowNumber: 1,
+                ProducerType: "Type 1",
+                ProducerSize: "Size 1",
+                WasteType: "Waste 1",
+                PackagingCategory: "Category 1",
+                MaterialType: "Type 1",
+                MaterialSubType: "SubType 1",
+                FromHomeNation: "Nation 1",
+                ToHomeNation: "Nation 1",
+                QuantityKg: "100",
+                QuantityUnits: "500",
+                SubmissionPeriod: "Period 1"),
+            new ProducerRow(
+                SubsidiaryId: string.Empty,
+                DataSubmissionPeriod: "Period 2",
+                ProducerId: "1",
+                RowNumber: 2,
+                ProducerType: "Type 2",
+                ProducerSize: "Size 2",
+                WasteType: "Waste 2",
+                PackagingCategory: "Category 2",
+                MaterialType: "Type 2",
+                MaterialSubType: "SubType 2",
+                FromHomeNation: "Nation 2",
+                ToHomeNation: "Nation 2",
+                QuantityKg: "200",
+                QuantityUnits: "1000",
+                SubmissionPeriod: "Period 2")
+        };
 
             // Act
             var result = _subsidiaryDetailsRequestBuilder.CreateRequest(rows);
@@ -82,24 +86,24 @@ namespace EPR.ProducerContentValidation.UnitTest.Services.Subsidiary
         {
             // Arrange
             var rows = new List<ProducerRow>
-            {
-                new ProducerRow(
-                    SubsidiaryId: string.Empty,
-                    DataSubmissionPeriod: "Period 1",
-                    ProducerId: "1",
-                    RowNumber: 1,
-                    ProducerType: "Type 1",
-                    ProducerSize: "Size 1",
-                    WasteType: "Waste 1",
-                    PackagingCategory: "Category 1",
-                    MaterialType: "Type 1",
-                    MaterialSubType: "SubType 1",
-                    FromHomeNation: "Nation 1",
-                    ToHomeNation: "Nation 1",
-                    QuantityKg: "100",
-                    QuantityUnits: "500",
-                    SubmissionPeriod: "Period 1")
-            };
+        {
+            new ProducerRow(
+                SubsidiaryId: string.Empty,
+                DataSubmissionPeriod: "Period 1",
+                ProducerId: "1",
+                RowNumber: 1,
+                ProducerType: "Type 1",
+                ProducerSize: "Size 1",
+                WasteType: "Waste 1",
+                PackagingCategory: "Category 1",
+                MaterialType: "Type 1",
+                MaterialSubType: "SubType 1",
+                FromHomeNation: "Nation 1",
+                ToHomeNation: "Nation 1",
+                QuantityKg: "100",
+                QuantityUnits: "500",
+                SubmissionPeriod: "Period 1")
+        };
 
             // Act
             var result = _subsidiaryDetailsRequestBuilder.CreateRequest(rows);
@@ -114,40 +118,40 @@ namespace EPR.ProducerContentValidation.UnitTest.Services.Subsidiary
         {
             // Arrange
             var rows = new List<ProducerRow>
-            {
-                new ProducerRow(
-                    SubsidiaryId: "SubId1",
-                    DataSubmissionPeriod: "Period 1",
-                    ProducerId: "1",
-                    RowNumber: 1,
-                    ProducerType: "Type 1",
-                    ProducerSize: "Size 1",
-                    WasteType: "Waste 1",
-                    PackagingCategory: "Category 1",
-                    MaterialType: "Type 1",
-                    MaterialSubType: "SubType 1",
-                    FromHomeNation: "Nation 1",
-                    ToHomeNation: "Nation 1",
-                    QuantityKg: "100",
-                    QuantityUnits: "500",
-                    SubmissionPeriod: "Period 1"),
-                new ProducerRow(
-                    SubsidiaryId: "SubId2",
-                    DataSubmissionPeriod: "Period 2",
-                    ProducerId: "1",
-                    RowNumber: 2,
-                    ProducerType: "Type 2",
-                    ProducerSize: "Size 2",
-                    WasteType: "Waste 2",
-                    PackagingCategory: "Category 2",
-                    MaterialType: "Type 2",
-                    MaterialSubType: "SubType 2",
-                    FromHomeNation: "Nation 2",
-                    ToHomeNation: "Nation 2",
-                    QuantityKg: "200",
-                    QuantityUnits: "1000",
-                    SubmissionPeriod: "Period 2")
-            };
+        {
+            new ProducerRow(
+                SubsidiaryId: "SubId1",
+                DataSubmissionPeriod: "Period 1",
+                ProducerId: "1",
+                RowNumber: 1,
+                ProducerType: "Type 1",
+                ProducerSize: "Size 1",
+                WasteType: "Waste 1",
+                PackagingCategory: "Category 1",
+                MaterialType: "Type 1",
+                MaterialSubType: "SubType 1",
+                FromHomeNation: "Nation 1",
+                ToHomeNation: "Nation 1",
+                QuantityKg: "100",
+                QuantityUnits: "500",
+                SubmissionPeriod: "Period 1"),
+            new ProducerRow(
+                SubsidiaryId: "SubId2",
+                DataSubmissionPeriod: "Period 2",
+                ProducerId: "1",
+                RowNumber: 2,
+                ProducerType: "Type 2",
+                ProducerSize: "Size 2",
+                WasteType: "Waste 2",
+                PackagingCategory: "Category 2",
+                MaterialType: "Type 2",
+                MaterialSubType: "SubType 2",
+                FromHomeNation: "Nation 2",
+                ToHomeNation: "Nation 2",
+                QuantityKg: "200",
+                QuantityUnits: "1000",
+                SubmissionPeriod: "Period 2")
+        };
 
             // Act
             var result = _subsidiaryDetailsRequestBuilder.CreateRequest(rows);
@@ -167,40 +171,40 @@ namespace EPR.ProducerContentValidation.UnitTest.Services.Subsidiary
         {
             // Arrange
             var rows = new List<ProducerRow>
-            {
-                new ProducerRow(
-                    SubsidiaryId: "SubId1",
-                    DataSubmissionPeriod: "Period 1",
-                    ProducerId: "1",
-                    RowNumber: 1,
-                    ProducerType: "Type 1",
-                    ProducerSize: "Size 1",
-                    WasteType: "Waste 1",
-                    PackagingCategory: "Category 1",
-                    MaterialType: "Type 1",
-                    MaterialSubType: "SubType 1",
-                    FromHomeNation: "Nation 1",
-                    ToHomeNation: "Nation 1",
-                    QuantityKg: "100",
-                    QuantityUnits: "500",
-                    SubmissionPeriod: "Period 1"),
-                new ProducerRow(
-                    SubsidiaryId: "SubId2",
-                    DataSubmissionPeriod: "Period 2",
-                    ProducerId: "2",
-                    RowNumber: 2,
-                    ProducerType: "Type 2",
-                    ProducerSize: "Size 2",
-                    WasteType: "Waste 2",
-                    PackagingCategory: "Category 2",
-                    MaterialType: "Type 2",
-                    MaterialSubType: "SubType 2",
-                    FromHomeNation: "Nation 2",
-                    ToHomeNation: "Nation 2",
-                    QuantityKg: "200",
-                    QuantityUnits: "1000",
-                    SubmissionPeriod: "Period 2")
-            };
+        {
+            new ProducerRow(
+                SubsidiaryId: "SubId1",
+                DataSubmissionPeriod: "Period 1",
+                ProducerId: "1",
+                RowNumber: 1,
+                ProducerType: "Type 1",
+                ProducerSize: "Size 1",
+                WasteType: "Waste 1",
+                PackagingCategory: "Category 1",
+                MaterialType: "Type 1",
+                MaterialSubType: "SubType 1",
+                FromHomeNation: "Nation 1",
+                ToHomeNation: "Nation 1",
+                QuantityKg: "100",
+                QuantityUnits: "500",
+                SubmissionPeriod: "Period 1"),
+            new ProducerRow(
+                SubsidiaryId: "SubId2",
+                DataSubmissionPeriod: "Period 2",
+                ProducerId: "2",
+                RowNumber: 2,
+                ProducerType: "Type 2",
+                ProducerSize: "Size 2",
+                WasteType: "Waste 2",
+                PackagingCategory: "Category 2",
+                MaterialType: "Type 2",
+                MaterialSubType: "SubType 2",
+                FromHomeNation: "Nation 2",
+                ToHomeNation: "Nation 2",
+                QuantityKg: "200",
+                QuantityUnits: "1000",
+                SubmissionPeriod: "Period 2")
+        };
 
             // Act
             var result = _subsidiaryDetailsRequestBuilder.CreateRequest(rows);
