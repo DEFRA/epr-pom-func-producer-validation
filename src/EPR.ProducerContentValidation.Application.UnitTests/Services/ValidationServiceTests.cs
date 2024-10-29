@@ -332,6 +332,25 @@ public class ValidationServiceTests
     }
 
     [TestMethod]
+    public async Task ValidateAsync_WhenFeatureFlagIsOn_DoesPerformSubsidiaryValidation()
+    {
+        // Arrange
+        var producer = new Producer(Guid.NewGuid(), "000123", "test-blob", new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidation)).ReturnsAsync(true);
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(1);
+
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateAsync(producer);
+
+        // Assert
+        _subsidiaryDetailsRequestBuilderMock.Verify(x => x.CreateRequest(It.IsAny<List<ProducerRow>>()), Times.Once);
+        _companyDetailsApiClientMock.Verify(x => x.GetSubsidiaryDetails(It.IsAny<SubsidiaryDetailsRequest>()), Times.Once);
+        Assert.IsNotNull(result);
+    }
+
+    [TestMethod]
     public async Task ValidateAsync_WhenRemainingWarningCapacityIsZero_OnlyErrorsAreValidated()
     {
         // Arrange
@@ -365,6 +384,34 @@ public class ValidationServiceTests
 
         // Assert
         Assert.AreEqual(0, result.Count);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_WhenWarningCapacityReached_LogsWarning()
+    {
+        // Arrange
+        var rows = new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) };
+        var producer = new Producer(_submissionId, ProducerId, BlobName, rows);
+
+        // Simulate reaching warning capacity
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(WarningStoreKey)).ReturnsAsync(0);
+
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateAsync(producer);
+
+        // Assert
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("No capacity left to process issues.")),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Never);
+        Assert.IsNotNull(result);
+        Assert.AreEqual(0, result.ValidationWarnings.Count);
     }
 
     private ValidationService CreateSystemUnderTest() =>

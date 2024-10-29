@@ -133,13 +133,4 @@ public class ValidationService : IValidationService
 
     private void LogRequestError(HttpRequestException exception) =>
         _logger.LogError(exception, "Error during subsidiary validation.");
-
-    private void LogValidationWarning(int rowNumber, string errorMessage, string errorCode)
-    {
-        _logger.LogWarning(
-            "Validation error on row {Row} {ErrorMessage} Error code {ErrorCode}",
-            rowNumber,
-            errorMessage,
-            errorCode);
-    }
 }
