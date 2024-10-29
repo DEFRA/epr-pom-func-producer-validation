@@ -7,6 +7,7 @@ using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.ReferenceData;
 using EPR.ProducerContentValidation.Application.Services;
+using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Subsidiary;
 using EPR.ProducerContentValidation.Application.Validators;
@@ -34,6 +35,8 @@ public class ValidatorsPerformanceTests
         Mock<IFeatureManager> featureManagerMock = new();
         Mock<ISubsidiaryDetailsRequestBuilder> subsidiaryDetailsRequestBuilderMock = new();
         Mock<ICompanyDetailsApiClient> companyDetailsApiClientMock = new();
+        Mock<IRequestValidator> requestValidatorMock = new();
+        Mock<IValidationServiceProducerRowValidator> validationServiceProducerRowValidatorMock = new();
 
         var submissionConfigOptions = new Mock<IOptions<List<SubmissionPeriodOption>>>();
 
@@ -63,7 +66,9 @@ public class ValidatorsPerformanceTests
             Microsoft.Extensions.Options.Options.Create(new StorageAccountOptions { PomContainer = "ContainerName" }),
             featureManagerMock.Object,
             subsidiaryDetailsRequestBuilderMock.Object,
-            companyDetailsApiClientMock.Object);
+            companyDetailsApiClientMock.Object,
+            requestValidatorMock.Object,
+            validationServiceProducerRowValidatorMock.Object);
     }
 
     [TestMethod]

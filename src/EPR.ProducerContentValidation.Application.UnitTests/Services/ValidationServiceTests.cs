@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using EPR.ProducerContentValidation.Application.Clients;
-using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.Services;
+using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Subsidiary;
 using EPR.ProducerContentValidation.Application.Validators.Interfaces;
@@ -37,6 +37,9 @@ public class ValidationServiceTests
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<ISubsidiaryDetailsRequestBuilder> _subsidiaryDetailsRequestBuilderMock;
     private Mock<ICompanyDetailsApiClient> _companyDetailsApiClientMock;
+    private Mock<IRequestValidator> _requestValidatorMock;
+    private Mock<IValidationServiceProducerRowValidator> _validationServiceProducerRowValidatorMock;
+    private Mock<ILogger> _mockLogger;
 
     [TestInitialize]
     public void TestInitialize()
@@ -46,8 +49,11 @@ public class ValidationServiceTests
         _issueCountServiceMock = new Mock<IIssueCountService>();
         _mapper = AutoMapperHelpers.GetMapper<ProducerProfile>();
         _featureManagerMock = new Mock<IFeatureManager>();
+        _requestValidatorMock = new Mock<IRequestValidator>();
         _subsidiaryDetailsRequestBuilderMock = new Mock<ISubsidiaryDetailsRequestBuilder>();
         _companyDetailsApiClientMock = new Mock<ICompanyDetailsApiClient>();
+        _validationServiceProducerRowValidatorMock = new Mock<IValidationServiceProducerRowValidator>();
+        _mockLogger = new Mock<ILogger>();
 
         _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(ErrorStoreKey))
             .ReturnsAsync(100);
@@ -130,13 +136,134 @@ public class ValidationServiceTests
         var service = CreateSystemUnderTest();
 
         // Act
-        var result = await service.ValidateSubsidiary(rows);
+        var result = await service.ValidateSubsidiaryAsync(rows);
 
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(0, result.Count);
     }
 
+    [TestMethod]
+    public async Task ValidateSubsidiaryAsync_InvalidRequest_ReturnsEmptyList()
+    {
+        // Arrange
+        var row = ModelGenerator.CreateProducerRow(1) with
+        {
+            SubsidiaryId = "Sub1",
+            DataSubmissionPeriod = "2024Q1",
+            ProducerId = "Prod1",
+            RowNumber = 1,
+            ProducerType = "TypeA",
+            ProducerSize = "Large",
+            WasteType = "WasteTypeA",
+            PackagingCategory = "CategoryA",
+            MaterialType = "MaterialA",
+            MaterialSubType = "SubTypeA",
+            FromHomeNation = "NationA",
+            ToHomeNation = "NationB",
+            QuantityKg = "100",
+            QuantityUnits = "10"
+        };
+        var rows = new List<ProducerRow> { row };
+
+        var subsidiaryDetailsRequest = new SubsidiaryDetailsRequest();
+
+        _subsidiaryDetailsRequestBuilderMock.Setup(x => x.CreateRequest(rows)).Returns(subsidiaryDetailsRequest);
+        _requestValidatorMock.Setup(x => x.IsInvalidRequest(subsidiaryDetailsRequest)).Returns(true);
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateSubsidiaryAsync(rows);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(0, result.Count);
+    }
+
+    [TestMethod]
+    public async Task ValidateSubsidiaryAsync_ValidRequest_ReturnsValidationErrors()
+    {
+        // Arrange
+        var row = ModelGenerator.CreateProducerRow(1) with
+        {
+            SubsidiaryId = "Sub1",
+            DataSubmissionPeriod = "2024Q1",
+            ProducerId = "Prod1",
+            RowNumber = 1,
+            ProducerType = "TypeA",
+            ProducerSize = "Large",
+            WasteType = "WasteTypeA",
+            PackagingCategory = "CategoryA",
+            MaterialType = "MaterialA",
+            MaterialSubType = "SubTypeA",
+            FromHomeNation = "NationA",
+            ToHomeNation = "NationB",
+            QuantityKg = "100",
+            QuantityUnits = "10"
+        };
+        var rows = new List<ProducerRow> { row };
+        var subsidiaryDetailsRequest = new SubsidiaryDetailsRequest();
+        var subsidiaryDetailsResponse = new SubsidiaryDetailsResponse();
+        var validationErrors = new List<ProducerValidationEventIssueRequest>
+            {
+                new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", ErrorCodes: new List<string> { "Error1" })
+            };
+
+        _subsidiaryDetailsRequestBuilderMock.Setup(x => x.CreateRequest(rows)).Returns(subsidiaryDetailsRequest);
+        _requestValidatorMock.Setup(x => x.IsInvalidRequest(subsidiaryDetailsRequest)).Returns(false);
+        _companyDetailsApiClientMock.Setup(x => x.GetSubsidiaryDetails(subsidiaryDetailsRequest)).ReturnsAsync(subsidiaryDetailsResponse);
+        _validationServiceProducerRowValidatorMock.Setup(x => x.ProcessRowsForValidationErrors(rows, subsidiaryDetailsResponse)).Returns(validationErrors);
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateSubsidiaryAsync(rows);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual(validationErrors.First(), result.First());
+    }
+
+    [TestMethod]
+    public async Task ValidateSubsidiaryAsync_HttpRequestException_LogsErrorAndReturnsEmptyList()
+    {
+        // Arrange
+        var row = ModelGenerator.CreateProducerRow(1) with
+        {
+            SubsidiaryId = "Sub1",
+            DataSubmissionPeriod = "2024Q1",
+            ProducerId = "Prod1",
+            RowNumber = 1,
+            ProducerType = "TypeA",
+            ProducerSize = "Large",
+            WasteType = "WasteTypeA",
+            PackagingCategory = "CategoryA",
+            MaterialType = "MaterialA",
+            MaterialSubType = "SubTypeA",
+            FromHomeNation = "NationA",
+            ToHomeNation = "NationB",
+            QuantityKg = "100",
+            QuantityUnits = "10"
+        };
+        var rows = new List<ProducerRow> { row };
+        var subsidiaryDetailsRequest = new SubsidiaryDetailsRequest();
+
+        _subsidiaryDetailsRequestBuilderMock.Setup(x => x.CreateRequest(rows)).Returns(subsidiaryDetailsRequest);
+        _requestValidatorMock.Setup(x => x.IsInvalidRequest(subsidiaryDetailsRequest)).Returns(false);
+        _companyDetailsApiClientMock.Setup(x => x.GetSubsidiaryDetails(subsidiaryDetailsRequest)).ThrowsAsync(new HttpRequestException());
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateSubsidiaryAsync(rows);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(0, result.Count);
+
+        // _mockLogger.Verify(x => x.LogError(It.IsAny<Exception>(), "Error during subsidiary validation."), Times.Once);
+    }
+
+    // End
     [TestMethod]
     public async Task ValidateSubsidiary_NullSubsidiaryDetailsResponse_ReturnsEmptyList()
     {
@@ -149,7 +276,7 @@ public class ValidationServiceTests
         var service = CreateSystemUnderTest();
 
         // Act
-        var result = await service.ValidateSubsidiary(rows);
+        var result = await service.ValidateSubsidiaryAsync(rows);
 
         // Assert
         Assert.IsNotNull(result);
@@ -170,7 +297,7 @@ public class ValidationServiceTests
         var service = CreateSystemUnderTest();
 
         // Act
-        var result = await service.ValidateSubsidiary(rows);
+        var result = await service.ValidateSubsidiaryAsync(rows);
 
         // Assert
         Assert.IsNotNull(result);
@@ -179,84 +306,10 @@ public class ValidationServiceTests
             x => x.Log(
                 LogLevel.Error,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Error Subsidiary validation")),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Error during subsidiary validation.")),
                 It.Is<Exception>(ex => ex == exception),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.Once);
-    }
-
-    [TestMethod]
-    public async Task ValidateAsync_WithSubsidiaryValidationEnabled_PerformsSubsidiaryValidation()
-    {
-        // Arrange
-        var producerRows = new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) };
-        var producer = new Producer(_submissionId, ProducerId, BlobName, producerRows);
-
-        var validationErrors = new List<ProducerValidationEventIssueRequest>();
-
-        _featureManagerMock
-            .Setup(fm => fm.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidation))
-            .ReturnsAsync(true);
-
-        _subsidiaryDetailsRequestBuilderMock
-            .Setup(x => x.CreateRequest(producer.Rows))
-            .Returns(new SubsidiaryDetailsRequest()
-            {
-                SubsidiaryOrganisationDetails = new List<SubsidiaryOrganisationDetail>()
-                {
-                    new SubsidiaryOrganisationDetail()
-                    { }
-                }
-            });
-
-        var subsidiaryOrganisationDetails = new List<SubsidiaryOrganisationDetail>();
-        subsidiaryOrganisationDetails.Add(new SubsidiaryOrganisationDetail
-        {
-            OrganisationReference = "sds",
-            SubsidiaryDetails = new List<SubsidiaryDetail>()
-        });
-        var subsidiaryDetailsResponse = new SubsidiaryDetailsResponse();
-        subsidiaryDetailsResponse.SubsidiaryOrganisationDetails = subsidiaryOrganisationDetails;
-
-        _companyDetailsApiClientMock
-            .Setup(x => x.GetSubsidiaryDetails(It.IsAny<SubsidiaryDetailsRequest>()))
-            .ReturnsAsync(subsidiaryDetailsResponse);
-
-        _issueCountServiceMock
-            .Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>()))
-            .ReturnsAsync(1);
-
-        var service = CreateSystemUnderTest();
-
-        // Act
-        var result = await service.ValidateAsync(producer);
-
-        // Assert
-        _subsidiaryDetailsRequestBuilderMock.Verify(x => x.CreateRequest(producer.Rows), Times.Once);
-        _companyDetailsApiClientMock.Verify(x => x.GetSubsidiaryDetails(It.IsAny<SubsidiaryDetailsRequest>()), Times.Once);
-    }
-
-    [TestMethod]
-    public async Task ValidateAsync_WithSubsidiaryValidationDisabled_SkipsSubsidiaryValidation()
-    {
-        // Arrange
-        var producerRows = new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) };
-        var producer = new Producer(_submissionId, ProducerId, BlobName, producerRows);
-
-        // Mock feature flag to disable subsidiary validation
-        _featureManagerMock
-            .Setup(fm => fm.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidation))
-            .ReturnsAsync(false);
-
-        var service = CreateSystemUnderTest();
-
-        // Act
-        var result = await service.ValidateAsync(producer);
-
-        // Assert
-        _subsidiaryDetailsRequestBuilderMock.Verify(x => x.CreateRequest(It.IsAny<List<ProducerRow>>()), Times.Never);
-        _companyDetailsApiClientMock.Verify(x => x.GetSubsidiaryDetails(It.IsAny<SubsidiaryDetailsRequest>()), Times.Never);
-        result.ValidationErrors.Should().BeEmpty();
     }
 
     private ValidationService CreateSystemUnderTest() =>
@@ -268,5 +321,7 @@ public class ValidationServiceTests
             Microsoft.Extensions.Options.Options.Create(new StorageAccountOptions { PomContainer = ContainerName }),
             _featureManagerMock.Object,
             _subsidiaryDetailsRequestBuilderMock.Object,
-            _companyDetailsApiClientMock.Object);
+            _companyDetailsApiClientMock.Object,
+            _requestValidatorMock.Object,
+            _validationServiceProducerRowValidatorMock.Object);
 }

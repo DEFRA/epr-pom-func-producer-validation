@@ -5,9 +5,11 @@ using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Extensions;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
+using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Subsidiary;
 using EPR.ProducerContentValidation.Application.Validators.Interfaces;
+using EPR.ProducerContentValidation.Data.Models.Subsidiary;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
@@ -23,7 +25,9 @@ public class ValidationService : IValidationService
     private readonly StorageAccountOptions _storageAccountOptions;
     private readonly ISubsidiaryDetailsRequestBuilder _subsidiaryDetailsRequestBuilder;
     private readonly ICompanyDetailsApiClient _companyDetailsApiClient;
-    private IFeatureManager _featureManager;
+    private readonly IFeatureManager _featureManager;
+    private readonly IRequestValidator _requestValidator;
+    private readonly IValidationServiceProducerRowValidator _validationServiceProducerRowValidator;
 
     public ValidationService(
         ILogger<ValidationService> logger,
@@ -33,7 +37,9 @@ public class ValidationService : IValidationService
         IOptions<StorageAccountOptions> storageAccountOptions,
         IFeatureManager featureManager,
         ISubsidiaryDetailsRequestBuilder subsidiaryDetailsRequestBuilder,
-        ICompanyDetailsApiClient companyDetailsApiClient)
+        ICompanyDetailsApiClient companyDetailsApiClient,
+        IRequestValidator requestValidator,
+        IValidationServiceProducerRowValidator validationServiceProducerRowValidator)
     {
         _logger = logger;
         _compositeValidator = compositeValidator;
@@ -43,6 +49,8 @@ public class ValidationService : IValidationService
         _featureManager = featureManager;
         _subsidiaryDetailsRequestBuilder = subsidiaryDetailsRequestBuilder;
         _companyDetailsApiClient = companyDetailsApiClient;
+        _requestValidator = requestValidator;
+        _validationServiceProducerRowValidator = validationServiceProducerRowValidator;
     }
 
     public async Task<SubmissionEventRequest> ValidateAsync(Producer producer)
@@ -77,7 +85,7 @@ public class ValidationService : IValidationService
 
         if (await _featureManager.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidation))
         {
-            List<ProducerValidationEventIssueRequest> subValidationResult = await ValidateSubsidiary(producer.Rows);
+            List<ProducerValidationEventIssueRequest> subValidationResult = await ValidateSubsidiaryAsync(producer.Rows);
             producerValidationOutRequest.ValidationErrors.AddRange(subValidationResult.Take(remainingErrorCapacity - errors.Count));
         }
 
@@ -86,65 +94,45 @@ public class ValidationService : IValidationService
         return producerValidationOutRequest;
     }
 
-    public async Task<List<ProducerValidationEventIssueRequest>> ValidateSubsidiary(List<ProducerRow> rows)
+    public async Task<List<ProducerValidationEventIssueRequest>> ValidateSubsidiaryAsync(List<ProducerRow> rows)
     {
-        List<ProducerValidationEventIssueRequest> validationErrors = new();
+        var validationErrors = new List<ProducerValidationEventIssueRequest>();
+
         try
         {
-            var subsidiaryDetailsRequest = _subsidiaryDetailsRequestBuilder.CreateRequest(rows);
-            if (subsidiaryDetailsRequest == null || subsidiaryDetailsRequest.SubsidiaryOrganisationDetails == null || !subsidiaryDetailsRequest.SubsidiaryOrganisationDetails.Any())
+            var subsidiaryDetailsRequest = BuildSubsidiaryRequest(rows);
+            if (_requestValidator.IsInvalidRequest(subsidiaryDetailsRequest))
             {
                 return validationErrors;
             }
 
-            var result = await _companyDetailsApiClient.GetSubsidiaryDetails(subsidiaryDetailsRequest);
-
-            for (int i = 0; i < rows.Count; i++)
-            {
-                var matchingOrg = result.SubsidiaryOrganisationDetails
-                    .FirstOrDefault(org => org.OrganisationReference == rows[i].ProducerId);
-
-                if (matchingOrg == null)
-                {
-                    continue;
-                }
-
-                var matchingSub = matchingOrg.SubsidiaryDetails
-                    .FirstOrDefault(sub => sub.ReferenceNumber == rows[i].SubsidiaryId);
-
-                if (matchingSub == null)
-                {
-                    continue;
-                }
-
-                if (!matchingSub.SubsidiaryExists)
-                {
-                    var error = CreateSubValidationError(rows[i], ErrorCode.SubsidiaryIdDoesNotExist);
-                    var errorMessage = $"Subsidiary ID does not exist";
-
-                    LogValidationWarning(i + 1, errorMessage, ErrorCode.SubsidiaryIdDoesNotExist);
-                    validationErrors.Add(error);
-                    continue;
-                }
-
-                if (!matchingSub.SubsidiaryBelongsToOrganisation)
-                {
-                    var error = CreateSubValidationError(rows[i], ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation);
-                    var errorMessage = $"Subsidiary ID is assigned to a different organisation";
-
-                    LogValidationWarning(i + 1, errorMessage, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation);
-                    validationErrors.Add(error);
-                }
-            }
+            var subsidiaryDetailsResponse = await FetchSubsidiaryDetailsAsync(subsidiaryDetailsRequest);
+            validationErrors.AddRange(_validationServiceProducerRowValidator.ProcessRowsForValidationErrors(rows, subsidiaryDetailsResponse));
 
             return validationErrors;
         }
         catch (HttpRequestException exception)
         {
-            _logger.LogError(exception, "Error Subsidiary validation");
+            LogRequestError(exception);
             return validationErrors;
         }
     }
+
+    // Helper Methods
+    private SubsidiaryDetailsRequest BuildSubsidiaryRequest(List<ProducerRow> rows) =>
+        _subsidiaryDetailsRequestBuilder.CreateRequest(rows);
+
+    private async Task<SubsidiaryDetailsResponse> FetchSubsidiaryDetailsAsync(SubsidiaryDetailsRequest request) =>
+        await _companyDetailsApiClient.GetSubsidiaryDetails(request);
+
+    private SubsidiaryOrganisationDetail? FindMatchingOrganisation(ProducerRow row, SubsidiaryDetailsResponse response) =>
+        response.SubsidiaryOrganisationDetails.FirstOrDefault(org => org.OrganisationReference == row.ProducerId);
+
+    private SubsidiaryDetail? FindMatchingSubsidiary(ProducerRow row, SubsidiaryOrganisationDetail org) =>
+        org.SubsidiaryDetails.FirstOrDefault(sub => sub.ReferenceNumber == row.SubsidiaryId);
+
+    private void LogRequestError(HttpRequestException exception) =>
+        _logger.LogError(exception, "Error during subsidiary validation.");
 
     private void LogValidationWarning(int rowNumber, string errorMessage, string errorCode)
     {
@@ -153,10 +141,5 @@ public class ValidationService : IValidationService
             rowNumber,
             errorMessage,
             errorCode);
-    }
-
-    private ProducerValidationEventIssueRequest CreateSubValidationError(ProducerRow row, object subsidiaryIdDoesNotExist)
-    {
-        throw new NotImplementedException();
     }
 }

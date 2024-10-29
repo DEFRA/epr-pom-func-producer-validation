@@ -4,6 +4,7 @@ using System.Reflection;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Services;
+using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Subsidiary;
 using EPR.ProducerContentValidation.Application.Validators;
@@ -33,7 +34,14 @@ public static class ConfigureServices
             .AddScoped<IValidationService, ValidationService>()
             .AddScoped<ISubmissionApiClient, SubmissionApiClient>()
             .AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisOptions.ConnectionString))
-            .AddSingleton<IIssueCountService, IssueCountService>();
+            .AddSingleton<IIssueCountService, IssueCountService>()
+            .AddSingleton<IRequestValidator, RequestValidator>()
+            .AddSingleton<ISubsidiaryMatcher, SubsidiaryMatcher>()
+            .AddSingleton<IProducerValidationEventIssueRequestFormatter, ProducerValidationEventIssueRequestFormatter>()
+            .AddSingleton<ISubsidiaryValidationEvaluator, SubsidiaryValidationEvaluator>()
+            .AddSingleton<IOrganisationMatcher, OrganisationMatcher>()
+            .AddSingleton<IFindMatchingProducer, FindMatchingProducer>()
+            .AddSingleton<IValidationServiceProducerRowValidator, ValidationServiceProducerRowValidator>();
     }
 
     private static IServiceCollection ConfigureOptions(this IServiceCollection services)
