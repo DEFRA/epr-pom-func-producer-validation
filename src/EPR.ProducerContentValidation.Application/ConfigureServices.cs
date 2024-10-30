@@ -31,7 +31,6 @@ public static class ConfigureServices
     {
         var redisOptions = services.BuildServiceProvider().GetRequiredService<IOptions<RedisOptions>>().Value;
         services
-            .AddScoped<IValidationService, ValidationService>()
             .AddScoped<ISubmissionApiClient, SubmissionApiClient>()
             .AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisOptions.ConnectionString))
             .AddSingleton<IIssueCountService, IssueCountService>()
@@ -41,7 +40,8 @@ public static class ConfigureServices
             .AddSingleton<ISubsidiaryValidationEvaluator, SubsidiaryValidationEvaluator>()
             .AddSingleton<IOrganisationMatcher, OrganisationMatcher>()
             .AddSingleton<IFindMatchingProducer, FindMatchingProducer>()
-            .AddSingleton<IValidationServiceProducerRowValidator, ValidationServiceProducerRowValidator>();
+            .AddSingleton<IValidationServiceProducerRowValidator, ValidationServiceProducerRowValidator>()
+            .AddScoped<IValidationService, ValidationService>();
     }
 
     private static IServiceCollection ConfigureOptions(this IServiceCollection services)

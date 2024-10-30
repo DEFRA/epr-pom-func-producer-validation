@@ -83,7 +83,7 @@ public class ValidationService : IValidationService
         producerValidationOutRequest.ValidationErrors.AddRange(errors);
         producerValidationOutRequest.ValidationWarnings.AddRange(warnings);
 
-        if (await _featureManager.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidation))
+        if (await _featureManager.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom))
         {
             List<ProducerValidationEventIssueRequest> subValidationResult = await ValidateSubsidiaryAsync(producer.Rows);
             producerValidationOutRequest.ValidationErrors.AddRange(subValidationResult.Take(remainingErrorCapacity - errors.Count));
@@ -124,12 +124,6 @@ public class ValidationService : IValidationService
 
     private async Task<SubsidiaryDetailsResponse> FetchSubsidiaryDetailsAsync(SubsidiaryDetailsRequest request) =>
         await _companyDetailsApiClient.GetSubsidiaryDetails(request);
-
-    private SubsidiaryOrganisationDetail? FindMatchingOrganisation(ProducerRow row, SubsidiaryDetailsResponse response) =>
-        response.SubsidiaryOrganisationDetails.FirstOrDefault(org => org.OrganisationReference == row.ProducerId);
-
-    private SubsidiaryDetail? FindMatchingSubsidiary(ProducerRow row, SubsidiaryOrganisationDetail org) =>
-        org.SubsidiaryDetails.FirstOrDefault(sub => sub.ReferenceNumber == row.SubsidiaryId);
 
     private void LogRequestError(HttpRequestException exception) =>
         _logger.LogError(exception, "Error during subsidiary validation.");

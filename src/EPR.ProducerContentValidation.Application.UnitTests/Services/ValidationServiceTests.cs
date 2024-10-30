@@ -316,7 +316,7 @@ public class ValidationServiceTests
     {
         // Arrange
         var producer = new Producer(Guid.NewGuid(), "000123", "test-blob", new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) });
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidation)).ReturnsAsync(false);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom)).ReturnsAsync(false);
 
         var service = CreateSystemUnderTest();
 
@@ -334,7 +334,7 @@ public class ValidationServiceTests
     {
         // Arrange
         var producer = new Producer(Guid.NewGuid(), "000123", "test-blob", new List<ProducerRow> { ModelGenerator.CreateProducerRow(1) });
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidation)).ReturnsAsync(true);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom)).ReturnsAsync(true);
         _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(1);
 
         var service = CreateSystemUnderTest();
