@@ -1,7 +1,8 @@
 ﻿using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Subsidiary;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace EPR.ProducerContentValidation.UnitTest.Services.Subsidiary
+namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Subsidiary
 {
     [TestClass]
     public class SubsidiaryDetailsRequestBuilderTests
