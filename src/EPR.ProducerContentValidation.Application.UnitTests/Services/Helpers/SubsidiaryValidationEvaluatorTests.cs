@@ -2,6 +2,7 @@
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Helpers;
+using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 using EPR.ProducerContentValidation.Data.Models.Subsidiary;
 using EPR.ProducerContentValidation.TestSupport;
 using Microsoft.Extensions.Logging;

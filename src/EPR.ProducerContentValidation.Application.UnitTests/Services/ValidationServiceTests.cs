@@ -6,7 +6,7 @@ using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.Services;
-using EPR.ProducerContentValidation.Application.Services.Helpers;
+using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Subsidiary;
 using EPR.ProducerContentValidation.Application.Validators.Interfaces;

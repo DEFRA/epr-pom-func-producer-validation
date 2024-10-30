@@ -29,8 +29,4 @@
       <ProjectReference Include="..\EPR.ProducerContentValidation.Data\EPR.ProducerContentValidation.Data.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Services\Helpers\Interfaces\" />
-    </ItemGroup>
-
 </Project>

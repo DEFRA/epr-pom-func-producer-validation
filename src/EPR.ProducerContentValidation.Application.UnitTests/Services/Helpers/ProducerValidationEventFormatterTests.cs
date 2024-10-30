@@ -1,5 +1,6 @@
 ﻿using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Helpers;
+using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
