@@ -260,8 +260,6 @@ public class ValidationServiceTests
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(0, result.Count);
-
-        // _mockLogger.Verify(x => x.LogError(It.IsAny<Exception>(), "Error during subsidiary validation."), Times.Once);
     }
 
     // End
