@@ -91,8 +91,8 @@ public class ValidationService : IValidationService
 
         if (subValidationResult.Count > 0)
         {
-            var subValidationResultLimitedToRemainingErrorCapacity = subValidationResult.Take(remainingErrorCapacity - errors.Count);
-            ProducerValidationEventIssueRequestMerger.MergeRequests(errors, (List<ProducerValidationEventIssueRequest>)subValidationResultLimitedToRemainingErrorCapacity);
+            var mergedErrors = ProducerValidationEventIssueRequestMerger.MergeRequests(errors, subValidationResult);
+            producerValidationOutRequest.ValidationErrors.AddRange(mergedErrors.Take(remainingErrorCapacity - errors.Count));
         }
         else
         {
