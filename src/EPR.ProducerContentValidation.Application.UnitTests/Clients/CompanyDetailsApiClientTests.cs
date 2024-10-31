@@ -106,5 +106,45 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Clients
             // Assert
             await act.Should().ThrowAsync<Exception>();
         }
+
+        [TestMethod]
+        public async Task GetSubsidiaryDetails_ShouldReturnDefault_WhenResponseContentIsEmpty()
+        {
+            // Arrange
+            var request = new SubsidiaryDetailsRequest();
+            var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            handlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(string.Empty), // Simulate empty content
+                })
+                .Verifiable();
+
+            var httpClient = new HttpClient(handlerMock.Object)
+            {
+                BaseAddress = new Uri(_config.BaseUrl),
+                Timeout = TimeSpan.FromSeconds(_config.Timeout),
+            };
+            var sut = new CompanyDetailsApiClient(httpClient, NullLogger<CompanyDetailsApiClient>.Instance);
+
+            // Act
+            var result = await sut.GetSubsidiaryDetails(request);
+
+            // Assert
+            result.Should().BeNull(); // Since default for reference type is null
+            handlerMock.Protected().Verify(
+                "SendAsync",
+                Times.Once(),
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Post &&
+                    req.RequestUri.ToString().EndsWith("api/subsidiary-details")),
+                ItExpr.IsAny<CancellationToken>());
+        }
     }
 }
