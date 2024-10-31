@@ -412,6 +412,131 @@ public class ValidationServiceTests
         Assert.AreEqual(0, result.ValidationWarnings.Count);
     }
 
+    [TestMethod]
+    public async Task ValidateAsync_CollectsWarningsAndValidatesSubsidiaries_LimitedByErrorCapacity()
+    {
+        // Arrange
+        var producerRows = new List<ProducerRow>
+        {
+            ModelGenerator.CreateProducerRow(1),
+            ModelGenerator.CreateProducerRow(2)
+        };
+
+        var producer = new Producer(_submissionId, ProducerId, BlobName, producerRows);
+
+        var expectedErrors = new List<ProducerValidationEventIssueRequest>
+        {
+            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", string.Empty, new List<string> { "Error1" })
+        };
+
+        var expectedWarnings = new List<ProducerValidationEventIssueRequest>
+        {
+            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", string.Empty, new List<string> { "Warning1" })
+        };
+
+        // Mocking
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(5);
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(5);
+
+        _compositeValidatorMock.Setup(x => x.ValidateAndFetchForIssuesAsync(It.IsAny<IEnumerable<ProducerRow>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), BlobName))
+            .Callback<IEnumerable<ProducerRow>, List<ProducerValidationEventIssueRequest>, List<ProducerValidationEventIssueRequest>, string>((rows, errors, warnings, blob) =>
+            {
+                warnings.AddRange(expectedWarnings);
+                errors.AddRange(expectedErrors);
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom)).ReturnsAsync(true);
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(ErrorStoreKey)).ReturnsAsync(10);
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(WarningStoreKey)).ReturnsAsync(5);
+
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateAsync(producer);
+
+        // Assert
+        result.ValidationWarnings.Should().BeEquivalentTo(expectedWarnings);
+        result.ValidationErrors.Should().BeEquivalentTo(expectedErrors.Take(5)); // Limited by error capacity
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_EnabledSubsidiaryValidation_NoErrorsFromSubsidiaryValidation_AggregatesErrors()
+    {
+        // Arrange
+        var producerRows = new List<ProducerRow>
+        {
+            ModelGenerator.CreateProducerRow(1)
+        };
+
+        var producer = new Producer(_submissionId, ProducerId, BlobName, producerRows);
+
+        var expectedErrors = new List<ProducerValidationEventIssueRequest>
+        {
+            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", string.Empty, new List<string> { "Error1" })
+        };
+
+        // Mocking
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(5);
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(5);
+
+        _compositeValidatorMock.Setup(x => x.ValidateAndFetchForIssuesAsync(It.IsAny<IEnumerable<ProducerRow>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), BlobName))
+            .Callback<IEnumerable<ProducerRow>, List<ProducerValidationEventIssueRequest>, List<ProducerValidationEventIssueRequest>, string>((rows, errors, warnings, blob) =>
+            {
+                // No warnings
+                errors.Add(new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", string.Empty, new List<string> { "Error1" }));
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom)).ReturnsAsync(true);
+
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateAsync(producer);
+
+        // Assert
+        result.ValidationWarnings.Should().BeEmpty();
+        result.ValidationErrors.Should().BeEquivalentTo(expectedErrors);
+    }
+
+    [TestMethod]
+    public async Task ValidateAsync_DisabledSubsidiaryValidation_DoesNotValidateSubsidiaries()
+    {
+        // Arrange
+        var producerRows = new List<ProducerRow>
+        {
+            ModelGenerator.CreateProducerRow(1)
+        };
+
+        var producer = new Producer(_submissionId, ProducerId, BlobName, producerRows);
+
+        var expectedErrors = new List<ProducerValidationEventIssueRequest>
+        {
+            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", string.Empty, new List<string> { "Error1" })
+        };
+
+        // Mocking
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(5);
+        _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(5);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom)).ReturnsAsync(false);
+
+        _compositeValidatorMock.Setup(x => x.ValidateAndFetchForIssuesAsync(It.IsAny<IEnumerable<ProducerRow>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), It.IsAny<List<ProducerValidationEventIssueRequest>>(), BlobName))
+            .Callback<IEnumerable<ProducerRow>, List<ProducerValidationEventIssueRequest>, List<ProducerValidationEventIssueRequest>, string>((rows, errors, warnings, blob) =>
+            {
+                errors.AddRange(expectedErrors);
+            });
+
+        var service = CreateSystemUnderTest();
+
+        // Act
+        var result = await service.ValidateAsync(producer);
+
+        // Assert
+        result.ValidationWarnings.Should().BeEmpty();
+        result.ValidationErrors.Should().BeEquivalentTo(expectedErrors);
+        _subsidiaryDetailsRequestBuilderMock.Verify(x => x.CreateRequest(It.IsAny<List<ProducerRow>>()), Times.Never);
+        _companyDetailsApiClientMock.Verify(x => x.GetSubsidiaryDetails(It.IsAny<SubsidiaryDetailsRequest>()), Times.Never);
+    }
+
     private ValidationService CreateSystemUnderTest() =>
         new(
             _loggerMock.Object,

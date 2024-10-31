@@ -5,6 +5,7 @@ using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Extensions;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
+using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Subsidiary;
@@ -76,17 +77,26 @@ public class ValidationService : IValidationService
 
         var errors = new List<ProducerValidationEventIssueRequest>();
         var warnings = new List<ProducerValidationEventIssueRequest>();
+        var subValidationResult = new List<ProducerValidationEventIssueRequest>();
 
         await _compositeValidator.ValidateAndFetchForIssuesAsync(producer.Rows, errors, warnings, producer.BlobName);
         await _compositeValidator.ValidateDuplicatesAndGroupedData(producer.Rows, errors, warnings, producer.BlobName);
 
-        producerValidationOutRequest.ValidationErrors.AddRange(errors);
         producerValidationOutRequest.ValidationWarnings.AddRange(warnings);
 
         if (await _featureManager.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom))
         {
-            List<ProducerValidationEventIssueRequest> subValidationResult = await ValidateSubsidiaryAsync(producer.Rows);
-            producerValidationOutRequest.ValidationErrors.AddRange(subValidationResult.Take(remainingErrorCapacity - errors.Count));
+            subValidationResult = await ValidateSubsidiaryAsync(producer.Rows);
+        }
+
+        if (subValidationResult.Count > 0)
+        {
+            var subValidationResultLimitedToRemainingErrorCapacity = subValidationResult.Take(remainingErrorCapacity - errors.Count);
+            ProducerValidationEventIssueRequestMerger.MergeRequests(errors, (List<ProducerValidationEventIssueRequest>)subValidationResultLimitedToRemainingErrorCapacity);
+        }
+        else
+        {
+            producerValidationOutRequest.ValidationErrors.AddRange(errors);
         }
 
         _logger.LogExit();
