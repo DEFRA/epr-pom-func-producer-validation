@@ -9,6 +9,6 @@ namespace EPR.ProducerContentValidation.Data.Models.Subsidiary
 
         public bool SubsidiaryExists { get; set; }
 
-        public bool SubsidiaryBelongsToOrganisation { get; set; }
+        public bool SubsidiaryBelongsToAnyOtherOrganisation { get; set; }
     }
 }

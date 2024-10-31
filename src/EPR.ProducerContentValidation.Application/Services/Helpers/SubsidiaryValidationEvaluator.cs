@@ -26,7 +26,7 @@ namespace EPR.ProducerContentValidation.Application.Services.Helpers
                 return _producerValidationEventIssueRequestFormatter.Format(row, ErrorCode.SubsidiaryIdDoesNotExist);
             }
 
-            if (!subsidiary.SubsidiaryBelongsToOrganisation)
+            if (subsidiary.SubsidiaryBelongsToAnyOtherOrganisation)
             {
                 LogValidationWarning(rowIndex + 1, "Subsidiary ID is assigned to a different organisation", ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation);
                 return _producerValidationEventIssueRequestFormatter.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation);

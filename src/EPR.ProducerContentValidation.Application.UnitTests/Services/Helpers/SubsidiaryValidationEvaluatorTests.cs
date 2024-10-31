@@ -47,7 +47,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
                 QuantityKg = "100",
                 QuantityUnits = "Units"
             };
-            var subsidiary = new SubsidiaryDetail { SubsidiaryExists = false, SubsidiaryBelongsToOrganisation = true };
+            var subsidiary = new SubsidiaryDetail { SubsidiaryExists = false, SubsidiaryBelongsToAnyOtherOrganisation = true };
             var expectedRequest = new ProducerValidationEventIssueRequest(
                 row.SubsidiaryId,
                 row.DataSubmissionPeriod,
@@ -74,14 +74,6 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedRequest, result);
 
-            // _mockLogger.Verify(
-            //    l => l.LogWarning(
-            //        It.Is<string>(s => s == "Validation Warning at row {RowNumber}: {Message} (ErrorCode: {ErrorCode})"),
-            //        It.Is<object[]>(o =>
-            //            (int)o[0] == row.RowNumber + 1 &&
-            //            (string)o[1] == "Subsidiary ID does not exist" &&
-            //            (string)o[2] == ErrorCode.SubsidiaryIdDoesNotExist)),
-            //    Times.Once);
             _mockFormatter.Verify(f => f.Format(row, ErrorCode.SubsidiaryIdDoesNotExist), Times.Once);
         }
 
@@ -106,7 +98,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
                 QuantityKg = "100",
                 QuantityUnits = "Units"
             };
-            var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToOrganisation = false };
+            var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToAnyOtherOrganisation = true };
             var expectedRequest = new ProducerValidationEventIssueRequest(
                 row.SubsidiaryId,
                 row.DataSubmissionPeriod,
@@ -133,7 +125,6 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedRequest, result);
 
-            // _mockLogger.Verify(l => l.LogWarning(It.IsAny<string>(), row.RowNumber + 1, "Subsidiary ID is assigned to a different organisation", ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation), Times.Once);
             _mockFormatter.Verify(f => f.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation), Times.Once);
         }
 
@@ -158,7 +149,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
                 QuantityKg = "100",
                 QuantityUnits = "Units"
             };
-            var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToOrganisation = true };
+            var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToAnyOtherOrganisation = false };
 
             // Act
             var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber);
@@ -166,7 +157,6 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             // Assert
             Assert.IsNull(result);
 
-            // _mockLogger.Verify(l => l.LogWarning(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             _mockFormatter.Verify(f => f.Format(It.IsAny<ProducerRow>(), It.IsAny<string>()), Times.Never);
         }
     }

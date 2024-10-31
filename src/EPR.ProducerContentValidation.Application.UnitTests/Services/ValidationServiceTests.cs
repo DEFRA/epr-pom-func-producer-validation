@@ -119,7 +119,7 @@ public class ValidationServiceTests
                         {
                             ReferenceNumber = "SubRef",
                             SubsidiaryExists = true,
-                            SubsidiaryBelongsToOrganisation = true
+                            SubsidiaryBelongsToAnyOtherOrganisation = true
                         }
                     }
                 }
