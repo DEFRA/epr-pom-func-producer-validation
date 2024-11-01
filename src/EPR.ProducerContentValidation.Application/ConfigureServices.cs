@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using EPR.ProducerContentValidation.Application.Handlers;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Services;
@@ -42,7 +43,8 @@ public static class ConfigureServices
             .AddSingleton<IOrganisationMatcher, OrganisationMatcher>()
             .AddSingleton<IFindMatchingProducer, FindMatchingProducer>()
             .AddSingleton<IValidationServiceProducerRowValidator, ValidationServiceProducerRowValidator>()
-            .AddScoped<IValidationService, ValidationService>();
+            .AddScoped<IValidationService, ValidationService>()
+            .AddTransient<CompanyDetailsApiAuthorisationHandler>();
     }
 
     private static IServiceCollection ConfigureOptions(this IServiceCollection services)
