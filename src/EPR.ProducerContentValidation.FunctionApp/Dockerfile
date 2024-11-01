@@ -8,7 +8,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS installer-env
 COPY stylecop.ruleset ./
 COPY Directory.Build.props ./
 COPY EPR.ProducerContentValidation.Application/. ./EPR.ProducerContentValidation.Application/.
-COPY EPR.ProducerContentValidation.Data/. ./EPR.ProducerContentValidation.Data/.
 COPY EPR.ProducerContentValidation.FunctionApp/. ./EPR.ProducerContentValidation.FunctionApp/.
 
 RUN dotnet publish EPR.ProducerContentValidation.FunctionApp/*.csproj --output /home/site/wwwroot
