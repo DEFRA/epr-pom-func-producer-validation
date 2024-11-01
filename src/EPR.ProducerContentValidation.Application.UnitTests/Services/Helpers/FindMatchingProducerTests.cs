@@ -4,6 +4,7 @@ using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 using EPR.ProducerContentValidation.Data.Models.Subsidiary;
 using EPR.ProducerContentValidation.TestSupport;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -44,7 +45,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _findMatchingProducer.Match(row, response, 1);
 
             // Assert
-            Assert.IsNull(result);
+            result.Should().BeNull();
             _organisationMatcherMock.Verify(m => m.FindMatchingOrganisation(row, response), Times.Once);
             _subsidiaryMatcherMock.Verify(m => m.FindMatchingSubsidiary(It.IsAny<ProducerRow>(), It.IsAny<SubsidiaryOrganisationDetail>()), Times.Never);
             _subsidiaryValidationEvaluatorMock.Verify(m => m.EvaluateSubsidiaryValidation(It.IsAny<ProducerRow>(), It.IsAny<SubsidiaryDetail>(), It.IsAny<int>()), Times.Never);
@@ -70,7 +71,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _findMatchingProducer.Match(row, response, 1);
 
             // Assert
-            Assert.IsNull(result);
+            result.Should().BeNull();
             _organisationMatcherMock.Verify(m => m.FindMatchingOrganisation(row, response), Times.Once);
             _subsidiaryMatcherMock.Verify(m => m.FindMatchingSubsidiary(row, matchingOrg), Times.Once);
             _subsidiaryValidationEvaluatorMock.Verify(m => m.EvaluateSubsidiaryValidation(It.IsAny<ProducerRow>(), It.IsAny<SubsidiaryDetail>(), It.IsAny<int>()), Times.Never);
@@ -118,7 +119,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _findMatchingProducer.Match(row, response, 1);
 
             // Assert
-            Assert.AreEqual(expectedValidationResult, result);
+            result.Should().Be(expectedValidationResult);
             _organisationMatcherMock.Verify(m => m.FindMatchingOrganisation(row, response), Times.Once);
             _subsidiaryMatcherMock.Verify(m => m.FindMatchingSubsidiary(row, matchingOrg), Times.Once);
             _subsidiaryValidationEvaluatorMock.Verify(m => m.EvaluateSubsidiaryValidation(row, matchingSub, 1), Times.Once);
