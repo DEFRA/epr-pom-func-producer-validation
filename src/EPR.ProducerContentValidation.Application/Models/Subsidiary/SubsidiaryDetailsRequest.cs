@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.ProducerContentValidation.Data.Models.Subsidiary
+namespace EPR.ProducerContentValidation.Application.Models.Subsidiary
 {
     [ExcludeFromCodeCoverage]
     public class SubsidiaryDetailsRequest

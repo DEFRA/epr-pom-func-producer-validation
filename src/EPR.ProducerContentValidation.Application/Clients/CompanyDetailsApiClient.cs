@@ -1,4 +1,4 @@
-﻿using EPR.ProducerContentValidation.Data.Models.Subsidiary;
+﻿using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 

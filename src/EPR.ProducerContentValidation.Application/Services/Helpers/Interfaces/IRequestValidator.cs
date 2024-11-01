@@ -1,4 +1,4 @@
-﻿using EPR.ProducerContentValidation.Data.Models.Subsidiary;
+﻿using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 
 namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces
 {

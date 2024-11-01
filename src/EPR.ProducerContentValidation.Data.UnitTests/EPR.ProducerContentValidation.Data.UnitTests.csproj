@@ -15,8 +15,4 @@
     <PackageReference Include="MSTest.TestFramework" Version="3.6.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\EPR.ProducerContentValidation.Data\EPR.ProducerContentValidation.Data.csproj" />
-  </ItemGroup>
-
 </Project>

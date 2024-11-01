@@ -1,4 +1,4 @@
-﻿namespace EPR.ProducerContentValidation.Data.Models.CompanyDetailsApi;
+﻿namespace EPR.ProducerContentValidation.Application.Models.CompanyDetailsApi;
 
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;

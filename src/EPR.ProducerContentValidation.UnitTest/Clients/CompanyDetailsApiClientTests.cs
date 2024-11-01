@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using EPR.ProducerContentValidation.Application.Clients;
-using EPR.ProducerContentValidation.Data.Config;
-using EPR.ProducerContentValidation.Data.Models.Subsidiary;
+using EPR.ProducerContentValidation.Application.Config;
+using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;

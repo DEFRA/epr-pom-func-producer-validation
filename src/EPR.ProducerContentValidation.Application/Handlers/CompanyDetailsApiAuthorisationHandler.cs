@@ -2,7 +2,7 @@
 using System.Net.Http.Headers;
 using Azure.Core;
 using Azure.Identity;
-using EPR.ProducerContentValidation.Data.Config;
+using EPR.ProducerContentValidation.Application.Config;
 using Microsoft.Extensions.Options;
 
 namespace EPR.ProducerContentValidation.Application.Handlers

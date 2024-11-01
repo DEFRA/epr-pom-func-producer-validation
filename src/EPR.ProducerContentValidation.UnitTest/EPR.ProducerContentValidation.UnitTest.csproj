@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EPR.ProducerContentValidation.Application\EPR.ProducerContentValidation.Application.csproj" />
-    <ProjectReference Include="..\EPR.ProducerContentValidation.Data\EPR.ProducerContentValidation.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

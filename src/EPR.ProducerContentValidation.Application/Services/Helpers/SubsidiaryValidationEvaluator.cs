@@ -1,8 +1,8 @@
 ﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
+using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
-using EPR.ProducerContentValidation.Data.Models.Subsidiary;
 using Microsoft.Extensions.Logging;
 
 namespace EPR.ProducerContentValidation.Application.Services.Helpers

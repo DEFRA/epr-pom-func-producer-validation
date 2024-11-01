@@ -1,5 +1,5 @@
-﻿using EPR.ProducerContentValidation.Application.Services.Helpers;
-using EPR.ProducerContentValidation.Data.Models.Subsidiary;
+﻿using EPR.ProducerContentValidation.Application.Models.Subsidiary;
+using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.TestSupport;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
