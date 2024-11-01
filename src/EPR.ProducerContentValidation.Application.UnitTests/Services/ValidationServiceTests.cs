@@ -140,8 +140,8 @@ public class ValidationServiceTests
         var result = await service.ValidateSubsidiaryAsync(rows);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.Count);
+        result.Should().NotBeNull("the result should not be null.")
+              .And.HaveCount(0, "because there are no validation errors expected in this case.");
     }
 
     [TestMethod]
@@ -177,8 +177,8 @@ public class ValidationServiceTests
         var result = await service.ValidateSubsidiaryAsync(rows);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.Count);
+        result.Should().NotBeNull("the result should not be null.")
+              .And.HaveCount(0, "because there are no validation errors expected in this case.");
     }
 
     [TestMethod]
@@ -220,9 +220,9 @@ public class ValidationServiceTests
         var result = await service.ValidateSubsidiaryAsync(rows);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
-        Assert.AreEqual(validationErrors.First(), result.First());
+        result.Should().NotBeNull("the result should not be null.")
+              .And.HaveCount(1, "because there is only one expected validation error.")
+              .And.ContainSingle(error => error.Equals(validationErrors.First()), "the single error returned should match the expected validation error.");
     }
 
     [TestMethod]
@@ -258,8 +258,8 @@ public class ValidationServiceTests
         var result = await service.ValidateSubsidiaryAsync(rows);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.Count);
+        result.Should().NotBeNull("the result should not be null")
+              .And.HaveCount(0, "because we expect no validation errors.");
     }
 
     // End
@@ -278,8 +278,8 @@ public class ValidationServiceTests
         var result = await service.ValidateSubsidiaryAsync(rows);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.Count);
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
     }
 
     [TestMethod]
@@ -299,8 +299,9 @@ public class ValidationServiceTests
         var result = await service.ValidateSubsidiaryAsync(rows);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.Count);
+        result.Should().NotBeNull("the result should not be null.")
+            .And.HaveCount(0, "because we expect zero validation errors.");
+
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Error,
@@ -308,7 +309,8 @@ public class ValidationServiceTests
                 It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Error during subsidiary validation.")),
                 It.Is<Exception>(ex => ex == exception),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-            Times.Once);
+            Times.Once,
+            "the logger should log an error when validation fails.");
     }
 
     [TestMethod]
@@ -326,7 +328,7 @@ public class ValidationServiceTests
         // Assert
         _subsidiaryDetailsRequestBuilderMock.Verify(x => x.CreateRequest(It.IsAny<List<ProducerRow>>()), Times.Never);
         _companyDetailsApiClientMock.Verify(x => x.GetSubsidiaryDetails(It.IsAny<SubsidiaryDetailsRequest>()), Times.Never);
-        Assert.IsNotNull(result);
+        result.Should().NotBeNull("the result should not be null");
     }
 
     [TestMethod]
@@ -345,7 +347,7 @@ public class ValidationServiceTests
         // Assert
         _subsidiaryDetailsRequestBuilderMock.Verify(x => x.CreateRequest(It.IsAny<List<ProducerRow>>()), Times.Once);
         _companyDetailsApiClientMock.Verify(x => x.GetSubsidiaryDetails(It.IsAny<SubsidiaryDetailsRequest>()), Times.Once);
-        Assert.IsNotNull(result);
+        result.Should().NotBeNull("the result should not be null.");
     }
 
     [TestMethod]
@@ -362,8 +364,8 @@ public class ValidationServiceTests
         var result = await service.ValidateAsync(producer);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsTrue(result.ValidationWarnings.Count == 0);
+        result.Should().NotBeNull("the result should not be null.");
+        result.ValidationWarnings.Should().BeEmpty("because there should be no validation warnings.");
     }
 
     [TestMethod]
@@ -381,7 +383,7 @@ public class ValidationServiceTests
         var result = await service.ValidateSubsidiaryAsync(rows);
 
         // Assert
-        Assert.AreEqual(0, result.Count);
+        result.Should().HaveCount(0, "because there are no validation errors expected in this case.");
     }
 
     [TestMethod]
@@ -408,8 +410,10 @@ public class ValidationServiceTests
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.Never);
-        Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.ValidationWarnings.Count);
+
+        // Use FluentAssertions for result validation
+        result.Should().NotBeNull("the result should not be null.");
+        result.ValidationWarnings.Should().BeEmpty("because there should be no validation warnings.");
     }
 
     [TestMethod]
