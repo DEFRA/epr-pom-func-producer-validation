@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using EPR.ProducerContentValidation.Application.Config;
 using EPR.ProducerContentValidation.Application.Handlers;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
@@ -55,6 +56,7 @@ public static class ConfigureServices
         services.ConfigureSection<StorageAccountOptions>(StorageAccountOptions.Section);
         services.ConfigureSection<RedisOptions>(RedisOptions.Section);
         services.ConfigureSection<List<SubmissionPeriodOption>>(SubmissionPeriodOption.Section);
+        services.ConfigureSection<CompanyDetailsApiConfig>(CompanyDetailsApiConfig.Section);
         return services;
     }
 
