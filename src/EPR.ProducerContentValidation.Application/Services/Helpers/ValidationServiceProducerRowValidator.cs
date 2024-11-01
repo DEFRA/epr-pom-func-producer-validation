@@ -19,7 +19,7 @@ namespace EPR.ProducerContentValidation.Application.Services.Helpers
         {
             var validationErrors = new List<ProducerValidationEventIssueRequest>();
 
-            for (int i = 0; i < rows.Count; i++)
+            for (var i = 0; i < rows.Count; i++)
             {
                 var error = _findMatchingProducer.Match(rows[i], response, i);
                 if (error != null)
