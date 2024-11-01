@@ -39,17 +39,17 @@ namespace EPR.ProducerContentValidation.UnitTest.Clients
             };
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             handlerMock
-            .Protected()
-            .Setup<Task<HttpResponseMessage>>(
-            "SendAsync",
-            ItExpr.IsAny<HttpRequestMessage>(),
-            ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(content),
-            })
-            .Verifiable();
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(content),
+                })
+                .Verifiable();
             var httpClient = new HttpClient(handlerMock.Object)
             {
                 BaseAddress = new Uri(_config.BaseUrl),
