@@ -1,6 +1,7 @@
 ﻿using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Data.Models.Subsidiary;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
@@ -50,8 +51,8 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _organisationMatcher.FindMatchingOrganisation(row, response);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual("Org456", result.OrganisationReference);
+            result.Should().NotBeNull();
+            result!.OrganisationReference.Should().Be("Org456");
         }
 
         [TestMethod]
@@ -89,7 +90,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _organisationMatcher.FindMatchingOrganisation(row, response);
 
             // Assert
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
 
         [TestMethod]
@@ -122,7 +123,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _organisationMatcher.FindMatchingOrganisation(row, response);
 
             // Assert
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
     }
 }
