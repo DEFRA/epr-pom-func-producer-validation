@@ -5,6 +5,7 @@ using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 using EPR.ProducerContentValidation.Data.Models.Subsidiary;
 using EPR.ProducerContentValidation.TestSupport;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -71,8 +72,8 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(expectedRequest, result);
+            result.Should().NotBeNull("because a request should be returned if the subsidiary does not exist.")
+                .And.BeEquivalentTo(expectedRequest, "because the returned request should match the expected formatted request.");
 
             _mockFormatter.Verify(f => f.Format(row, ErrorCode.SubsidiaryIdDoesNotExist), Times.Once);
         }
@@ -122,8 +123,8 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(expectedRequest, result);
+            result.Should().NotBeNull("because a request should be returned if the subsidiary belongs to a different organisation.")
+                .And.BeEquivalentTo(expectedRequest, "because the returned request should match the expected formatted request.");
 
             _mockFormatter.Verify(f => f.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation), Times.Once);
         }
@@ -155,7 +156,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber);
 
             // Assert
-            Assert.IsNull(result);
+            result.Should().BeNull("because the subsidiary is valid and should not generate any validation issue.");
 
             _mockFormatter.Verify(f => f.Format(It.IsAny<ProducerRow>(), It.IsAny<string>()), Times.Never);
         }
