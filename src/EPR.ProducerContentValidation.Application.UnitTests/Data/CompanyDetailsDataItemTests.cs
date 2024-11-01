@@ -3,7 +3,7 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace EPR.ProducerContentValidation.Data.UnitTests
+namespace EPR.ProducerContentValidation.Application.UnitTests
 {
     [TestClass]
     public class CompanyDetailsDataItemTests

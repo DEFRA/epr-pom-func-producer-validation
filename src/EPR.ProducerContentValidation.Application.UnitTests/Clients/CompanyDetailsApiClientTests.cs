@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using EPR.ProducerContentValidation.Application.Clients;
+using EPR.ProducerContentValidation.Application.Config;
 using EPR.ProducerContentValidation.Application.Models.Subsidiary;
-using EPR.ProducerContentValidation.Data.Config;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
