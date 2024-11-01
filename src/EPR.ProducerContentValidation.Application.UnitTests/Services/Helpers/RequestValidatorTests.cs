@@ -1,5 +1,6 @@
 ﻿using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Data.Models.Subsidiary;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
@@ -22,7 +23,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _validator.IsInvalidRequest(null);
 
             // Assert
-            Assert.IsTrue(result, "Expected IsInvalidRequest to return true for null request.");
+            result.Should().BeTrue("because the request is null and should be considered invalid.");
         }
 
         [TestMethod]
@@ -38,7 +39,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _validator.IsInvalidRequest(request);
 
             // Assert
-            Assert.IsTrue(result, "Expected IsInvalidRequest to return true when SubsidiaryOrganisationDetails is null.");
+            result.Should().BeTrue("because SubsidiaryOrganisationDetails is null and the request should be invalid.");
         }
 
         [TestMethod]
@@ -54,7 +55,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _validator.IsInvalidRequest(request);
 
             // Assert
-            Assert.IsTrue(result, "Expected IsInvalidRequest to return true when SubsidiaryOrganisationDetails is empty.");
+            result.Should().BeTrue("because SubsidiaryOrganisationDetails is empty and should be considered invalid.");
         }
 
         [TestMethod]
@@ -64,16 +65,16 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var request = new SubsidiaryDetailsRequest
             {
                 SubsidiaryOrganisationDetails = new List<SubsidiaryOrganisationDetail>
-            {
-                new SubsidiaryOrganisationDetail { OrganisationReference = "Org1" }
-            }
+                {
+                    new SubsidiaryOrganisationDetail { OrganisationReference = "Org1" }
+                }
             };
 
             // Act
             var result = _validator.IsInvalidRequest(request);
 
             // Assert
-            Assert.IsFalse(result, "Expected IsInvalidRequest to return false when SubsidiaryOrganisationDetails is not empty.");
+            result.Should().BeFalse("because SubsidiaryOrganisationDetails contains entries and should be considered valid.");
         }
     }
 }
