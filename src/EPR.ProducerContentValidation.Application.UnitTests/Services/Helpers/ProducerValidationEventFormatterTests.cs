@@ -1,6 +1,7 @@
 ﻿using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
@@ -42,22 +43,22 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _formatter.Format(row, errorCode);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual("Sub123", result.SubsidiaryId);
-            Assert.AreEqual("2023-Q1", result.DataSubmissionPeriod);
-            Assert.AreEqual(1, result.RowNumber);
-            Assert.AreEqual("Org456", result.ProducerId);
-            Assert.AreEqual("TypeA", result.ProducerType);
-            Assert.AreEqual("Large", result.ProducerSize);
-            Assert.AreEqual("Plastic", result.WasteType);
-            Assert.AreEqual("CategoryA", result.PackagingCategory);
-            Assert.AreEqual("MaterialX", result.MaterialType);
-            Assert.AreEqual("SubMaterialX", result.MaterialSubType);
-            Assert.AreEqual("UK", result.FromHomeNation);
-            Assert.AreEqual("Germany", result.ToHomeNation);
-            Assert.AreEqual("100", result.QuantityKg);
-            Assert.AreEqual("200", result.QuantityUnits);
-            CollectionAssert.Contains(result.ErrorCodes, errorCode);
+            result.Should().NotBeNull();
+            result.SubsidiaryId.Should().Be("Sub123");
+            result.DataSubmissionPeriod.Should().Be("2023-Q1");
+            result.RowNumber.Should().Be(1);
+            result.ProducerId.Should().Be("Org456");
+            result.ProducerType.Should().Be("TypeA");
+            result.ProducerSize.Should().Be("Large");
+            result.WasteType.Should().Be("Plastic");
+            result.PackagingCategory.Should().Be("CategoryA");
+            result.MaterialType.Should().Be("MaterialX");
+            result.MaterialSubType.Should().Be("SubMaterialX");
+            result.FromHomeNation.Should().Be("UK");
+            result.ToHomeNation.Should().Be("Germany");
+            result.QuantityKg.Should().Be("100");
+            result.QuantityUnits.Should().Be("200");
+            result.ErrorCodes.Should().Contain(errorCode);
         }
 
         [TestMethod]
@@ -87,22 +88,22 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _formatter.Format(row, errorCode);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(string.Empty, result.SubsidiaryId);
-            Assert.AreEqual(string.Empty, result.DataSubmissionPeriod);
-            Assert.AreEqual(1, result.RowNumber);
-            Assert.AreEqual(string.Empty, result.ProducerId);
-            Assert.AreEqual(string.Empty, result.ProducerType);
-            Assert.AreEqual(string.Empty, result.ProducerSize);
-            Assert.AreEqual(string.Empty, result.WasteType);
-            Assert.AreEqual(string.Empty, result.PackagingCategory);
-            Assert.AreEqual(string.Empty, result.MaterialType);
-            Assert.AreEqual(string.Empty, result.MaterialSubType);
-            Assert.AreEqual(string.Empty, result.FromHomeNation);
-            Assert.AreEqual(string.Empty, result.ToHomeNation);
-            Assert.AreEqual(string.Empty, result.QuantityKg);
-            Assert.AreEqual(string.Empty, result.QuantityUnits);
-            CollectionAssert.Contains(result.ErrorCodes, errorCode);
+            result.Should().NotBeNull();
+            result.SubsidiaryId.Should().BeEmpty();
+            result.DataSubmissionPeriod.Should().BeEmpty();
+            result.RowNumber.Should().Be(1);
+            result.ProducerId.Should().BeEmpty();
+            result.ProducerType.Should().BeEmpty();
+            result.ProducerSize.Should().BeEmpty();
+            result.WasteType.Should().BeEmpty();
+            result.PackagingCategory.Should().BeEmpty();
+            result.MaterialType.Should().BeEmpty();
+            result.MaterialSubType.Should().BeEmpty();
+            result.FromHomeNation.Should().BeEmpty();
+            result.ToHomeNation.Should().BeEmpty();
+            result.QuantityKg.Should().BeEmpty();
+            result.QuantityUnits.Should().BeEmpty();
+            result.ErrorCodes.Should().Contain(errorCode);
         }
 
         [TestMethod]
@@ -132,8 +133,8 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _formatter.Format(row, errorCode);
 
             // Assert
-            Assert.AreEqual(1, result.ErrorCodes.Count, "Expected exactly one error code in the list.");
-            Assert.AreEqual("SingleError", result.ErrorCodes[0]);
+            result.ErrorCodes.Should().HaveCount(1, "Expected exactly one error code in the list.")
+                              .And.ContainSingle(e => e == "SingleError");
         }
     }
 }
