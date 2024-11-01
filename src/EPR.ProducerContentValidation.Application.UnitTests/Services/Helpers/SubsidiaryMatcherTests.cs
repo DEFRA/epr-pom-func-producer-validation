@@ -1,6 +1,7 @@
 ﻿using EPR.ProducerContentValidation.Application.Services.Helpers;
 using EPR.ProducerContentValidation.Data.Models.Subsidiary;
 using EPR.ProducerContentValidation.TestSupport;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
@@ -54,8 +55,8 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _matcher.FindMatchingSubsidiary(row, org);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual("123", result?.ReferenceNumber);
+            result.Should().NotBeNull("because there is a matching subsidiary with the reference number '123'");
+            result?.ReferenceNumber.Should().Be("123", "because the reference number should match the subsidiary ID in the row.");
         }
 
         [TestMethod]
@@ -96,7 +97,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _matcher.FindMatchingSubsidiary(row, org);
 
             // Assert
-            Assert.IsNull(result);
+            result.Should().BeNull("because there is no matching subsidiary with the reference number '789'.");
         }
 
         [TestMethod]
@@ -131,14 +132,15 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _matcher.FindMatchingSubsidiary(row, org);
 
             // Assert
-            Assert.IsNull(result);
+            result.Should().BeNull("because SubsidiaryDetails is empty and should not contain a matching subsidiary.");
         }
 
         [TestMethod]
         public void FindMatchingSubsidiary_ShouldReturnNull_WhenSubsidiaryIdIsNull()
         {
             // Arrange
-            var row = ModelGenerator.CreateProducerRow(1) with {
+            var row = ModelGenerator.CreateProducerRow(1) with
+            {
                 SubsidiaryId = null,
                 DataSubmissionPeriod = "2024Q1",
                 ProducerId = "456",
@@ -171,7 +173,7 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
             var result = _matcher.FindMatchingSubsidiary(row, org);
 
             // Assert
-            Assert.IsNull(result);
+            result.Should().BeNull("because the row's SubsidiaryId is null and cannot match any reference number.");
         }
     }
 }
