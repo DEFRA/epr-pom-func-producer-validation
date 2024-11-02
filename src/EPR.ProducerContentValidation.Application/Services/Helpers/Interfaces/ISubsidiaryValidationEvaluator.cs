@@ -2,10 +2,9 @@
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 
-namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces
+namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
+
+public interface ISubsidiaryValidationEvaluator
 {
-    public interface ISubsidiaryValidationEvaluator
-    {
-        ProducerValidationEventIssueRequest? EvaluateSubsidiaryValidation(ProducerRow row, SubsidiaryDetail subsidiary, int rowIndex);
-    }
+    ProducerValidationEventIssueRequest? EvaluateSubsidiaryValidation(ProducerRow row, SubsidiaryDetail subsidiary, int rowIndex);
 }

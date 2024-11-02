@@ -4,176 +4,175 @@ using EPR.ProducerContentValidation.TestSupport;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers
+namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers;
+
+[TestClass]
+public class SubsidiaryMatcherTests
 {
-    [TestClass]
-    public class SubsidiaryMatcherTests
+    private SubsidiaryMatcher _matcher;
+
+    [TestInitialize]
+    public void SetUp()
     {
-        private SubsidiaryMatcher _matcher;
+        _matcher = new SubsidiaryMatcher();
+    }
 
-        [TestInitialize]
-        public void SetUp()
+    [TestMethod]
+    public void FindMatchingSubsidiary_ShouldReturnMatchingSubsidiary_WhenReferenceNumberMatches()
+    {
+        // Arrange
+        var row = ModelGenerator.CreateProducerRow(1) with
         {
-            _matcher = new SubsidiaryMatcher();
-        }
+            SubsidiaryId = "123",
+            DataSubmissionPeriod = "2024Q1",
+            ProducerId = "456",
+            RowNumber = 1,
+            ProducerType = "Large",
+            ProducerSize = "1000",
+            WasteType = "Plastic",
+            PackagingCategory = "CategoryA",
+            MaterialType = "TypeA",
+            MaterialSubType = "SubTypeA",
+            FromHomeNation = "NationA",
+            ToHomeNation = "NationB",
+            QuantityKg = "500",
+            QuantityUnits = "10"
+        };
 
-        [TestMethod]
-        public void FindMatchingSubsidiary_ShouldReturnMatchingSubsidiary_WhenReferenceNumberMatches()
+        var subsidiaryDetails = new List<SubsidiaryDetail>
         {
-            // Arrange
-            var row = ModelGenerator.CreateProducerRow(1) with
-            {
-                SubsidiaryId = "123",
-                DataSubmissionPeriod = "2024Q1",
-                ProducerId = "456",
-                RowNumber = 1,
-                ProducerType = "Large",
-                ProducerSize = "1000",
-                WasteType = "Plastic",
-                PackagingCategory = "CategoryA",
-                MaterialType = "TypeA",
-                MaterialSubType = "SubTypeA",
-                FromHomeNation = "NationA",
-                ToHomeNation = "NationB",
-                QuantityKg = "500",
-                QuantityUnits = "10"
-            };
+            new SubsidiaryDetail { ReferenceNumber = "123", SubsidiaryExists = true },
+            new SubsidiaryDetail { ReferenceNumber = "456", SubsidiaryExists = true }
+        };
 
-            var subsidiaryDetails = new List<SubsidiaryDetail>
-            {
-                new SubsidiaryDetail { ReferenceNumber = "123", SubsidiaryExists = true },
-                new SubsidiaryDetail { ReferenceNumber = "456", SubsidiaryExists = true }
-            };
-
-            var org = new SubsidiaryOrganisationDetail
-            {
-                OrganisationReference = "456",
-                SubsidiaryDetails = subsidiaryDetails
-            };
-
-            // Act
-            var result = _matcher.FindMatchingSubsidiary(row, org);
-
-            // Assert
-            result.Should().NotBeNull("because there is a matching subsidiary with the reference number '123'");
-            result?.ReferenceNumber.Should().Be("123", "because the reference number should match the subsidiary ID in the row.");
-        }
-
-        [TestMethod]
-        public void FindMatchingSubsidiary_ShouldReturnNull_WhenNoMatchingReferenceNumber()
+        var org = new SubsidiaryOrganisationDetail
         {
-            // Arrange
-            var row = ModelGenerator.CreateProducerRow(1) with
-            {
-                SubsidiaryId = "789",
-                DataSubmissionPeriod = "2024Q1",
-                ProducerId = "456",
-                RowNumber = 1,
-                ProducerType = "Large",
-                ProducerSize = "1000",
-                WasteType = "Plastic",
-                PackagingCategory = "CategoryA",
-                MaterialType = "TypeA",
-                MaterialSubType = "SubTypeA",
-                FromHomeNation = "NationA",
-                ToHomeNation = "NationB",
-                QuantityKg = "500",
-                QuantityUnits = "10"
-            };
+            OrganisationReference = "456",
+            SubsidiaryDetails = subsidiaryDetails
+        };
 
-            var subsidiaryDetails = new List<SubsidiaryDetail>
-            {
-                new SubsidiaryDetail { ReferenceNumber = "123", SubsidiaryExists = true },
-                new SubsidiaryDetail { ReferenceNumber = "456", SubsidiaryExists = true }
-            };
+        // Act
+        var result = _matcher.FindMatchingSubsidiary(row, org);
 
-            var org = new SubsidiaryOrganisationDetail
-            {
-                OrganisationReference = "456",
-                SubsidiaryDetails = subsidiaryDetails
-            };
+        // Assert
+        result.Should().NotBeNull("because there is a matching subsidiary with the reference number '123'");
+        result?.ReferenceNumber.Should().Be("123", "because the reference number should match the subsidiary ID in the row.");
+    }
 
-            // Act
-            var result = _matcher.FindMatchingSubsidiary(row, org);
-
-            // Assert
-            result.Should().BeNull("because there is no matching subsidiary with the reference number '789'.");
-        }
-
-        [TestMethod]
-        public void FindMatchingSubsidiary_ShouldReturnNull_WhenSubsidiaryDetailsIsEmpty()
+    [TestMethod]
+    public void FindMatchingSubsidiary_ShouldReturnNull_WhenNoMatchingReferenceNumber()
+    {
+        // Arrange
+        var row = ModelGenerator.CreateProducerRow(1) with
         {
-            // Arrange
-            var row = ModelGenerator.CreateProducerRow(1) with
-            {
-                SubsidiaryId = "123",
-                DataSubmissionPeriod = "2024Q1",
-                ProducerId = "456",
-                RowNumber = 1,
-                ProducerType = "Large",
-                ProducerSize = "1000",
-                WasteType = "Plastic",
-                PackagingCategory = "CategoryA",
-                MaterialType = "TypeA",
-                MaterialSubType = "SubTypeA",
-                FromHomeNation = "NationA",
-                ToHomeNation = "NationB",
-                QuantityKg = "500",
-                QuantityUnits = "10"
-            };
+            SubsidiaryId = "789",
+            DataSubmissionPeriod = "2024Q1",
+            ProducerId = "456",
+            RowNumber = 1,
+            ProducerType = "Large",
+            ProducerSize = "1000",
+            WasteType = "Plastic",
+            PackagingCategory = "CategoryA",
+            MaterialType = "TypeA",
+            MaterialSubType = "SubTypeA",
+            FromHomeNation = "NationA",
+            ToHomeNation = "NationB",
+            QuantityKg = "500",
+            QuantityUnits = "10"
+        };
 
-            var org = new SubsidiaryOrganisationDetail
-            {
-                OrganisationReference = "456",
-                SubsidiaryDetails = new List<SubsidiaryDetail>()
-            };
-
-            // Act
-            var result = _matcher.FindMatchingSubsidiary(row, org);
-
-            // Assert
-            result.Should().BeNull("because SubsidiaryDetails is empty and should not contain a matching subsidiary.");
-        }
-
-        [TestMethod]
-        public void FindMatchingSubsidiary_ShouldReturnNull_WhenSubsidiaryIdIsNull()
+        var subsidiaryDetails = new List<SubsidiaryDetail>
         {
-            // Arrange
-            var row = ModelGenerator.CreateProducerRow(1) with
-            {
-                SubsidiaryId = null,
-                DataSubmissionPeriod = "2024Q1",
-                ProducerId = "456",
-                RowNumber = 1,
-                ProducerType = "Large",
-                ProducerSize = "1000",
-                WasteType = "Plastic",
-                PackagingCategory = "CategoryA",
-                MaterialType = "TypeA",
-                MaterialSubType = "SubTypeA",
-                FromHomeNation = "NationA",
-                ToHomeNation = "NationB",
-                QuantityKg = "500",
-                QuantityUnits = "10"
-            };
+            new SubsidiaryDetail { ReferenceNumber = "123", SubsidiaryExists = true },
+            new SubsidiaryDetail { ReferenceNumber = "456", SubsidiaryExists = true }
+        };
 
-            var subsidiaryDetails = new List<SubsidiaryDetail>
-            {
-                new SubsidiaryDetail { ReferenceNumber = "123", SubsidiaryExists = true },
-                new SubsidiaryDetail { ReferenceNumber = "456", SubsidiaryExists = true }
-            };
+        var org = new SubsidiaryOrganisationDetail
+        {
+            OrganisationReference = "456",
+            SubsidiaryDetails = subsidiaryDetails
+        };
 
-            var org = new SubsidiaryOrganisationDetail
-            {
-                OrganisationReference = "456",
-                SubsidiaryDetails = subsidiaryDetails
-            };
+        // Act
+        var result = _matcher.FindMatchingSubsidiary(row, org);
 
-            // Act
-            var result = _matcher.FindMatchingSubsidiary(row, org);
+        // Assert
+        result.Should().BeNull("because there is no matching subsidiary with the reference number '789'.");
+    }
 
-            // Assert
-            result.Should().BeNull("because the row's SubsidiaryId is null and cannot match any reference number.");
-        }
+    [TestMethod]
+    public void FindMatchingSubsidiary_ShouldReturnNull_WhenSubsidiaryDetailsIsEmpty()
+    {
+        // Arrange
+        var row = ModelGenerator.CreateProducerRow(1) with
+        {
+            SubsidiaryId = "123",
+            DataSubmissionPeriod = "2024Q1",
+            ProducerId = "456",
+            RowNumber = 1,
+            ProducerType = "Large",
+            ProducerSize = "1000",
+            WasteType = "Plastic",
+            PackagingCategory = "CategoryA",
+            MaterialType = "TypeA",
+            MaterialSubType = "SubTypeA",
+            FromHomeNation = "NationA",
+            ToHomeNation = "NationB",
+            QuantityKg = "500",
+            QuantityUnits = "10"
+        };
+
+        var org = new SubsidiaryOrganisationDetail
+        {
+            OrganisationReference = "456",
+            SubsidiaryDetails = new List<SubsidiaryDetail>()
+        };
+
+        // Act
+        var result = _matcher.FindMatchingSubsidiary(row, org);
+
+        // Assert
+        result.Should().BeNull("because SubsidiaryDetails is empty and should not contain a matching subsidiary.");
+    }
+
+    [TestMethod]
+    public void FindMatchingSubsidiary_ShouldReturnNull_WhenSubsidiaryIdIsNull()
+    {
+        // Arrange
+        var row = ModelGenerator.CreateProducerRow(1) with
+        {
+            SubsidiaryId = null,
+            DataSubmissionPeriod = "2024Q1",
+            ProducerId = "456",
+            RowNumber = 1,
+            ProducerType = "Large",
+            ProducerSize = "1000",
+            WasteType = "Plastic",
+            PackagingCategory = "CategoryA",
+            MaterialType = "TypeA",
+            MaterialSubType = "SubTypeA",
+            FromHomeNation = "NationA",
+            ToHomeNation = "NationB",
+            QuantityKg = "500",
+            QuantityUnits = "10"
+        };
+
+        var subsidiaryDetails = new List<SubsidiaryDetail>
+        {
+            new SubsidiaryDetail { ReferenceNumber = "123", SubsidiaryExists = true },
+            new SubsidiaryDetail { ReferenceNumber = "456", SubsidiaryExists = true }
+        };
+
+        var org = new SubsidiaryOrganisationDetail
+        {
+            OrganisationReference = "456",
+            SubsidiaryDetails = subsidiaryDetails
+        };
+
+        // Act
+        var result = _matcher.FindMatchingSubsidiary(row, org);
+
+        // Assert
+        result.Should().BeNull("because the row's SubsidiaryId is null and cannot match any reference number.");
     }
 }

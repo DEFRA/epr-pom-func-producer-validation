@@ -1,14 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.ProducerContentValidation.Application.Models.Subsidiary
+namespace EPR.ProducerContentValidation.Application.Models.Subsidiary;
+
+[ExcludeFromCodeCoverage]
+public class SubsidiaryDetail
 {
-    [ExcludeFromCodeCoverage]
-    public class SubsidiaryDetail
-    {
-        public string ReferenceNumber { get; set; }
+    public string ReferenceNumber { get; set; }
 
-        public bool SubsidiaryExists { get; set; }
+    public bool SubsidiaryExists { get; set; }
 
-        public bool SubsidiaryBelongsToAnyOtherOrganisation { get; set; }
-    }
+    public bool SubsidiaryBelongsToAnyOtherOrganisation { get; set; }
 }

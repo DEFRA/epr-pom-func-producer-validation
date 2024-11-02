@@ -1,23 +1,22 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace EPR.ProducerContentValidation.Application.Exceptions
+namespace EPR.ProducerContentValidation.Application.Exceptions;
+
+[ExcludeFromCodeCoverage]
+[Serializable]
+public class CompanyDetailsApiClientException : Exception
 {
-    [ExcludeFromCodeCoverage]
-    [Serializable]
-    public class CompanyDetailsApiClientException : Exception
+    public CompanyDetailsApiClientException()
     {
-        public CompanyDetailsApiClientException()
-        {
-        }
+    }
 
-        public CompanyDetailsApiClientException(string message)
-            : base(message)
-        {
-        }
+    public CompanyDetailsApiClientException(string message)
+        : base(message)
+    {
+    }
 
-        public CompanyDetailsApiClientException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+    public CompanyDetailsApiClientException(string message, Exception inner)
+        : base(message, inner)
+    {
     }
 }

@@ -2,14 +2,13 @@
 using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 
-namespace EPR.ProducerContentValidation.Application.Services.Helpers
+namespace EPR.ProducerContentValidation.Application.Services.Helpers;
+
+public class OrganisationMatcher : IOrganisationMatcher
 {
-    public class OrganisationMatcher : IOrganisationMatcher
+    public SubsidiaryOrganisationDetail? FindMatchingOrganisation(ProducerRow row, SubsidiaryDetailsResponse response)
     {
-        public SubsidiaryOrganisationDetail? FindMatchingOrganisation(ProducerRow row, SubsidiaryDetailsResponse response)
-        {
-            return response.SubsidiaryOrganisationDetails
-                           .FirstOrDefault(org => org.OrganisationReference == row.ProducerId);
-        }
+        return response.SubsidiaryOrganisationDetails
+                       .FirstOrDefault(org => org.OrganisationReference == row.ProducerId);
     }
 }

@@ -2,11 +2,10 @@
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 
-namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces
+namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
+
+public interface IValidationServiceProducerRowValidator
 {
-    public interface IValidationServiceProducerRowValidator
-    {
-        IEnumerable<ProducerValidationEventIssueRequest> ProcessRowsForValidationErrors(
-            List<ProducerRow> rows, SubsidiaryDetailsResponse response);
-    }
+    IEnumerable<ProducerValidationEventIssueRequest> ProcessRowsForValidationErrors(
+        List<ProducerRow> rows, SubsidiaryDetailsResponse response);
 }

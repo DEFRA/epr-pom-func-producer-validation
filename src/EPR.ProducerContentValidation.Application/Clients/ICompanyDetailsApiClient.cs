@@ -1,9 +1,8 @@
 ﻿using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 
-namespace EPR.ProducerContentValidation.Application.Clients
+namespace EPR.ProducerContentValidation.Application.Clients;
+
+public interface ICompanyDetailsApiClient
 {
-    public interface ICompanyDetailsApiClient
-    {
-        Task<SubsidiaryDetailsResponse> GetSubsidiaryDetails(SubsidiaryDetailsRequest subsidiaryDetailsRequest);
-    }
+    Task<SubsidiaryDetailsResponse> GetSubsidiaryDetails(SubsidiaryDetailsRequest subsidiaryDetailsRequest);
 }

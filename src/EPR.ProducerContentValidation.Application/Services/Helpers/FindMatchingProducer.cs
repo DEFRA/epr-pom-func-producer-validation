@@ -3,37 +3,36 @@ using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 
-namespace EPR.ProducerContentValidation.Application.Services.Helpers
+namespace EPR.ProducerContentValidation.Application.Services.Helpers;
+
+public class FindMatchingProducer : IFindMatchingProducer
 {
-    public class FindMatchingProducer : IFindMatchingProducer
+    private readonly IOrganisationMatcher _organisationMatcher;
+    private readonly ISubsidiaryMatcher _subsidiaryMatcher;
+    private readonly ISubsidiaryValidationEvaluator _subsidiaryValidationEvaluator;
+
+    public FindMatchingProducer(IOrganisationMatcher organisationMatcher, ISubsidiaryMatcher subsidiaryMatcher, ISubsidiaryValidationEvaluator subsidiaryValidationEvaluator)
     {
-        private readonly IOrganisationMatcher _organisationMatcher;
-        private readonly ISubsidiaryMatcher _subsidiaryMatcher;
-        private readonly ISubsidiaryValidationEvaluator _subsidiaryValidationEvaluator;
+        _organisationMatcher = organisationMatcher;
+        _subsidiaryMatcher = subsidiaryMatcher;
+        _subsidiaryValidationEvaluator = subsidiaryValidationEvaluator;
+    }
 
-        public FindMatchingProducer(IOrganisationMatcher organisationMatcher, ISubsidiaryMatcher subsidiaryMatcher, ISubsidiaryValidationEvaluator subsidiaryValidationEvaluator)
+    public ProducerValidationEventIssueRequest? Match(
+        ProducerRow row, SubsidiaryDetailsResponse response, int rowIndex)
+    {
+        var matchingOrg = _organisationMatcher.FindMatchingOrganisation(row, response);
+        if (matchingOrg == null)
         {
-            _organisationMatcher = organisationMatcher;
-            _subsidiaryMatcher = subsidiaryMatcher;
-            _subsidiaryValidationEvaluator = subsidiaryValidationEvaluator;
+            return null;
         }
 
-        public ProducerValidationEventIssueRequest? Match(
-            ProducerRow row, SubsidiaryDetailsResponse response, int rowIndex)
+        var matchingSub = _subsidiaryMatcher.FindMatchingSubsidiary(row, matchingOrg);
+        if (matchingSub == null)
         {
-            var matchingOrg = _organisationMatcher.FindMatchingOrganisation(row, response);
-            if (matchingOrg == null)
-            {
-                return null;
-            }
-
-            var matchingSub = _subsidiaryMatcher.FindMatchingSubsidiary(row, matchingOrg);
-            if (matchingSub == null)
-            {
-                return null;
-            }
-
-            return _subsidiaryValidationEvaluator.EvaluateSubsidiaryValidation(row, matchingSub, rowIndex);
+            return null;
         }
+
+        return _subsidiaryValidationEvaluator.EvaluateSubsidiaryValidation(row, matchingSub, rowIndex);
     }
 }

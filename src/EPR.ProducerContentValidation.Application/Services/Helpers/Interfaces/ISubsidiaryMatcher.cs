@@ -1,10 +1,9 @@
 ﻿using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 
-namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces
+namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
+
+public interface ISubsidiaryMatcher
 {
-    public interface ISubsidiaryMatcher
-    {
-        SubsidiaryDetail? FindMatchingSubsidiary(ProducerRow row, SubsidiaryOrganisationDetail org);
-    }
+    SubsidiaryDetail? FindMatchingSubsidiary(ProducerRow row, SubsidiaryOrganisationDetail org);
 }
