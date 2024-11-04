@@ -86,7 +86,7 @@ public class ValidationService : IValidationService
 
         if (await _featureManager.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom))
         {
-            subValidationResult = await ValidateSubsidiaryAsync(producer.Rows);
+            subValidationResult = await ValidateSubsidiaryAsync(producer.Rows, producer.BlobName);
         }
 
         if (subValidationResult.Count > 0)
@@ -104,7 +104,7 @@ public class ValidationService : IValidationService
         return producerValidationOutRequest;
     }
 
-    public async Task<List<ProducerValidationEventIssueRequest>> ValidateSubsidiaryAsync(List<ProducerRow> rows)
+    public async Task<List<ProducerValidationEventIssueRequest>> ValidateSubsidiaryAsync(List<ProducerRow> rows, string blobName)
     {
         var validationErrors = new List<ProducerValidationEventIssueRequest>();
 
@@ -117,7 +117,7 @@ public class ValidationService : IValidationService
             }
 
             var subsidiaryDetailsResponse = await FetchSubsidiaryDetailsAsync(subsidiaryDetailsRequest);
-            validationErrors.AddRange(_validationServiceProducerRowValidator.ProcessRowsForValidationErrors(rows, subsidiaryDetailsResponse));
+            validationErrors.AddRange(_validationServiceProducerRowValidator.ProcessRowsForValidationErrors(rows, subsidiaryDetailsResponse, blobName));
 
             return validationErrors;
         }

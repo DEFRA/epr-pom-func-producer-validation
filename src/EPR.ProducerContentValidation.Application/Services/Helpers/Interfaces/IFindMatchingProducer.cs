@@ -6,5 +6,5 @@ namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 
 public interface IFindMatchingProducer
 {
-    ProducerValidationEventIssueRequest? Match(ProducerRow row, SubsidiaryDetailsResponse response, int rowIndex);
+    ProducerValidationEventIssueRequest? Match(ProducerRow row, SubsidiaryDetailsResponse response, int rowIndex, string blobName);
 }

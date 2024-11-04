@@ -135,9 +135,10 @@ public class ValidationServiceTests
             .ReturnsAsync(subsidiaryDetailsResponse);
 
         var service = CreateSystemUnderTest();
+        string blobName = string.Empty;
 
         // Act
-        var result = await service.ValidateSubsidiaryAsync(rows);
+        var result = await service.ValidateSubsidiaryAsync(rows, blobName);
 
         // Assert
         result.Should().NotBeNull("the result should not be null.")
@@ -172,9 +173,10 @@ public class ValidationServiceTests
         _subsidiaryDetailsRequestBuilderMock.Setup(x => x.CreateRequest(rows)).Returns(subsidiaryDetailsRequest);
         _requestValidatorMock.Setup(x => x.IsInvalidRequest(subsidiaryDetailsRequest)).Returns(true);
         var service = CreateSystemUnderTest();
+        string blobName = string.Empty;
 
         // Act
-        var result = await service.ValidateSubsidiaryAsync(rows);
+        var result = await service.ValidateSubsidiaryAsync(rows, blobName);
 
         // Assert
         result.Should().NotBeNull("the result should not be null.")
@@ -213,11 +215,12 @@ public class ValidationServiceTests
         _subsidiaryDetailsRequestBuilderMock.Setup(x => x.CreateRequest(rows)).Returns(subsidiaryDetailsRequest);
         _requestValidatorMock.Setup(x => x.IsInvalidRequest(subsidiaryDetailsRequest)).Returns(false);
         _companyDetailsApiClientMock.Setup(x => x.GetSubsidiaryDetails(subsidiaryDetailsRequest)).ReturnsAsync(subsidiaryDetailsResponse);
-        _validationServiceProducerRowValidatorMock.Setup(x => x.ProcessRowsForValidationErrors(rows, subsidiaryDetailsResponse)).Returns(validationErrors);
+        _validationServiceProducerRowValidatorMock.Setup(x => x.ProcessRowsForValidationErrors(rows, subsidiaryDetailsResponse, It.IsAny<string>())).Returns(validationErrors);
         var service = CreateSystemUnderTest();
+        string blobName = string.Empty;
 
         // Act
-        var result = await service.ValidateSubsidiaryAsync(rows);
+        var result = await service.ValidateSubsidiaryAsync(rows, blobName);
 
         // Assert
         result.Should().NotBeNull("the result should not be null.")
@@ -253,9 +256,10 @@ public class ValidationServiceTests
         _requestValidatorMock.Setup(x => x.IsInvalidRequest(subsidiaryDetailsRequest)).Returns(false);
         _companyDetailsApiClientMock.Setup(x => x.GetSubsidiaryDetails(subsidiaryDetailsRequest)).ThrowsAsync(new HttpRequestException());
         var service = CreateSystemUnderTest();
+        string blobName = string.Empty;
 
         // Act
-        var result = await service.ValidateSubsidiaryAsync(rows);
+        var result = await service.ValidateSubsidiaryAsync(rows, blobName);
 
         // Assert
         result.Should().NotBeNull("the result should not be null")
@@ -273,9 +277,10 @@ public class ValidationServiceTests
             .Returns((SubsidiaryDetailsRequest)null);
 
         var service = CreateSystemUnderTest();
+        string blobName = string.Empty;
 
         // Act
-        var result = await service.ValidateSubsidiaryAsync(rows);
+        var result = await service.ValidateSubsidiaryAsync(rows, blobName);
 
         // Assert
         result.Should().NotBeNull();
@@ -294,9 +299,10 @@ public class ValidationServiceTests
             .Throws(exception);
 
         var service = CreateSystemUnderTest();
+        string blobName = string.Empty;
 
         // Act
-        var result = await service.ValidateSubsidiaryAsync(rows);
+        var result = await service.ValidateSubsidiaryAsync(rows, blobName);
 
         // Assert
         result.Should().NotBeNull("the result should not be null.")
@@ -378,9 +384,10 @@ public class ValidationServiceTests
         _requestValidatorMock.Setup(x => x.IsInvalidRequest(subsidiaryDetailsRequest)).Returns(true);
 
         var service = CreateSystemUnderTest();
+        string blobName = string.Empty;
 
         // Act
-        var result = await service.ValidateSubsidiaryAsync(rows);
+        var result = await service.ValidateSubsidiaryAsync(rows, blobName);
 
         // Assert
         result.Should().HaveCount(0, "because there are no validation errors expected in this case.");
@@ -522,7 +529,7 @@ public class ValidationServiceTests
                 new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "Any old Blob Name", ErrorCodes: new List<string> { "Error1" })
             };
 
-        _validationServiceProducerRowValidatorMock.Setup(x => x.ProcessRowsForValidationErrors(It.IsAny<List<ProducerRow>>(), It.IsAny<SubsidiaryDetailsResponse>())).Returns(validationErrors);
+        _validationServiceProducerRowValidatorMock.Setup(x => x.ProcessRowsForValidationErrors(It.IsAny<List<ProducerRow>>(), It.IsAny<SubsidiaryDetailsResponse>(), It.IsAny<string>())).Returns(validationErrors);
 
         // Mocking
         _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(5);
@@ -570,7 +577,7 @@ public class ValidationServiceTests
                 new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "Any old Blob Name", ErrorCodes: new List<string> { "Error1" })
             };
 
-        _validationServiceProducerRowValidatorMock.Setup(x => x.ProcessRowsForValidationErrors(It.IsAny<List<ProducerRow>>(), It.IsAny<SubsidiaryDetailsResponse>())).Returns(validationErrors);
+        _validationServiceProducerRowValidatorMock.Setup(x => x.ProcessRowsForValidationErrors(It.IsAny<List<ProducerRow>>(), It.IsAny<SubsidiaryDetailsResponse>(), It.IsAny<string>())).Returns(validationErrors);
 
         // Mocking
         _issueCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(5);

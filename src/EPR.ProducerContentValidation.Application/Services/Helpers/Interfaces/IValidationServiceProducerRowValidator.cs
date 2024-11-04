@@ -7,5 +7,5 @@ namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 public interface IValidationServiceProducerRowValidator
 {
     IEnumerable<ProducerValidationEventIssueRequest> ProcessRowsForValidationErrors(
-        List<ProducerRow> rows, SubsidiaryDetailsResponse response);
+        List<ProducerRow> rows, SubsidiaryDetailsResponse response, string blobName);
 }

@@ -6,5 +6,5 @@ namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 
 public interface ISubsidiaryValidationEvaluator
 {
-    ProducerValidationEventIssueRequest? EvaluateSubsidiaryValidation(ProducerRow row, SubsidiaryDetail subsidiary, int rowIndex);
+    ProducerValidationEventIssueRequest? EvaluateSubsidiaryValidation(ProducerRow row, SubsidiaryDetail subsidiary, int rowIndex, string blobName);
 }

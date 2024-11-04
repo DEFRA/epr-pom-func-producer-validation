@@ -6,7 +6,7 @@ namespace EPR.ProducerContentValidation.Application.Services.Helpers;
 
 public class ProducerValidationEventIssueRequestFormatter : IProducerValidationEventIssueRequestFormatter
 {
-    public ProducerValidationEventIssueRequest Format(ProducerRow row, string errorCode)
+    public ProducerValidationEventIssueRequest Format(ProducerRow row, string errorCode, string blobName)
     {
         var errorCodes = new List<string> { errorCode };
 
@@ -25,6 +25,7 @@ public class ProducerValidationEventIssueRequestFormatter : IProducerValidationE
             ToHomeNation: row.ToHomeNation ?? string.Empty,
             QuantityKg: row.QuantityKg ?? string.Empty,
             QuantityUnits: row.QuantityUnits ?? string.Empty,
+            blobName = blobName ?? string.Empty,
             ErrorCodes: errorCodes);
     }
 }

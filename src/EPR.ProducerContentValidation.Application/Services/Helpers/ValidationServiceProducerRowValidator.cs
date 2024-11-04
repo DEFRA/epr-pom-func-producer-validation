@@ -15,13 +15,13 @@ public class ValidationServiceProducerRowValidator : IValidationServiceProducerR
     }
 
     public IEnumerable<ProducerValidationEventIssueRequest> ProcessRowsForValidationErrors(
-        List<ProducerRow> rows, SubsidiaryDetailsResponse response)
+        List<ProducerRow> rows, SubsidiaryDetailsResponse response, string blobName)
     {
         var validationErrors = new List<ProducerValidationEventIssueRequest>();
 
         for (var i = 0; i < rows.Count; i++)
         {
-            var error = _findMatchingProducer.Match(rows[i], response, i);
+            var error = _findMatchingProducer.Match(rows[i], response, i, blobName);
             if (error != null)
             {
                 validationErrors.Add(error);

@@ -5,5 +5,5 @@ namespace EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 
 public interface IProducerValidationEventIssueRequestFormatter
 {
-    ProducerValidationEventIssueRequest Format(ProducerRow row, string errorCode);
+    ProducerValidationEventIssueRequest Format(ProducerRow row, string errorCode, string blobName);
 }

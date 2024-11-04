@@ -36,10 +36,11 @@ public class ValidationServiceProducerRowValidatorTests
             // Initialize response data if needed
         };
 
-        _mockFindMatchingProducer.Setup(x => x.Match(It.IsAny<ProducerRow>(), response, It.IsAny<int>())).Returns((ProducerValidationEventIssueRequest)null);
+        _mockFindMatchingProducer.Setup(x => x.Match(It.IsAny<ProducerRow>(), response, It.IsAny<int>(), It.IsAny<string>())).Returns((ProducerValidationEventIssueRequest)null);
+        string blobName = string.Empty;
 
         // Act
-        var result = _validator.ProcessRowsForValidationErrors(rows, response);
+        var result = _validator.ProcessRowsForValidationErrors(rows, response, blobName);
 
         // Assert
         result.Should().NotBeNull("the result should not be null, even if it contains no errors.")
@@ -109,11 +110,12 @@ public class ValidationServiceProducerRowValidatorTests
             "10",
             ErrorCodes: new List<string> { "Error1" });
 
-        _mockFindMatchingProducer.Setup(x => x.Match(row1, response, 0)).Returns(errorRequest);
-        _mockFindMatchingProducer.Setup(x => x.Match(row2, response, 1)).Returns((ProducerValidationEventIssueRequest)null);
+        _mockFindMatchingProducer.Setup(x => x.Match(row1, response, 0, It.IsAny<string>())).Returns(errorRequest);
+        _mockFindMatchingProducer.Setup(x => x.Match(row2, response, 1, It.IsAny<string>())).Returns((ProducerValidationEventIssueRequest)null);
+        string blobName = string.Empty;
 
         // Act
-        var result = _validator.ProcessRowsForValidationErrors(rows, response);
+        var result = _validator.ProcessRowsForValidationErrors(rows, response, blobName);
 
         // Assert
         result.Should().NotBeNull("the result should contain errors if one row has a validation issue.")
@@ -201,11 +203,12 @@ public class ValidationServiceProducerRowValidatorTests
             "20",
             ErrorCodes: new List<string> { "Error2" });
 
-        _mockFindMatchingProducer.Setup(x => x.Match(row1, response, 0)).Returns(errorRequest1);
-        _mockFindMatchingProducer.Setup(x => x.Match(row2, response, 1)).Returns(errorRequest2);
+        _mockFindMatchingProducer.Setup(x => x.Match(row1, response, 0, It.IsAny<string>())).Returns(errorRequest1);
+        _mockFindMatchingProducer.Setup(x => x.Match(row2, response, 1, It.IsAny<string>())).Returns(errorRequest2);
+        string blobName = string.Empty;
 
         // Act
-        var result = _validator.ProcessRowsForValidationErrors(rows, response);
+        var result = _validator.ProcessRowsForValidationErrors(rows, response, blobName);
 
         // Assert
         result.Should().NotBeNull("the result should contain all validation errors if multiple rows have issues.")

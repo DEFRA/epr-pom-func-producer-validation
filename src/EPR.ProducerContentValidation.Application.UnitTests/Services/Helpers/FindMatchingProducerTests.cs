@@ -36,19 +36,20 @@ public class FindMatchingProducerTests
         // Arrange
         var row = ModelGenerator.CreateProducerRow(1);
         var response = new SubsidiaryDetailsResponse();
+        string blobName = string.Empty;
 
         _organisationMatcherMock
             .Setup(m => m.FindMatchingOrganisation(row, response))
             .Returns((SubsidiaryOrganisationDetail?)null);
 
         // Act
-        var result = _findMatchingProducer.Match(row, response, 1);
+        var result = _findMatchingProducer.Match(row, response, 1, blobName);
 
         // Assert
         result.Should().BeNull();
         _organisationMatcherMock.Verify(m => m.FindMatchingOrganisation(row, response), Times.Once);
         _subsidiaryMatcherMock.Verify(m => m.FindMatchingSubsidiary(It.IsAny<ProducerRow>(), It.IsAny<SubsidiaryOrganisationDetail>()), Times.Never);
-        _subsidiaryValidationEvaluatorMock.Verify(m => m.EvaluateSubsidiaryValidation(It.IsAny<ProducerRow>(), It.IsAny<SubsidiaryDetail>(), It.IsAny<int>()), Times.Never);
+        _subsidiaryValidationEvaluatorMock.Verify(m => m.EvaluateSubsidiaryValidation(It.IsAny<ProducerRow>(), It.IsAny<SubsidiaryDetail>(), It.IsAny<int>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
@@ -58,6 +59,7 @@ public class FindMatchingProducerTests
         var row = ModelGenerator.CreateProducerRow(1);
         var response = new SubsidiaryDetailsResponse();
         var matchingOrg = new SubsidiaryOrganisationDetail();
+        string blobName = string.Empty;
 
         _organisationMatcherMock
             .Setup(m => m.FindMatchingOrganisation(row, response))
@@ -68,13 +70,13 @@ public class FindMatchingProducerTests
             .Returns((SubsidiaryDetail?)null);
 
         // Act
-        var result = _findMatchingProducer.Match(row, response, 1);
+        var result = _findMatchingProducer.Match(row, response, 1, blobName);
 
         // Assert
         result.Should().BeNull();
         _organisationMatcherMock.Verify(m => m.FindMatchingOrganisation(row, response), Times.Once);
         _subsidiaryMatcherMock.Verify(m => m.FindMatchingSubsidiary(row, matchingOrg), Times.Once);
-        _subsidiaryValidationEvaluatorMock.Verify(m => m.EvaluateSubsidiaryValidation(It.IsAny<ProducerRow>(), It.IsAny<SubsidiaryDetail>(), It.IsAny<int>()), Times.Never);
+        _subsidiaryValidationEvaluatorMock.Verify(m => m.EvaluateSubsidiaryValidation(It.IsAny<ProducerRow>(), It.IsAny<SubsidiaryDetail>(), It.IsAny<int>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
@@ -85,6 +87,8 @@ public class FindMatchingProducerTests
         var response = new SubsidiaryDetailsResponse();
         var matchingOrg = new SubsidiaryOrganisationDetail();
         var matchingSub = new SubsidiaryDetail();
+        string blobName = string.Empty;
+
         var expectedValidationResult = new ProducerValidationEventIssueRequest(
             SubsidiaryId: "S123",
             DataSubmissionPeriod: "2024-Q1",
@@ -112,16 +116,16 @@ public class FindMatchingProducerTests
             .Returns(matchingSub);
 
         _subsidiaryValidationEvaluatorMock
-            .Setup(m => m.EvaluateSubsidiaryValidation(row, matchingSub, 1))
+            .Setup(m => m.EvaluateSubsidiaryValidation(row, matchingSub, 1, blobName))
             .Returns(expectedValidationResult);
 
         // Act
-        var result = _findMatchingProducer.Match(row, response, 1);
+        var result = _findMatchingProducer.Match(row, response, 1, blobName);
 
         // Assert
         result.Should().Be(expectedValidationResult);
         _organisationMatcherMock.Verify(m => m.FindMatchingOrganisation(row, response), Times.Once);
         _subsidiaryMatcherMock.Verify(m => m.FindMatchingSubsidiary(row, matchingOrg), Times.Once);
-        _subsidiaryValidationEvaluatorMock.Verify(m => m.EvaluateSubsidiaryValidation(row, matchingSub, 1), Times.Once);
+        _subsidiaryValidationEvaluatorMock.Verify(m => m.EvaluateSubsidiaryValidation(row, matchingSub, 1, blobName), Times.Once);
     }
 }

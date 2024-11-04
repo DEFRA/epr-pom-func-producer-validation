@@ -19,7 +19,7 @@ public class FindMatchingProducer : IFindMatchingProducer
     }
 
     public ProducerValidationEventIssueRequest? Match(
-        ProducerRow row, SubsidiaryDetailsResponse response, int rowIndex)
+        ProducerRow row, SubsidiaryDetailsResponse response, int rowIndex, string blobName)
     {
         var matchingOrg = _organisationMatcher.FindMatchingOrganisation(row, response);
         if (matchingOrg == null)
@@ -33,6 +33,6 @@ public class FindMatchingProducer : IFindMatchingProducer
             return null;
         }
 
-        return _subsidiaryValidationEvaluator.EvaluateSubsidiaryValidation(row, matchingSub, rowIndex);
+        return _subsidiaryValidationEvaluator.EvaluateSubsidiaryValidation(row, matchingSub, rowIndex, blobName);
     }
 }

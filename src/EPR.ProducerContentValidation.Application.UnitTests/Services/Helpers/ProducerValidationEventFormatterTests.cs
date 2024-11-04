@@ -38,9 +38,10 @@ public class ProducerValidationEventFormatterTests
             SubmissionPeriod: "2023");
 
         string errorCode = "ErrorCode123";
+        string blobName = string.Empty;
 
         // Act
-        var result = _formatter.Format(row, errorCode);
+        var result = _formatter.Format(row, errorCode, blobName);
 
         // Assert
         result.Should().NotBeNull();
@@ -83,9 +84,10 @@ public class ProducerValidationEventFormatterTests
             SubmissionPeriod: "2023");
 
         string errorCode = "ErrorCode123";
+        string blobName = string.Empty;
 
         // Act
-        var result = _formatter.Format(row, errorCode);
+        var result = _formatter.Format(row, errorCode, blobName);
 
         // Assert
         result.Should().NotBeNull();
@@ -128,9 +130,10 @@ public class ProducerValidationEventFormatterTests
             SubmissionPeriod: "2023");
 
         string errorCode = "SingleError";
+        string blobName = string.Empty;
 
         // Act
-        var result = _formatter.Format(row, errorCode);
+        var result = _formatter.Format(row, errorCode, blobName);
 
         // Assert
         result.ErrorCodes.Should().HaveCount(1, "Expected exactly one error code in the list.")

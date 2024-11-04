@@ -18,18 +18,18 @@ public class SubsidiaryValidationEvaluator : ISubsidiaryValidationEvaluator
         _producerValidationEventIssueRequestFormatter = producerValidationEventIssueRequestFormatter;
     }
 
-    public ProducerValidationEventIssueRequest? EvaluateSubsidiaryValidation(ProducerRow row, SubsidiaryDetail subsidiary, int rowIndex)
+    public ProducerValidationEventIssueRequest? EvaluateSubsidiaryValidation(ProducerRow row, SubsidiaryDetail subsidiary, int rowIndex, string blobName)
     {
         if (!subsidiary.SubsidiaryExists)
         {
             LogValidationWarning(rowIndex + 1, "Subsidiary ID does not exist", ErrorCode.SubsidiaryIdDoesNotExist);
-            return _producerValidationEventIssueRequestFormatter.Format(row, ErrorCode.SubsidiaryIdDoesNotExist);
+            return _producerValidationEventIssueRequestFormatter.Format(row, ErrorCode.SubsidiaryIdDoesNotExist, blobName);
         }
 
         if (subsidiary.SubsidiaryBelongsToAnyOtherOrganisation)
         {
             LogValidationWarning(rowIndex + 1, "Subsidiary ID is assigned to a different organisation", ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation);
-            return _producerValidationEventIssueRequestFormatter.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation);
+            return _producerValidationEventIssueRequestFormatter.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation, blobName);
         }
 
         return null;

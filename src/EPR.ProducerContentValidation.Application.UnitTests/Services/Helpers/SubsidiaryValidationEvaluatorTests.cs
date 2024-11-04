@@ -66,16 +66,17 @@ public class SubsidiaryValidationEvaluatorTests
             row.QuantityUnits,
             ErrorCodes: new List<string> { ErrorCode.SubsidiaryIdDoesNotExist });
 
-        _mockFormatter.Setup(f => f.Format(row, ErrorCode.SubsidiaryIdDoesNotExist)).Returns(expectedRequest);
+        _mockFormatter.Setup(f => f.Format(row, ErrorCode.SubsidiaryIdDoesNotExist, It.IsAny<string>())).Returns(expectedRequest);
+        string blobName = string.Empty;
 
         // Act
-        var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber);
+        var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber, blobName);
 
         // Assert
         result.Should().NotBeNull("because a request should be returned if the subsidiary does not exist.")
             .And.BeEquivalentTo(expectedRequest, "because the returned request should match the expected formatted request.");
 
-        _mockFormatter.Verify(f => f.Format(row, ErrorCode.SubsidiaryIdDoesNotExist), Times.Once);
+        _mockFormatter.Verify(f => f.Format(row, ErrorCode.SubsidiaryIdDoesNotExist, It.IsAny<string>()), Times.Once);
     }
 
     [TestMethod]
@@ -117,16 +118,17 @@ public class SubsidiaryValidationEvaluatorTests
             row.QuantityUnits,
             ErrorCodes: new List<string> { ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation });
 
-        _mockFormatter.Setup(f => f.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation)).Returns(expectedRequest);
+        _mockFormatter.Setup(f => f.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation, It.IsAny<string>())).Returns(expectedRequest);
+        string blobName = string.Empty;
 
         // Act
-        var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber);
+        var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber, blobName);
 
         // Assert
         result.Should().NotBeNull("because a request should be returned if the subsidiary belongs to a different organisation.")
             .And.BeEquivalentTo(expectedRequest, "because the returned request should match the expected formatted request.");
 
-        _mockFormatter.Verify(f => f.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation), Times.Once);
+        _mockFormatter.Verify(f => f.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation, It.IsAny<string>()), Times.Once);
     }
 
     [TestMethod]
@@ -151,13 +153,14 @@ public class SubsidiaryValidationEvaluatorTests
             QuantityUnits = "Units"
         };
         var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToAnyOtherOrganisation = false };
+        string blobName = string.Empty;
 
         // Act
-        var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber);
+        var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber, blobName);
 
         // Assert
         result.Should().BeNull("because the subsidiary is valid and should not generate any validation issue.");
 
-        _mockFormatter.Verify(f => f.Format(It.IsAny<ProducerRow>(), It.IsAny<string>()), Times.Never);
+        _mockFormatter.Verify(f => f.Format(It.IsAny<ProducerRow>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 }
