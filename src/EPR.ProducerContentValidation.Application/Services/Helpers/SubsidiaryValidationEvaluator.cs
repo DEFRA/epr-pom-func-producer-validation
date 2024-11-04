@@ -9,10 +9,10 @@ namespace EPR.ProducerContentValidation.Application.Services.Helpers;
 
 public class SubsidiaryValidationEvaluator : ISubsidiaryValidationEvaluator
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<SubsidiaryValidationEvaluator> _logger;
     private readonly IProducerValidationEventIssueRequestFormatter _producerValidationEventIssueRequestFormatter;
 
-    public SubsidiaryValidationEvaluator(ILogger logger, IProducerValidationEventIssueRequestFormatter producerValidationEventIssueRequestFormatter)
+    public SubsidiaryValidationEvaluator(ILogger<SubsidiaryValidationEvaluator> logger, IProducerValidationEventIssueRequestFormatter producerValidationEventIssueRequestFormatter)
     {
         _logger = logger;
         _producerValidationEventIssueRequestFormatter = producerValidationEventIssueRequestFormatter;

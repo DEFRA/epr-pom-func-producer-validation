@@ -15,14 +15,14 @@ namespace EPR.ProducerContentValidation.Application.UnitTests.Services.Helpers;
 [TestClass]
 public class SubsidiaryValidationEvaluatorTests
 {
-    private Mock<ILogger> _mockLogger;
+    private Mock<ILogger<SubsidiaryValidationEvaluator>> _mockLogger;
     private Mock<IProducerValidationEventIssueRequestFormatter> _mockFormatter;
     private SubsidiaryValidationEvaluator _evaluator;
 
     [TestInitialize]
     public void Setup()
     {
-        _mockLogger = new Mock<ILogger>();
+        _mockLogger = new Mock<ILogger<SubsidiaryValidationEvaluator>>();
         _mockFormatter = new Mock<IProducerValidationEventIssueRequestFormatter>();
         _evaluator = new SubsidiaryValidationEvaluator(_mockLogger.Object, _mockFormatter.Object);
     }
