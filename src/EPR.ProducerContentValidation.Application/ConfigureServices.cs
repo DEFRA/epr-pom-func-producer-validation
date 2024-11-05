@@ -1,10 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using EPR.ProducerContentValidation.Application.Config;
+using EPR.ProducerContentValidation.Application.Handlers;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Services;
+using EPR.ProducerContentValidation.Application.Services.Helpers;
+using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
+using EPR.ProducerContentValidation.Application.Services.Subsidiary;
 using EPR.ProducerContentValidation.Application.Validators;
 using EPR.ProducerContentValidation.Application.Validators.Factories;
 using EPR.ProducerContentValidation.Application.Validators.Factories.Interfaces;
@@ -29,10 +34,18 @@ public static class ConfigureServices
     {
         var redisOptions = services.BuildServiceProvider().GetRequiredService<IOptions<RedisOptions>>().Value;
         services
-            .AddScoped<IValidationService, ValidationService>()
             .AddScoped<ISubmissionApiClient, SubmissionApiClient>()
             .AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisOptions.ConnectionString))
-            .AddSingleton<IIssueCountService, IssueCountService>();
+            .AddSingleton<IIssueCountService, IssueCountService>()
+            .AddSingleton<IRequestValidator, RequestValidator>()
+            .AddSingleton<ISubsidiaryMatcher, SubsidiaryMatcher>()
+            .AddSingleton<IProducerValidationEventIssueRequestFormatter, ProducerValidationEventIssueRequestFormatter>()
+            .AddSingleton<ISubsidiaryValidationEvaluator, SubsidiaryValidationEvaluator>()
+            .AddSingleton<IOrganisationMatcher, OrganisationMatcher>()
+            .AddSingleton<IFindMatchingProducer, FindMatchingProducer>()
+            .AddSingleton<IValidationServiceProducerRowValidator, ValidationServiceProducerRowValidator>()
+            .AddScoped<IValidationService, ValidationService>()
+            .AddTransient<CompanyDetailsApiAuthorisationHandler>();
     }
 
     private static IServiceCollection ConfigureOptions(this IServiceCollection services)
@@ -43,6 +56,7 @@ public static class ConfigureServices
         services.ConfigureSection<StorageAccountOptions>(StorageAccountOptions.Section);
         services.ConfigureSection<RedisOptions>(RedisOptions.Section);
         services.ConfigureSection<List<SubmissionPeriodOption>>(SubmissionPeriodOption.Section);
+        services.ConfigureSection<CompanyDetailsApiConfig>(CompanyDetailsApiConfig.Section);
         return services;
     }
 
@@ -88,6 +102,7 @@ public static class ConfigureServices
         services.AddScoped<ICompositeValidator, CompositeValidator>();
         services.AddScoped<IGroupedValidator, GroupedValidator>();
         services.AddScoped<IDuplicateValidator, DuplicateValidator>();
+        services.AddScoped<ISubsidiaryDetailsRequestBuilder, SubsidiaryDetailsRequestBuilder>();
 
         return services;
     }

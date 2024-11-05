@@ -1,7 +1,6 @@
 ﻿namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
 
 using Constants;
-using CustomValidators;
 using FluentValidation;
 using Models;
 
