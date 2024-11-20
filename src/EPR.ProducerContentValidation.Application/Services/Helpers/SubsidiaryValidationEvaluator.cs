@@ -32,6 +32,12 @@ public class SubsidiaryValidationEvaluator : ISubsidiaryValidationEvaluator
             return _producerValidationEventIssueRequestFormatter.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation, blobName);
         }
 
+        if (subsidiary.SubsidiaryDoesNotBelongToAnyOrganisation)
+        {
+            LogValidationWarning(rowIndex + 1, "Subsidiary ID does not belong to any organization", ErrorCode.SubsidiaryDoesNotBelongToAnyOrganisation);
+            return _producerValidationEventIssueRequestFormatter.Format(row, ErrorCode.SubsidiaryDoesNotBelongToAnyOrganisation, blobName);
+        }
+
         return null;
     }
 
