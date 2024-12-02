@@ -54,6 +54,7 @@ public static class ErrorCode
     public const string PomFileSmallOrganisationSizeToCountryInvalidErrorCode = "905";
     public const string PomFileSmallOrganisationSizePackagingMaterialWeightInvalidErrorCode = "906";
     public const string PomFileSmallOrganisationSizePackagingMaterialQuantityInvalidErrorCode = "907";
+    public const string PomFileSmallOrganisationHDCSizePackagingClassInvalidErrorCode = "908";
 
     /* Issue codes for warnings */
     public const string WarningPackagingMaterialWeightLessThan100 = "59";
