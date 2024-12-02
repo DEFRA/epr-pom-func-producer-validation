@@ -2,6 +2,7 @@
 
 using Application.Validators.PropertyValidators;
 using Constants;
+using EPR.ProducerContentValidation.Application.Validators.PropertyValidators.WarningValidators;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
@@ -45,6 +46,45 @@ public class SmallProducerPackagingTypeValidatorTests : SmallProducerPackagingTy
         result
             .ShouldHaveValidationErrorFor(x => x.WasteType)
             .WithErrorCode(ErrorCode.SmallProducerWasteTypeInvalidErrorCode);
+    }
+
+    [TestMethod]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "", "", "1", "1")]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.SecondaryPackaging, "", "", "1", "1")]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.ShipmentPackaging, "", "", "1", "1")]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TransitPackaging, "", "", "1", "1")]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TotalPackaging, "", "", "1", "1")]
+    [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, "", "", "", "1", "1")]
+    public void SmallProducerPackagingTypeValidator_ContainsInValidMatrixValues_ReturnTrue(string producerSize, string packagingType, string packagingClass, string fromCountry, string toCountry, string weight, string quantity)
+    {
+        // arrange
+        var producerRow = BuildProducerRow(ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize, packagingType, packagingClass, fromCountry, toCountry, weight, quantity);
+
+        // act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // assert
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [TestMethod]
+    [DataRow(ProducerSize.Small, PackagingType.Household, PackagingClass.PrimaryPackaging, "", "", "1", "1", nameof(ProducerRow.WasteType))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.WasteOrigin, "", "", "1", "1", nameof(ProducerRow.PackagingCategory))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "abc", "", "1", "1", nameof(ProducerRow.FromHomeNation))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "", "abc", "1", "1", nameof(ProducerRow.ToHomeNation))]
+    [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, "", "", "0.5", "1", nameof(ProducerRow.QuantityKg))]
+    [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, "abc", "", "", "1", "1", nameof(ProducerRow.PackagingCategory))]
+    [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, "", "", "1", "0.5", nameof(ProducerRow.QuantityUnits))]
+    public void SmallProducerPackagingTypeValidator_ContainsInValidMatrixValues_ReturnFalse(string producerSize, string packagingType, string packagingClass, string fromCountry, string toCountry, string weight, string quantity, string errorProperty)
+    {
+        // arrange
+        var producerRow = BuildProducerRow(ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize, packagingType, packagingClass, fromCountry, toCountry, weight, quantity);
+
+        // act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // assert
+        result.ShouldHaveValidationErrorFor(errorProperty);
     }
 
     [TestMethod]
@@ -152,5 +192,10 @@ public class SmallProducerPackagingTypeValidatorTests : SmallProducerPackagingTy
     private static ProducerRow BuildProducerRow(string producerType, string producerSize, string packagingType)
     {
         return new ProducerRow(null, null, null, 1, producerType, producerSize, packagingType, null, null, null, null, null, null, null, null);
+    }
+
+    private static ProducerRow BuildProducerRow(string producerType, string producerSize, string packagingType, string packagingClass, string fromCountry, string toCountry, string weight, string quantity)
+    {
+        return new ProducerRow(null, null, null, 1, producerType, producerSize, packagingType, packagingClass, null, null, fromCountry, toCountry, weight, quantity, null, null);
     }
 }
