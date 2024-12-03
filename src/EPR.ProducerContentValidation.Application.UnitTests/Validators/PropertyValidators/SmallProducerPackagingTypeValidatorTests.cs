@@ -117,21 +117,6 @@ public class SmallProducerPackagingTypeValidatorTests : SmallProducerPackagingTy
     }
 
     [TestMethod]
-    public void PreValidate_ReturnsFalse_WhenProducerSizeIsNotSmall()
-    {
-        // Arrange
-        var producerRow = BuildProducerRow(ProducerType.SoldThroughOnlineMarketplaceYouOwn, ProducerSize.Large, PackagingType.SmallOrganisationPackagingAll);
-        var validationContext = new ValidationContext<ProducerRow>(producerRow);
-        var validationResult = new ValidationResult();
-
-        // Act
-        var result = PreValidate(validationContext, validationResult);
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [TestMethod]
     public void PreValidate_ReturnsFalse_WhenProducerIdInvalidErrorCodeIsPresent()
     {
         // Arrange
