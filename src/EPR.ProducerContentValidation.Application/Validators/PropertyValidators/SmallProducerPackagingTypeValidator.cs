@@ -1,97 +1,24 @@
 ﻿namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
 
-using System.Collections.Immutable;
 using Constants;
-using EPR.ProducerContentValidation.Application.Validators.CustomValidators;
 using FluentValidation;
 using FluentValidation.Results;
 using Models;
 
 public class SmallProducerPackagingTypeValidator : AbstractValidator<ProducerRow>
 {
-    private readonly List<string> _skipRuleErrorCodes = new ()
+    private readonly List<string> _skipRuleErrorCodes = new()
     {
         ErrorCode.ProducerIdInvalidErrorCode,
         ErrorCode.ProducerTypeInvalidErrorCode,
         ErrorCode.PackagingTypeInvalidErrorCode
     };
 
-    private readonly ImmutableList<string> _validPackagingTypes =
-    [
-        PackagingType.SmallOrganisationPackagingAll,
-        PackagingType.HouseholdDrinksContainers
-    ];
-
-    private readonly ImmutableList<string> _validPackagingClassesForSpType =
-    [
-        PackagingClass.PrimaryPackaging,
-        PackagingClass.SecondaryPackaging,
-        PackagingClass.ShipmentPackaging,
-        PackagingClass.TransitPackaging,
-        PackagingClass.TotalPackaging
-    ];
-
     public SmallProducerPackagingTypeValidator()
     {
-        // ClassLevelCascadeMode = CascadeMode.Stop;
-
-        // Producer size must be small.
-        RuleFor(x => x.ProducerSize)
-            .Equal(ProducerSize.Small)
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizeInvalidErrorCode);
-
-        // Valid packaging types (WasteType).
         RuleFor(x => x.WasteType)
-            .IsInAllowedValues(_validPackagingTypes)
-            .When(x => x.ProducerSize == ProducerSize.Small)
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizePackagingTypeInvalidErrorCode);
-
-        // Valid packaging class (PackagingCategory), when packaging type is [SP].
-        RuleFor(x => x.PackagingCategory)
-            .IsInAllowedValues(_validPackagingClassesForSpType)
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.SmallOrganisationPackagingAll)
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizePackagingClassInvalidErrorCode);
-
-        // Valid packaging class (PackagingCategory), when packaging type is [HDC].
-        RuleFor(x => x.PackagingCategory)
-            .Equal(string.Empty)
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.HouseholdDrinksContainers)
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizePackagingClassInvalidErrorCode);
-
-        // Valid remaining values for [from country, to country], when S/SP/P1-6
-        RuleFor(x => x.FromHomeNation)
-            .Empty()
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizeFromCountryInvalidErrorCode)
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.SmallOrganisationPackagingAll && _validPackagingClassesForSpType.Contains(x.PackagingCategory));
-
-        RuleFor(x => x.ToHomeNation)
-            .Empty()
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizeToCountryInvalidErrorCode)
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.SmallOrganisationPackagingAll && _validPackagingClassesForSpType.Contains(x.PackagingCategory));
-
-        // Valid remaining values [from country, to country, material weight, material quantity], when S/HDC/blank
-        RuleFor(x => x.PackagingCategory)
-            .Empty()
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationHDCSizePackagingClassInvalidErrorCode)
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.HouseholdDrinksContainers);
-
-        RuleFor(x => x.FromHomeNation)
-            .Empty()
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizeFromCountryInvalidErrorCode)
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.HouseholdDrinksContainers && string.IsNullOrWhiteSpace(x.PackagingCategory));
-
-        RuleFor(x => x.ToHomeNation)
-            .Empty()
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizeToCountryInvalidErrorCode)
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.HouseholdDrinksContainers && string.IsNullOrWhiteSpace(x.PackagingCategory));
-
-        RuleFor(row => row)
-            .Must(row => ValidPackagingMaterialWeight(row.QuantityKg)).WithErrorCode(ErrorCode.PomFileSmallOrganisationSizePackagingMaterialWeightInvalidErrorCode).WithName(nameof(ProducerRow.QuantityKg))
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.HouseholdDrinksContainers && string.IsNullOrWhiteSpace(x.PackagingCategory));
-
-        RuleFor(row => row)
-            .Must(row => ValidPackagingMaterialQuantity(row.QuantityUnits)).WithErrorCode(ErrorCode.PomFileSmallOrganisationSizePackagingMaterialQuantityInvalidErrorCode).WithName(nameof(ProducerRow.QuantityUnits))
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.HouseholdDrinksContainers && string.IsNullOrWhiteSpace(x.PackagingCategory));
+            .Equal(PackagingType.SmallOrganisationPackagingAll)
+            .WithErrorCode(ErrorCode.SmallProducerWasteTypeInvalidErrorCode);
     }
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
@@ -99,26 +26,7 @@ public class SmallProducerPackagingTypeValidator : AbstractValidator<ProducerRow
         var producerRow = context.InstanceToValidate;
 
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+               && ProducerSize.Small.Equals(producerRow.ProducerSize)
                && ProducerType.SoldThroughOnlineMarketplaceYouOwn.Equals(producerRow.ProducerType);
-    }
-
-    private bool ValidPackagingMaterialWeight(string amount)
-    {
-        if (int.TryParse(amount, out var intValue))
-        {
-            return intValue > 0;
-        }
-
-        return false;
-    }
-
-    private bool ValidPackagingMaterialQuantity(string amount)
-    {
-        if (int.TryParse(amount, out var intValue))
-        {
-            return intValue > 0;
-        }
-
-        return false;
     }
 }
