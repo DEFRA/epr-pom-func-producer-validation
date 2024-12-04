@@ -43,7 +43,7 @@ public class ValidatorsPerformanceTests
         validationOptionsMock.Setup(x => x.Value).Returns(new ValidationOptions { Disabled = false });
         errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(1000);
 
-        var producerRowValidatorFactory = new ProducerRowValidatorFactory(validationOptionsMock.Object);
+        var producerRowValidatorFactory = new ProducerRowValidatorFactory(validationOptionsMock.Object, featureManagerMock.Object);
         var producerRowWarningValidatorFactory = new ProducerRowWarningValidatorFactory();
 
         var systemUnderDuplicateValidatorTest = new DuplicateValidator(AutoMapperHelpers.GetMapper<ProducerProfile>(), errorCountServiceMock.Object);

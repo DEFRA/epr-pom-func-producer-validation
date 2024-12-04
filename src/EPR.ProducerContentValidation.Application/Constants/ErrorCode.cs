@@ -47,6 +47,14 @@ public static class ErrorCode
     public const string InvalidSubmissionPeriodFor2023P1P2 = "54";
     public const string InvalidSubmissionPeriodFor2023P3 = "55";
     public const string TransitionalPackagingUnitsInvalidErrorCode = "90";
+    public const string PomFileSmallOrganisationSizeInvalidErrorCode = "901";
+    public const string PomFileSmallOrganisationSizePackagingTypeInvalidErrorCode = "902";
+    public const string PomFileSmallOrganisationSizePackagingClassInvalidErrorCode = "903";
+    public const string PomFileSmallOrganisationSizeFromCountryInvalidErrorCode = "904";
+    public const string PomFileSmallOrganisationSizeToCountryInvalidErrorCode = "905";
+    public const string PomFileSmallOrganisationSizePackagingMaterialWeightInvalidErrorCode = "906";
+    public const string PomFileSmallOrganisationSizePackagingMaterialQuantityInvalidErrorCode = "907";
+    public const string PomFileSmallOrganisationHDCSizePackagingClassInvalidErrorCode = "908";
 
     /* Issue codes for warnings */
     public const string WarningPackagingMaterialWeightLessThan100 = "59";

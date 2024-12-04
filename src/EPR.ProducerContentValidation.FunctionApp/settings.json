@@ -13,6 +13,7 @@
     "Validation:MaxIssuesToProcess": 1000,
     "Redis:ConnectionString": "https://localhost:1234",
     "Validation:IsLatest": false,
-    "FeatureManagement:EnableSubsidiaryValidationPom": false
+    "FeatureManagement:EnableSubsidiaryValidationPom": false,
+    "EnableSmallProducerPackagingTypeEnhancedValidation":  false
   }
 }

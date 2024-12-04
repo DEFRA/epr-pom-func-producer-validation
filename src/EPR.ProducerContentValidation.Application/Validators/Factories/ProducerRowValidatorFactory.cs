@@ -3,6 +3,7 @@ using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Validators.Factories.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 
 namespace EPR.ProducerContentValidation.Application.Validators.Factories;
 
@@ -10,7 +11,7 @@ public class ProducerRowValidatorFactory : IProducerRowValidatorFactory
 {
     private readonly IValidator<ProducerRow> _producerRowValidator;
 
-    public ProducerRowValidatorFactory(IOptions<ValidationOptions> validationOptions)
+    public ProducerRowValidatorFactory(IOptions<ValidationOptions> validationOptions, IFeatureManager featureManager)
     {
         if (validationOptions.Value.Disabled)
         {
@@ -18,7 +19,7 @@ public class ProducerRowValidatorFactory : IProducerRowValidatorFactory
         }
         else
         {
-            _producerRowValidator = validationOptions.Value.IsLatest ? new Producer14ColumnRowValidator() : new ProducerRowValidator();
+            _producerRowValidator = validationOptions.Value.IsLatest ? new Producer14ColumnRowValidator(featureManager) : new ProducerRowValidator(featureManager);
         }
     }
 
