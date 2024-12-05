@@ -26,7 +26,8 @@ public class HomeNationCombinationValidator : AbstractValidator<ProducerRow>
         var producerRow = context.InstanceToValidate;
 
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
-               && producerRow.ToHomeNation != null
-               && producerRow.FromHomeNation != null;
+            && ProducerSize.Large.Equals(producerRow.ProducerSize)
+            && producerRow.ToHomeNation != null
+            && producerRow.FromHomeNation != null;
     }
 }

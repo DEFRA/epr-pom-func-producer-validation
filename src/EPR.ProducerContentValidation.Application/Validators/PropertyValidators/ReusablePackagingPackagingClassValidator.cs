@@ -31,7 +31,10 @@ public class ReusablePackagingPackagingClassValidator : AbstractValidator<Produc
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
+        var producerRow = context.InstanceToValidate;
+
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+            && ProducerSize.Large.Equals(producerRow.ProducerSize)
                && PackagingType.ReusablePackaging.Equals(context.InstanceToValidate.WasteType);
     }
 }
