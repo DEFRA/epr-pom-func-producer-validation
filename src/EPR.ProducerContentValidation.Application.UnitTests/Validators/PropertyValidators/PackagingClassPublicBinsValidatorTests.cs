@@ -125,6 +125,6 @@ public class PackagingClassPublicBinsValidatorTests : PackagingClassPublicBinsVa
 
     private static ProducerRow BuildProducerRow(string packagingType, string packagingClass)
     {
-        return new ProducerRow(null, null, null, 1, null, null, packagingType, packagingClass, null, null, null, null, "1", "1", null);
+        return new ProducerRow(null, null, null, 1, null, ProducerSize.Large, packagingType, packagingClass, null, null, null, null, "1", "1", null);
     }
 }

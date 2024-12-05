@@ -110,6 +110,6 @@ public class NonHouseholdDrinksContainerPackagingClassValidatorTests : NonHouseh
 
     private static ProducerRow BuildProducerRow(string packagingType, string? packagingClass)
     {
-        return new ProducerRow(null, null, null, 1, null, null, packagingType, packagingClass, null, null, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, null, ProducerSize.Large, packagingType, packagingClass, null, null, null, null, null, null, null);
     }
 }

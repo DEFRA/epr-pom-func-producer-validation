@@ -118,6 +118,6 @@ public class HouseholdDrinksContainerMaterialTypeValidatorTests : HouseholdDrink
 
     private static ProducerRow BuildProducerRow(string packagingType, string? materialType)
     {
-        return new ProducerRow(null, null, "123456", 0, null, null, packagingType, null, materialType, null, null, null, "1", "1", null);
+        return new ProducerRow(null, null, "123456", 0, null, ProducerSize.Large, packagingType, null, materialType, null, null, null, "1", "1", null);
     }
 }
