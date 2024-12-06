@@ -132,6 +132,58 @@ public class SubsidiaryValidationEvaluatorTests
     }
 
     [TestMethod]
+    public void EvaluateSubsidiaryValidation_SubsidiaryDoesNotBelongToAnyOrganisation_ShouldLogWarningAndReturnFormattedRequest()
+    {
+        // Arrange
+        var row = ModelGenerator.CreateProducerRow(1) with
+        {
+            SubsidiaryId = "123",
+            DataSubmissionPeriod = "2024-01",
+            ProducerId = "Producer1",
+            RowNumber = 1,
+            ProducerType = "TypeA",
+            ProducerSize = "Large",
+            WasteType = "WasteType",
+            PackagingCategory = "CategoryA",
+            MaterialType = "MaterialX",
+            MaterialSubType = "SubTypeX",
+            FromHomeNation = "Nation1",
+            ToHomeNation = "Nation2",
+            QuantityKg = "100",
+            QuantityUnits = "Units"
+        };
+        var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToAnyOtherOrganisation = false, SubsidiaryDoesNotBelongToAnyOrganisation = true };
+        var expectedResponse = new ProducerValidationEventIssueRequest(
+            row.SubsidiaryId,
+            row.DataSubmissionPeriod,
+            row.RowNumber,
+            row.ProducerId,
+            row.ProducerType,
+            row.ProducerSize,
+            row.WasteType,
+            row.PackagingCategory,
+            row.MaterialType,
+            row.MaterialSubType,
+            row.FromHomeNation,
+            row.ToHomeNation,
+            row.QuantityKg,
+            row.QuantityUnits,
+            ErrorCodes: new List<string> { ErrorCode.SubsidiaryDoesNotBelongToAnyOrganisation });
+
+        _mockFormatter.Setup(f => f.Format(row, ErrorCode.SubsidiaryDoesNotBelongToAnyOrganisation, It.IsAny<string>())).Returns(expectedResponse);
+        string blobName = string.Empty;
+
+        // Act
+        var result = _evaluator.EvaluateSubsidiaryValidation(row, subsidiary, row.RowNumber, blobName);
+
+        // Assert
+        result.Should().NotBeNull("because a request should be returned if the subsidiary belongs to no organisation.")
+            .And.BeEquivalentTo(expectedResponse, "because the returned response should match the expected formatted response.");
+
+        _mockFormatter.Verify(f => f.Format(row, ErrorCode.SubsidiaryDoesNotBelongToAnyOrganisation, It.IsAny<string>()), Times.Once);
+    }
+
+    [TestMethod]
     public void EvaluateSubsidiaryValidation_SubsidiaryIsValid_ShouldReturnNull()
     {
         // Arrange

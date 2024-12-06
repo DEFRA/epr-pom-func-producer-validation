@@ -10,4 +10,6 @@ public class SubsidiaryDetail
     public bool SubsidiaryExists { get; set; }
 
     public bool SubsidiaryBelongsToAnyOtherOrganisation { get; set; }
+
+    public bool SubsidiaryDoesNotBelongToAnyOrganisation { get; set; }
 }
