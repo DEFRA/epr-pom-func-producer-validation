@@ -14,6 +14,7 @@ using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -38,6 +39,7 @@ public class CompositeValidatorTests
     private readonly Mock<IValidator<ProducerRow>> _producerRowValidatorMock;
     private readonly Mock<ValidationFailure> _validationFailureMock;
     private readonly Mock<ValidationResult> _validationResultMock;
+    private Mock<IFeatureManager> _featureManagerMock;
 
     private ValidationOptions _options;
 
@@ -55,6 +57,7 @@ public class CompositeValidatorTests
         _producerRowValidatorMock = new Mock<IValidator<ProducerRow>>();
         _validationFailureMock = new Mock<ValidationFailure>();
         _validationResultMock = new Mock<ValidationResult>();
+        _featureManagerMock = new Mock<IFeatureManager>();
     }
 
     [TestInitialize]
@@ -394,8 +397,9 @@ public class CompositeValidatorTests
 
         var producerRows = new List<ProducerRow> { producerRowOne };
 
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation)).ReturnsAsync(false);
         var submissionPeriodOptions = new List<SubmissionPeriodOption>();
-        var producerRowValidatorFactory = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options));
+        var producerRowValidatorFactory = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options), _featureManagerMock.Object);
         var producerRowWarningValidatorFactory = new ProducerRowWarningValidatorFactory();
 
         var compositeValidator = new CompositeValidator(

@@ -7,7 +7,7 @@ using Models;
 
 public class SmallProducerPackagingTypeValidator : AbstractValidator<ProducerRow>
 {
-    private readonly List<string> _skipRuleErrorCodes = new ()
+    private readonly List<string> _skipRuleErrorCodes = new()
     {
         ErrorCode.ProducerIdInvalidErrorCode,
         ErrorCode.ProducerTypeInvalidErrorCode,

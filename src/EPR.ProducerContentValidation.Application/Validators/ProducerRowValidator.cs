@@ -1,14 +1,16 @@
 ﻿namespace EPR.ProducerContentValidation.Application.Validators;
 
 using System.Diagnostics.CodeAnalysis;
+using EPR.ProducerContentValidation.Application.Constants;
 using FluentValidation;
+using Microsoft.FeatureManagement;
 using Models;
 using PropertyValidators;
 
 [ExcludeFromCodeCoverage]
 public class ProducerRowValidator : AbstractValidator<ProducerRow>
 {
-    public ProducerRowValidator()
+    public ProducerRowValidator(IFeatureManager featureManager)
     {
         Include(new ProducerIdValidator());
         Include(new QuantityKgValidator());
@@ -21,7 +23,6 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new ToHomeNationValidator());
         Include(new FromHomeNationValidator());
         Include(new MaterialSubMaterialCombinationValidator());
-        Include(new SmallProducerPackagingTypeValidator());
         Include(new LargeProducerPackagingTypeValidator());
         Include(new ToHomeNationPackagingTypeValidator());
         Include(new HomeNationCombinationValidator());
@@ -46,5 +47,14 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new NonHouseholdDrinksContainerPackagingClassValidator());
         Include(new DataSubmissionPeriodValidator());
         Include(new SubsidiaryIdValidator());
+
+        if (featureManager.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation).Result)
+        {
+            Include(new SmallProducerPackagingTypeEnhancedValidator());
+        }
+        else
+        {
+            Include(new SmallProducerPackagingTypeValidator());
+        }
     }
 }
