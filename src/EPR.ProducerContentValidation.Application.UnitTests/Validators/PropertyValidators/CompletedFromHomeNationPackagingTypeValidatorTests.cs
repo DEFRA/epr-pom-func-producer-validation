@@ -183,7 +183,7 @@ public class CompletedFromHomeNationPackagingTypeValidatorTests : CompletedFromH
             null,
             1,
             null,
-            null,
+            ProducerSize.Large,
             packagingType,
             null,
             null,

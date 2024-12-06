@@ -125,6 +125,6 @@ public class OnlineMarketplaceHouseholdWastePackagingClassValidatorTests : Onlin
 
     private static ProducerRow BuildProducerRow(string producerType, string packagingType, string packagingClass)
     {
-        return new ProducerRow(null, null, null, 1, producerType, null, packagingType, packagingClass, null, null, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, producerType, ProducerSize.Large, packagingType, packagingClass, null, null, null, null, null, null, null);
     }
 }

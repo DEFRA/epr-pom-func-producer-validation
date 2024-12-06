@@ -31,7 +31,6 @@ public class ProducerSizeValidatorTests
     }
 
     [TestMethod]
-    [DataRow(ProducerSize.Small)]
     [DataRow("Xx")]
     public void ProducerSizeValidator_ContainsErrorForProducerSize_WhenProducerSizeIsInvalid(string producerSize)
     {

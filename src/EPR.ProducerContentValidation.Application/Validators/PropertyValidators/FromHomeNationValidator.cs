@@ -3,6 +3,7 @@
 using Constants;
 using CustomValidators;
 using FluentValidation;
+using FluentValidation.Results;
 using Models;
 using ReferenceData;
 
@@ -13,5 +14,11 @@ public class FromHomeNationValidator : AbstractValidator<ProducerRow>
         RuleFor(x => x.FromHomeNation)
             .IsInAllowedValuesOrNull(ReferenceDataGenerator.HomeNations)
             .WithErrorCode(ErrorCode.FromHomeNationInvalidErrorCode);
+    }
+
+    protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
+    {
+        var producerRow = context.InstanceToValidate;
+        return ProducerSize.Large.Equals(producerRow.ProducerSize);
     }
 }

@@ -17,7 +17,8 @@ public static class ReferenceDataGenerator
 
     public static readonly ImmutableList<string> ProducerSizes = new List<string>()
     {
-        ProducerSize.Large
+        ProducerSize.Large,
+        ProducerSize.Small
     }.ToImmutableList();
 
     public static readonly ImmutableList<string> PackagingTypes = new List<string>()

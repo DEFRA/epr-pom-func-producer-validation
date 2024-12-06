@@ -35,8 +35,9 @@ public class HouseholdDrinksContainerMaterialTypeValidator : AbstractValidator<P
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
-        var producerLine = context.InstanceToValidate;
+        var producerRow = context.InstanceToValidate;
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
-               && PackagingType.HouseholdDrinksContainers.Equals(producerLine.WasteType);
+            && ProducerSize.Large.Equals(producerRow.ProducerSize)
+               && PackagingType.HouseholdDrinksContainers.Equals(producerRow.WasteType);
     }
 }

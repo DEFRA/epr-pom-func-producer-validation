@@ -35,8 +35,10 @@ public class NonHouseholdDrinksContainerMaterialTypeValidator : AbstractValidato
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
-        var producerLine = context.InstanceToValidate;
+        var producerRow = context.InstanceToValidate;
+
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
-               && PackagingType.NonHouseholdDrinksContainers.Equals(producerLine.WasteType);
+            && ProducerSize.Large.Equals(producerRow.ProducerSize)
+               && PackagingType.NonHouseholdDrinksContainers.Equals(producerRow.WasteType);
     }
 }

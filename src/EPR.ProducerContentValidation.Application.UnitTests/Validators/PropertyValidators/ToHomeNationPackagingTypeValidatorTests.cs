@@ -145,6 +145,6 @@ public class ToHomeNationPackagingTypeValidatorTests : ToHomeNationPackagingType
 
     private static ProducerRow BuildProducerRow(string toHomeNation, string fromHomeNation, string packagingType)
     {
-        return new ProducerRow(null, null, null, 1, null, null, packagingType, null, null, null, fromHomeNation, toHomeNation, null, null, null);
+        return new ProducerRow(null, null, null, 1, null, ProducerSize.Large, packagingType, null, null, null, fromHomeNation, toHomeNation, null, null, null);
     }
 }

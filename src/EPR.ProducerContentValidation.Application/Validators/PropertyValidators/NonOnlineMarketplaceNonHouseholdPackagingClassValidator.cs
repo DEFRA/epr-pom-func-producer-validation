@@ -43,10 +43,11 @@ public class NonOnlineMarketplaceNonHouseholdPackagingClassValidator : AbstractV
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
-        var producerLine = context.InstanceToValidate;
+        var producerRow = context.InstanceToValidate;
 
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
-               && _applicableProducerTypes.Contains(producerLine.ProducerType)
-               && PackagingType.NonHousehold.Equals(producerLine.WasteType);
+            && ProducerSize.Large.Equals(producerRow.ProducerSize)
+               && _applicableProducerTypes.Contains(producerRow.ProducerType)
+               && PackagingType.NonHousehold.Equals(producerRow.WasteType);
     }
 }
