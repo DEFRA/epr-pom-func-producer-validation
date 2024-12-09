@@ -73,11 +73,14 @@ public class SmallProducerPackagingTypeEnhancedValidatorTests : SmallProducerPac
     [TestMethod]
     [DataRow(ProducerSize.Small, PackagingType.Household, PackagingClass.PrimaryPackaging, "", "", "1", "1", nameof(ProducerRow.WasteType))]
     [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.WasteOrigin, "", "", "1", "1", nameof(ProducerRow.PackagingCategory))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "abc", "def", "1", "1", nameof(ProducerRow.FromHomeNation))]
     [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "abc", "", "1", "1", nameof(ProducerRow.FromHomeNation))]
-    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "", "abc", "1", "1", nameof(ProducerRow.ToHomeNation))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "", "def", "1", "1", nameof(ProducerRow.ToHomeNation))]
     [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, "", "", "1", "1", nameof(ProducerRow.PackagingCategory))]
     [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, "", "", "", "0.5", "1", nameof(ProducerRow.QuantityKg))]
     [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, "", "", "", "1", "0.5", nameof(ProducerRow.QuantityUnits))]
+    [DataRow(ProducerSize.Small, "", PackagingClass.PrimaryPackaging, "abc", "", "1", "1", nameof(ProducerRow.WasteType))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, "", "abc", "", "1", "1", nameof(ProducerRow.PackagingCategory))]
     public void SmallProducerPackagingTypeValidator_ContainsInValidMatrixValues_ReturnFalse(string producerSize, string packagingType, string packagingClass, string fromCountry, string toCountry, string weight, string quantity, string errorProperty)
     {
         // arrange
