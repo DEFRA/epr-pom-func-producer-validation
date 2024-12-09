@@ -32,6 +32,8 @@ public class ProducerSizeValidatorTests
 
     [TestMethod]
     [DataRow("Xx")]
+    [DataRow("s")]
+    [DataRow("l")]
     public void ProducerSizeValidator_ContainsErrorForProducerSize_WhenProducerSizeIsInvalid(string producerSize)
     {
         // Arrange
@@ -43,7 +45,7 @@ public class ProducerSizeValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.ProducerSize)
-            .WithErrorCode(ErrorCode.ProducerSizeInvalidErrorCode);
+            .WithErrorCode(ErrorCode.InvalidOrganisationSizeValue);
     }
 
     private static ProducerRow BuildProducerRow(string producerSize)
