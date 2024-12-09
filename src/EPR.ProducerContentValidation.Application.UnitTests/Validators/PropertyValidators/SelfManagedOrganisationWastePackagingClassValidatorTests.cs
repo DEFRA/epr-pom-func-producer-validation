@@ -120,6 +120,6 @@ public class SelfManagedOrganisationWastePackagingClassValidatorTests : SelfMana
 
     private static ProducerRow BuildProducerRow(string packagingType, string packagingCategory)
     {
-        return new ProducerRow(null, null, null, 1, null, null, packagingType, packagingCategory, null, null, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, null, ProducerSize.Large, packagingType, packagingCategory, null, null, null, null, null, null, null);
     }
 }

@@ -12,6 +12,6 @@ public class ProducerSizeValidator : AbstractValidator<ProducerRow>
     {
         RuleFor(x => x.ProducerSize)
             .IsInAllowedValues(ReferenceDataGenerator.ProducerSizes)
-            .WithErrorCode(ErrorCode.ProducerSizeInvalidErrorCode);
+            .WithErrorCode(ErrorCode.InvalidOrganisationSizeValue);
     }
 }

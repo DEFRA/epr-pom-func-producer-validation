@@ -138,7 +138,7 @@ public class EmptyFromHomeNationPackagingTypeValidatorTests : EmptyFromHomeNatio
             null,
             1,
             null,
-            null,
+            ProducerSize.Large,
             packagingType,
             null,
             null,

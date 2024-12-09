@@ -136,6 +136,6 @@ public class HomeNationCombinationValidatorTests : HomeNationCombinationValidato
 
     private static ProducerRow BuildProducerRow(string? fromHomeNation, string? toHomeNation)
     {
-        return new ProducerRow(null, null, null, 1, null, null, null, null, null, null, fromHomeNation, toHomeNation, null, null, null);
+        return new ProducerRow(null, null, null, 1, null, ProducerSize.Large, null, null, null, null, fromHomeNation, toHomeNation, null, null, null);
     }
 }

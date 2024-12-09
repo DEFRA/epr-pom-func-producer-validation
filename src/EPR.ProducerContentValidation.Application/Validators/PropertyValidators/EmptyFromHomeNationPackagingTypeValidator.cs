@@ -31,6 +31,7 @@ public class EmptyFromHomeNationPackagingTypeValidator : AbstractValidator<Produ
     {
         var producerRow = context.InstanceToValidate;
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+            && ProducerSize.Large.Equals(producerRow.ProducerSize)
                && producerRow.FromHomeNation == null;
     }
 }

@@ -43,6 +43,7 @@ public class NonOnlineMarketplaceHouseholdPackagingClassValidator : AbstractVali
         var producerRow = context.InstanceToValidate;
 
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+            && ProducerSize.Large.Equals(producerRow.ProducerSize)
                && _applicableProducerTypes.Contains(producerRow.ProducerType)
                && PackagingType.Household.Equals(producerRow.WasteType);
     }

@@ -200,6 +200,6 @@ public class NonOnlineMarketplaceNonHouseholdPackagingClassValidatorTests : NonO
 
     private static ProducerRow BuildProducerLine(string producerType, string packagingType, string packagingClass)
     {
-        return new ProducerRow(null, null, null, 1, producerType, null, packagingType, packagingClass, null, null, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, producerType, ProducerSize.Large, packagingType, packagingClass, null, null, null, null, null, null, null);
     }
 }
