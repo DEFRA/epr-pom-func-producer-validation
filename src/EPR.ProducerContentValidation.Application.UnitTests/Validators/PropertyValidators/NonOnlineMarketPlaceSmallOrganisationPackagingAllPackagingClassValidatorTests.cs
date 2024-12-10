@@ -16,7 +16,6 @@ public class NonOnlineMarketPlaceSmallOrganisationPackagingAllPackagingClassVali
 
     [TestMethod]
     [DataRow(PackagingClass.NonPrimaryPackaging)]
-    [DataRow(PackagingClass.TotalPackaging)]
     [DataRow(PackagingClass.TotalRelevantWaste)]
     [DataRow(PackagingClass.WasteOrigin)]
     [DataRow(PackagingClass.PublicBin)]

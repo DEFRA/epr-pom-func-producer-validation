@@ -54,9 +54,9 @@ public class SmallProducerPackagingTypeEnhancedValidator : AbstractValidator<Pro
 
         // Valid packaging class (PackagingCategory), when packaging type is [HDC].
         RuleFor(x => x.PackagingCategory)
-            .Equal(string.Empty)
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.HouseholdDrinksContainers)
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizePackagingClassInvalidErrorCode);
+            .Empty()
+            .WithErrorCode(ErrorCode.PomFileSmallOrganisationHDCSizePackagingClassInvalidErrorCode)
+            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.HouseholdDrinksContainers);
 
         // Valid remaining values for [from country, to country], when S/SP/P1-6
         RuleFor(x => x.FromHomeNation)
@@ -70,11 +70,6 @@ public class SmallProducerPackagingTypeEnhancedValidator : AbstractValidator<Pro
             .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.SmallOrganisationPackagingAll && _validPackagingClassesForSpType.Contains(x.PackagingCategory));
 
         // Valid remaining values [from country, to country, material weight, material quantity], when S/HDC/blank
-        RuleFor(x => x.PackagingCategory)
-            .Empty()
-            .WithErrorCode(ErrorCode.PomFileSmallOrganisationHDCSizePackagingClassInvalidErrorCode)
-            .When(x => x.ProducerSize == ProducerSize.Small && x.WasteType == PackagingType.HouseholdDrinksContainers);
-
         RuleFor(x => x.FromHomeNation)
             .Empty()
             .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizeFromCountryInvalidErrorCode)
