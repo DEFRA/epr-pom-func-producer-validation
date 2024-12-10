@@ -32,6 +32,7 @@ public class NonOnlineMarketPlaceSmallOrganisationPackagingAllPackagingClassVali
         PackagingClass.SecondaryPackaging,
         PackagingClass.ShipmentPackaging,
         PackagingClass.TransitPackaging,
+        PackagingClass.TotalPackaging,
         null
     }.ToImmutableList();
 
