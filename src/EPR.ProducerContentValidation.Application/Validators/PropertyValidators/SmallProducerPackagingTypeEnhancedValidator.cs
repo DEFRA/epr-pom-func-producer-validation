@@ -93,7 +93,8 @@ public class SmallProducerPackagingTypeEnhancedValidator : AbstractValidator<Pro
     {
         var producerRow = context.InstanceToValidate;
 
-        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode));
+        return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+                && ProducerSize.Small.Equals(producerRow.ProducerSize);
     }
 
     private bool ValidPackagingMaterialWeight(string amount)
