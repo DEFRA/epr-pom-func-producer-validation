@@ -527,7 +527,7 @@ public class ValidationServiceTests
         };
         var validationErrors = new List<ProducerValidationEventIssueRequest>
             {
-                new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "Any old Blob Name", ErrorCodes: new List<string> { "Error1" })
+                new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", "Any old Blob Name", ErrorCodes: new List<string> { "Error1" })
             };
 
         _validationServiceProducerRowValidatorMock.Setup(x => x.ProcessRowsForValidationErrors(It.IsAny<List<ProducerRow>>(), It.IsAny<SubsidiaryDetailsResponse>(), It.IsAny<string>())).Returns(validationErrors);
@@ -575,7 +575,7 @@ public class ValidationServiceTests
         };
         var validationErrors = new List<ProducerValidationEventIssueRequest>
             {
-                new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "Any old Blob Name", ErrorCodes: new List<string> { "Error1" })
+                new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", "Any old Blob Name", ErrorCodes: new List<string> { "Error1" })
             };
 
         _validationServiceProducerRowValidatorMock.Setup(x => x.ProcessRowsForValidationErrors(It.IsAny<List<ProducerRow>>(), It.IsAny<SubsidiaryDetailsResponse>(), It.IsAny<string>())).Returns(validationErrors);
