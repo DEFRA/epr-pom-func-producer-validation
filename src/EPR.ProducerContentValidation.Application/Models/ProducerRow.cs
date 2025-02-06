@@ -18,6 +18,7 @@
 /// <param name="QuantityKg">Quantity Kg.</param>
 /// <param name="QuantityUnits">Quantity units.</param>
 /// <param name="SubmissionPeriod">Submission period.</param>
+/// <param name="RecyclabilityRating">Recyclability Rating.</param>
 /// <param name="TransitionalPackagingUnits">Transitional packaging units.</param>
 public record ProducerRow(
     string? SubsidiaryId,
@@ -35,4 +36,5 @@ public record ProducerRow(
     string? QuantityKg,
     string? QuantityUnits,
     string? SubmissionPeriod,
+    string? RecyclabilityRating,
     string? TransitionalPackagingUnits = null);

@@ -97,7 +97,7 @@ public class ValidatorsPerformanceTests
         {
             SubmissionPeriod.SubmissionPeriodP1,
             SubmissionPeriod.SubmissionPeriodP2,
-            SubmissionPeriod.SubmissionPeriodP3,
+            SubmissionPeriod.SubmissionPeriodP3
         }.ToArray();
 
         var rowNumber = 0;

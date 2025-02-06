@@ -35,6 +35,7 @@ public class OrganisationMatcherTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            RecyclabilityRating: "A",
             SubmissionPeriod: "2023");
 
         var matchingOrg = new SubsidiaryOrganisationDetail
@@ -74,6 +75,7 @@ public class OrganisationMatcherTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            RecyclabilityRating: "A",
             SubmissionPeriod: "2023");
 
         var nonMatchingOrg = new SubsidiaryOrganisationDetail
@@ -112,6 +114,7 @@ public class OrganisationMatcherTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            RecyclabilityRating: "A",
             SubmissionPeriod: "2023");
 
         var response = new SubsidiaryDetailsResponse

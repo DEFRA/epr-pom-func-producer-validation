@@ -84,7 +84,8 @@ public class ValidationServiceProducerRowValidatorTests
             FromHomeNation = "NationA",
             ToHomeNation = "NationB",
             QuantityKg = "200",
-            QuantityUnits = "20"
+            QuantityUnits = "20",
+            RecyclabilityRating = "A"
         };
 
         var rows = new List<ProducerRow> { row1, row2 };
@@ -108,6 +109,7 @@ public class ValidationServiceProducerRowValidatorTests
             "NationB",
             "100",
             "10",
+            "A",
             ErrorCodes: new List<string> { "Error1" });
 
         _mockFindMatchingProducer.Setup(x => x.Match(row1, response, 0, It.IsAny<string>())).Returns(errorRequest);
@@ -184,6 +186,7 @@ public class ValidationServiceProducerRowValidatorTests
             "NationB",
             "100",
             "10",
+            "A",
             ErrorCodes: new List<string> { "Error1" });
 
         var errorRequest2 = new ProducerValidationEventIssueRequest(
@@ -201,6 +204,7 @@ public class ValidationServiceProducerRowValidatorTests
             "NationB",
             "200",
             "20",
+            "A",
             ErrorCodes: new List<string> { "Error2" });
 
         _mockFindMatchingProducer.Setup(x => x.Match(row1, response, 0, It.IsAny<string>())).Returns(errorRequest1);

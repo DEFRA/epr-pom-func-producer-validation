@@ -35,6 +35,7 @@ public class ProducerValidationEventFormatterTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            RecyclabilityRating: "A",
             SubmissionPeriod: "2023");
 
         string errorCode = "ErrorCode123";
@@ -81,6 +82,7 @@ public class ProducerValidationEventFormatterTests
             ToHomeNation: null,
             QuantityKg: null,
             QuantityUnits: null,
+            RecyclabilityRating: null,
             SubmissionPeriod: "2023");
 
         string errorCode = "ErrorCode123";
@@ -127,6 +129,7 @@ public class ProducerValidationEventFormatterTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            RecyclabilityRating: "A",
             SubmissionPeriod: "2023");
 
         string errorCode = "SingleError";

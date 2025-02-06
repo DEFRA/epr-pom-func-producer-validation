@@ -220,6 +220,7 @@ public class ConsistentDataSubmissionPeriodsGroupedValidatorTests
         string fromHomeNation = "FromHomeNation",
         string toHomeNation = "ToHomeNation",
         string quantityKg = "QuantityKg",
+        string recyclabilityRating = "RecyclabilityRating",
         string quantityUnits = "QuantityUnits") =>
         new(
             SubsidiaryId: subsidiaryId,
@@ -236,5 +237,6 @@ public class ConsistentDataSubmissionPeriodsGroupedValidatorTests
             FromHomeNation: fromHomeNation,
             ToHomeNation: toHomeNation,
             QuantityKg: quantityKg,
+            RecyclabilityRating: recyclabilityRating,
             QuantityUnits: quantityUnits);
 }

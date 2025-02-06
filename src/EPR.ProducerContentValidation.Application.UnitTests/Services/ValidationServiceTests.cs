@@ -209,7 +209,7 @@ public class ValidationServiceTests
         var subsidiaryDetailsResponse = new SubsidiaryDetailsResponse();
         var validationErrors = new List<ProducerValidationEventIssueRequest>
             {
-                new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", ErrorCodes: new List<string> { "Error1" })
+                new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", ErrorCodes: new List<string> { "Error1" })
             };
 
         _subsidiaryDetailsRequestBuilderMock.Setup(x => x.CreateRequest(rows)).Returns(subsidiaryDetailsRequest);
@@ -247,7 +247,8 @@ public class ValidationServiceTests
             FromHomeNation = "NationA",
             ToHomeNation = "NationB",
             QuantityKg = "100",
-            QuantityUnits = "10"
+            QuantityUnits = "10",
+            RecyclabilityRating = "A"
         };
         var rows = new List<ProducerRow> { row };
         var subsidiaryDetailsRequest = new SubsidiaryDetailsRequest();
@@ -437,12 +438,12 @@ public class ValidationServiceTests
 
         var expectedErrors = new List<ProducerValidationEventIssueRequest>
         {
-            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", string.Empty, new List<string> { "Error1" })
+            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", string.Empty, new List<string> { "Error1" })
         };
 
         var expectedWarnings = new List<ProducerValidationEventIssueRequest>
         {
-            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", string.Empty, new List<string> { "Warning1" })
+            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", string.Empty, new List<string> { "Warning1" })
         };
 
         // Mocking
@@ -483,7 +484,7 @@ public class ValidationServiceTests
 
         var expectedErrors = new List<ProducerValidationEventIssueRequest>
         {
-            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", string.Empty, new List<string> { "Error1" })
+            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", string.Empty, new List<string> { "Error1" })
         };
 
         // Mocking
@@ -494,7 +495,7 @@ public class ValidationServiceTests
             .Callback<IEnumerable<ProducerRow>, List<ProducerValidationEventIssueRequest>, List<ProducerValidationEventIssueRequest>, string>((rows, errors, warnings, blob) =>
             {
                 // No warnings
-                errors.Add(new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", string.Empty, new List<string> { "Error1" }));
+                errors.Add(new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", string.Empty, new List<string> { "Error1" }));
             });
 
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom)).ReturnsAsync(true);
@@ -522,7 +523,7 @@ public class ValidationServiceTests
 
         var expectedErrors = new List<ProducerValidationEventIssueRequest>
         {
-            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "Any old Blob Name", new List<string> { "Error1" })
+            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10",  "A", "Any old Blob Name", new List<string> { "Error1" })
         };
         var validationErrors = new List<ProducerValidationEventIssueRequest>
             {
@@ -539,7 +540,7 @@ public class ValidationServiceTests
             .Callback<IEnumerable<ProducerRow>, List<ProducerValidationEventIssueRequest>, List<ProducerValidationEventIssueRequest>, string>((rows, errors, warnings, blob) =>
             {
                 // No warnings
-                errors.Add(new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "Any old Blob Name", new List<string> { "Error2" }));
+                errors.Add(new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", "Any old Blob Name", new List<string> { "Error2" }));
             });
 
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom)).ReturnsAsync(true);
@@ -570,7 +571,7 @@ public class ValidationServiceTests
 
         var expectedErrors = new List<ProducerValidationEventIssueRequest>
         {
-            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "Any old Blob Name", new List<string> { "Error1" })
+            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", "Any old Blob Name", new List<string> { "Error1" })
         };
         var validationErrors = new List<ProducerValidationEventIssueRequest>
             {
@@ -587,7 +588,7 @@ public class ValidationServiceTests
             .Callback<IEnumerable<ProducerRow>, List<ProducerValidationEventIssueRequest>, List<ProducerValidationEventIssueRequest>, string>((rows, errors, warnings, blob) =>
             {
                 // No warnings
-                errors.Add(new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "Any old Blob Name", new List<string> { "Error1" }));
+                errors.Add(new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", "Any old Blob Name", new List<string> { "Error1" }));
             });
 
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom)).ReturnsAsync(true);
@@ -617,7 +618,7 @@ public class ValidationServiceTests
 
         var expectedErrors = new List<ProducerValidationEventIssueRequest>
         {
-            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", string.Empty, new List<string> { "Error1" })
+            new ProducerValidationEventIssueRequest("Sub1", "2024Q1", 1, "Prod1", "TypeA", "Large", "WasteTypeA", "CategoryA", "MaterialA", "SubTypeA", "NationA", "NationB", "100", "10", "A", string.Empty, new List<string> { "Error1" })
         };
 
         // Mocking

@@ -56,5 +56,10 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         {
             Include(new SmallProducerPackagingTypeValidator());
         }
+
+        if (featureManager.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation).Result)
+        {
+            Include(new LargeProducerRecyclabilityRatingValidator()); // large producer only
+        }
     }
 }

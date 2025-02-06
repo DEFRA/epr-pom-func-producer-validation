@@ -63,6 +63,6 @@ public class QuantityKgValidatorTests
 
     private static ProducerRow BuildProducerRow(string quantityKg)
     {
-        return new ProducerRow(null, null, null, 1, null, null, null, null, null, null, null, null, quantityKg, null, null);
+        return new ProducerRow(null, null, null, 1, null, null, null, null, null, null, null, null, quantityKg, null, null, null);
     }
 }

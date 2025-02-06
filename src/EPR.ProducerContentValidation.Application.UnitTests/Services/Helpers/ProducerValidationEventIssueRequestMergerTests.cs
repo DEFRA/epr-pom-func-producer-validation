@@ -26,6 +26,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             "Nation1",
             "Nation2",
             "100",
+            "A",
             "Units",
             ErrorCodes: new List<string> { "Error1" });
         var request2 = new ProducerValidationEventIssueRequest(
@@ -42,6 +43,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             "Nation1",
             "Nation2",
             "100",
+            "A",
             "Units",
             ErrorCodes: new List<string> { "Error2" });
 
@@ -74,6 +76,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             "Nation1",
             "Nation2",
             "100",
+            "A",
             "Units",
             ErrorCodes: new List<string> { "Error1" });
         var request2 = new ProducerValidationEventIssueRequest(
@@ -90,6 +93,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             "Nation3",
             "Nation4",
             "200",
+            "A",
             "Units",
             ErrorCodes: new List<string> { "Error3" });
 
@@ -124,6 +128,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation2",
             QuantityKg: "100",
             QuantityUnits: "Units",
+            RecyclabilityRating: "A",
             ErrorCodes: new List<string> { "Error1" });
 
         var request2 = new ProducerValidationEventIssueRequest(
@@ -141,6 +146,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation2",
             QuantityKg: "100",
             QuantityUnits: "Units",
+            RecyclabilityRating: "A",
             ErrorCodes: new List<string> { "Error2" });
 
         var uniqueRequest = new ProducerValidationEventIssueRequest(
@@ -158,6 +164,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation6",
             QuantityKg: "300",
             QuantityUnits: "Units",
+            RecyclabilityRating: "A",
             ErrorCodes: new List<string> { "Error4" });
 
         var list1 = new List<ProducerValidationEventIssueRequest> { request1, uniqueRequest };
@@ -191,6 +198,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation2",
             QuantityKg: "100",
             QuantityUnits: "Units",
+            RecyclabilityRating: "A",
             ErrorCodes: new List<string> { "Error1" });
 
         var list1 = new List<ProducerValidationEventIssueRequest> { request };
@@ -237,6 +245,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation2",
             QuantityKg: "100",
             QuantityUnits: "Units",
+            RecyclabilityRating: "A",
             ErrorCodes: null);
 
         var request2 = new ProducerValidationEventIssueRequest(
@@ -254,6 +263,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation2",
             QuantityKg: "100",
             QuantityUnits: "Units",
+            RecyclabilityRating: "A",
             ErrorCodes: new List<string> { "Error2" });
 
         var list1 = new List<ProducerValidationEventIssueRequest> { request1 };

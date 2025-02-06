@@ -90,6 +90,7 @@ public class TotalPackagingMaterialValidatorTests
             producerWithError.ToHomeNation,
             producerWithError.QuantityKg,
             producerWithError.QuantityUnits,
+            producerWithError.RecyclabilityRating,
             producer.BlobName,
             new List<string> { ErrorCode.PackagingTypeInvalidErrorCode }));
 
@@ -125,6 +126,7 @@ public class TotalPackagingMaterialValidatorTests
         string fromHomeNation = "FromHomeNation",
         string toHomeNation = "ToHomeNation",
         string quantityKg = "QuantityKg",
+        string recyclabilityRating = "RecyclabilityRating",
         string quantityUnits = "QuantityUnits") =>
         new(
             SubsidiaryId: subsidiaryId,
@@ -141,5 +143,6 @@ public class TotalPackagingMaterialValidatorTests
             FromHomeNation: fromHomeNation,
             ToHomeNation: toHomeNation,
             QuantityKg: quantityKg,
+            RecyclabilityRating: recyclabilityRating,
             QuantityUnits: quantityUnits);
 }

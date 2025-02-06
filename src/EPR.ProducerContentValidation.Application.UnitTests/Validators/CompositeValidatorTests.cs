@@ -129,6 +129,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -150,6 +151,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -215,6 +217,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -260,6 +263,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -308,6 +312,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -354,6 +359,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -393,6 +399,7 @@ public class CompositeValidatorTests
             "ToHomeNation",
             "100",
             "1",
+            "A",
             "SubmissionPeriod");
 
         var producerRows = new List<ProducerRow> { producerRowOne };
@@ -443,6 +450,7 @@ public class CompositeValidatorTests
                 producerRowOne.ToHomeNation,
                 producerRowOne.QuantityKg,
                 producerRowOne.QuantityUnits,
+                producerRowOne.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCode.ValidationContextErrorKey });
         var warning = new ProducerValidationEventIssueRequest(
@@ -460,6 +468,7 @@ public class CompositeValidatorTests
             producerRowOne.ToHomeNation,
             producerRowOne.QuantityKg,
             producerRowOne.QuantityUnits,
+            producerRowOne.RecyclabilityRating,
             BlobName,
             new List<string> { ErrorCodeOne });
         errors.Add(existingError);

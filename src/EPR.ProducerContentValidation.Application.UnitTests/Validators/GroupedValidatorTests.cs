@@ -114,6 +114,7 @@ public class GroupedValidatorTests
         string fromHomeNation = "FromHomeNation",
         string toHomeNation = "ToHomeNation",
         string quantityKg = "QuantityKg",
+        string recyclabilityRating = "RecyclabilityRating",
         string quantityUnits = "QuantityUnits") =>
         new(
             SubsidiaryId: subsidiaryId,
@@ -130,5 +131,6 @@ public class GroupedValidatorTests
             FromHomeNation: fromHomeNation,
             ToHomeNation: toHomeNation,
             QuantityKg: quantityKg,
+            RecyclabilityRating: recyclabilityRating,
             QuantityUnits: quantityUnits);
 }

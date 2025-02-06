@@ -56,6 +56,7 @@ public static class DtoGenerator
                 "ToHomeNation",
                 "1",
                 "1",
+                "A",
                 "blobName",
                 new List<string> { "Error" })
         };

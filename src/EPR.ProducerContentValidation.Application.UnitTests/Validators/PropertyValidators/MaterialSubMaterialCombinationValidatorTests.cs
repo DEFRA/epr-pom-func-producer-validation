@@ -174,6 +174,6 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
 
     private static ProducerRow BuildProducerRow(string materialType, string? materialSubType)
     {
-        return new ProducerRow(null, null, null, 1, null, null, null, null, materialType, materialSubType, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, null, null, null, null, materialType, materialSubType, null, null, null, null, null, null);
     }
 }

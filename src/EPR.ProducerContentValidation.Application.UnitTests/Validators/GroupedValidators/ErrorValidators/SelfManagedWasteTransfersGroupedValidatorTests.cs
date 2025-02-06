@@ -295,6 +295,7 @@ public class SelfManagedWasteTransfersGroupedValidatorTests
         string fromHomeNation = "FromHomeNation",
         string toHomeNation = "ToHomeNation",
         string quantityKg = "QuantityKg",
+        string recyclabilityRating = "RecyclabilityRating",
         string quantityUnits = "QuantityUnits") =>
         new(
             SubsidiaryId: subsidiaryId,
@@ -311,5 +312,6 @@ public class SelfManagedWasteTransfersGroupedValidatorTests
             FromHomeNation: fromHomeNation,
             ToHomeNation: toHomeNation,
             QuantityKg: quantityKg,
+            RecyclabilityRating: recyclabilityRating,
             QuantityUnits: quantityUnits);
 }

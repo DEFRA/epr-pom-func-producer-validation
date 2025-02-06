@@ -55,6 +55,6 @@ public class MaterialTypeValidatorTests
 
     private static ProducerRow BuildProducerRow(string materialType)
     {
-        return new ProducerRow(null, null, null, 1, null, null, null, null, materialType, null, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, null, null, null, null, materialType, null, null, null, null, null, null, null);
     }
 }
