@@ -137,6 +137,6 @@ public class LargeProducerRecyclabilityRatingValidatorTests : LargeProducerRecyc
 
     private static ProducerRow BuildProducerRow(string dataSubmissionPeriod, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
-        return new ProducerRow(null, dataSubmissionPeriod, null, 1, null, producerSize, packagingType, packagingClass, materialType, materialSubType, null, null, null, null, null, recyclabilityRating, null);
+        return new ProducerRow(null, dataSubmissionPeriod, null, 1, null, producerSize, packagingType, packagingClass, materialType, materialSubType, null, null, null, null, null, null, recyclabilityRating);
     }
 }
