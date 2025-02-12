@@ -26,6 +26,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             "Nation1",
             "Nation2",
             "100",
+            "100",
             "A",
             "Units",
             ErrorCodes: new List<string> { "Error1" });
@@ -42,6 +43,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             "SubTypeX",
             "Nation1",
             "Nation2",
+            "100",
             "100",
             "A",
             "Units",
@@ -76,6 +78,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             "Nation1",
             "Nation2",
             "100",
+            "100",
             "A",
             "Units",
             ErrorCodes: new List<string> { "Error1" });
@@ -93,6 +96,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             "Nation3",
             "Nation4",
             "200",
+            "30",
             "A",
             "Units",
             ErrorCodes: new List<string> { "Error3" });
@@ -128,6 +132,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation2",
             QuantityKg: "100",
             QuantityUnits: "Units",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             ErrorCodes: new List<string> { "Error1" });
 
@@ -146,6 +151,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation2",
             QuantityKg: "100",
             QuantityUnits: "Units",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             ErrorCodes: new List<string> { "Error2" });
 
@@ -164,6 +170,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation6",
             QuantityKg: "300",
             QuantityUnits: "Units",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             ErrorCodes: new List<string> { "Error4" });
 
@@ -198,6 +205,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation2",
             QuantityKg: "100",
             QuantityUnits: "Units",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             ErrorCodes: new List<string> { "Error1" });
 
@@ -245,6 +253,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation2",
             QuantityKg: "100",
             QuantityUnits: "Units",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             ErrorCodes: null);
 
@@ -263,6 +272,7 @@ public class ProducerValidationEventIssueRequestMergerTests
             ToHomeNation: "Nation2",
             QuantityKg: "100",
             QuantityUnits: "Units",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             ErrorCodes: new List<string> { "Error2" });
 

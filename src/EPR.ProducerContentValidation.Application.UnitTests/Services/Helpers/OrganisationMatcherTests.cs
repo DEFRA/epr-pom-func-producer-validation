@@ -35,6 +35,7 @@ public class OrganisationMatcherTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             SubmissionPeriod: "2023");
 
@@ -75,6 +76,7 @@ public class OrganisationMatcherTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             SubmissionPeriod: "2023");
 
@@ -114,6 +116,7 @@ public class OrganisationMatcherTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             SubmissionPeriod: "2023");
 

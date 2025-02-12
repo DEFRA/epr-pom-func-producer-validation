@@ -47,7 +47,8 @@ public class SubsidiaryValidationEvaluatorTests
             ToHomeNation = "Nation2",
             QuantityKg = "100",
             QuantityUnits = "Units",
-            RecyclabilityRating = "A",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
         var subsidiary = new SubsidiaryDetail { SubsidiaryExists = false, SubsidiaryBelongsToAnyOtherOrganisation = true };
         var expectedRequest = new ProducerValidationEventIssueRequest(
@@ -65,6 +66,7 @@ public class SubsidiaryValidationEvaluatorTests
             row.ToHomeNation,
             row.QuantityKg,
             row.QuantityUnits,
+            row.TransitionalPackagingUnits,
             row.RecyclabilityRating,
             ErrorCodes: new List<string> { ErrorCode.SubsidiaryIdDoesNotExist });
 
@@ -101,6 +103,7 @@ public class SubsidiaryValidationEvaluatorTests
             ToHomeNation = "Nation2",
             QuantityKg = "100",
             QuantityUnits = "Units",
+            TransitionalPackagingUnits = "50",
             RecyclabilityRating = "A"
         };
         var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToAnyOtherOrganisation = true };
@@ -119,6 +122,7 @@ public class SubsidiaryValidationEvaluatorTests
             row.ToHomeNation,
             row.QuantityKg,
             row.QuantityUnits,
+            row.TransitionalPackagingUnits,
             row.RecyclabilityRating,
             ErrorCodes: new List<string> { ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation });
 
@@ -155,6 +159,7 @@ public class SubsidiaryValidationEvaluatorTests
             ToHomeNation = "Nation2",
             QuantityKg = "100",
             QuantityUnits = "Units",
+            TransitionalPackagingUnits = "50",
             RecyclabilityRating = "A"
         };
         var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToAnyOtherOrganisation = false, SubsidiaryDoesNotBelongToAnyOrganisation = true };
@@ -173,6 +178,7 @@ public class SubsidiaryValidationEvaluatorTests
             row.ToHomeNation,
             row.QuantityKg,
             row.QuantityUnits,
+            row.TransitionalPackagingUnits,
             row.RecyclabilityRating,
             ErrorCodes: new List<string> { ErrorCode.SubsidiaryDoesNotBelongToAnyOrganisation });
 
@@ -208,7 +214,9 @@ public class SubsidiaryValidationEvaluatorTests
             FromHomeNation = "Nation1",
             ToHomeNation = "Nation2",
             QuantityKg = "100",
-            QuantityUnits = "Units"
+            QuantityUnits = "Units",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
         var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToAnyOtherOrganisation = false };
         string blobName = string.Empty;

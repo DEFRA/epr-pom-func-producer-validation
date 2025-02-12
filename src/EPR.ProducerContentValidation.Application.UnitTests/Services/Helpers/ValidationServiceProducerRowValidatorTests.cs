@@ -66,7 +66,9 @@ public class ValidationServiceProducerRowValidatorTests
             FromHomeNation = "NationA",
             ToHomeNation = "NationB",
             QuantityKg = "100",
-            QuantityUnits = "10"
+            QuantityUnits = "10",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
 
         var row2 = ModelGenerator.CreateProducerRow(1) with
@@ -85,6 +87,7 @@ public class ValidationServiceProducerRowValidatorTests
             ToHomeNation = "NationB",
             QuantityKg = "200",
             QuantityUnits = "20",
+            TransitionalPackagingUnits = "50",
             RecyclabilityRating = "A"
         };
 
@@ -108,6 +111,7 @@ public class ValidationServiceProducerRowValidatorTests
             "NationA",
             "NationB",
             "100",
+            "10",
             "10",
             "A",
             ErrorCodes: new List<string> { "Error1" });
@@ -144,7 +148,9 @@ public class ValidationServiceProducerRowValidatorTests
             FromHomeNation = "NationA",
             ToHomeNation = "NationB",
             QuantityKg = "100",
-            QuantityUnits = "10"
+            QuantityUnits = "10",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
 
         var row2 = ModelGenerator.CreateProducerRow(1) with
@@ -162,7 +168,9 @@ public class ValidationServiceProducerRowValidatorTests
             FromHomeNation = "NationA",
             ToHomeNation = "NationB",
             QuantityKg = "200",
-            QuantityUnits = "20"
+            QuantityUnits = "20",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
 
         var rows = new List<ProducerRow> { row1, row2 };
@@ -186,6 +194,7 @@ public class ValidationServiceProducerRowValidatorTests
             "NationB",
             "100",
             "10",
+            "10",
             "A",
             ErrorCodes: new List<string> { "Error1" });
 
@@ -203,6 +212,7 @@ public class ValidationServiceProducerRowValidatorTests
             "NationA",
             "NationB",
             "200",
+            "20",
             "20",
             "A",
             ErrorCodes: new List<string> { "Error2" });

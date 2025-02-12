@@ -12,9 +12,9 @@
     "StorageAccount:PomContainer": "pom-upload-container",
     "Validation:MaxIssuesToProcess": 1000,
     "Redis:ConnectionString": "https://localhost:1234",
-    "Validation:IsLatest": false,
+    "Validation:IsLatest": true,
     "FeatureManagement:EnableSubsidiaryValidationPom": false,
-    "FeatureManagement:EnableSmallProducerPackagingTypeEnhancedValidation": false,
+    "FeatureManagement:EnableSmallProducerPackagingTypeEnhancedValidation": true,
     "FeatureManagement:EnableLargeProducerRecyclabilityRatingValidation": true
   }
 }

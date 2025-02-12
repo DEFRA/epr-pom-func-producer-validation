@@ -173,6 +173,7 @@ public class SinglePackagingMaterialGroupedValidatorTests
             producerWithError.ToHomeNation,
             producerWithError.QuantityKg,
             producerWithError.QuantityUnits,
+            producerWithError.TransitionalPackagingUnits,
             producerWithError.RecyclabilityRating,
             producer.BlobName,
             new List<string> { ErrorCode.MaterialTypeInvalidErrorCode }));
@@ -236,8 +237,9 @@ public class SinglePackagingMaterialGroupedValidatorTests
         string fromHomeNation = "FromHomeNation",
         string toHomeNation = "ToHomeNation",
         string quantityKg = "QuantityKg",
-        string recyclabilityRating = "RecyclabilityRating",
-        string quantityUnits = "QuantityUnits") =>
+        string quantityUnits = "QuantityUnits",
+        string transitionalPackagingUnits = "TransitionalPackagingUnits",
+        string recyclabilityRating = "RecyclabilityRating") =>
         new(
             SubsidiaryId: subsidiaryId,
             DataSubmissionPeriod: dataSubmissionPeriod,
@@ -253,6 +255,7 @@ public class SinglePackagingMaterialGroupedValidatorTests
             FromHomeNation: fromHomeNation,
             ToHomeNation: toHomeNation,
             QuantityKg: quantityKg,
-            RecyclabilityRating: recyclabilityRating,
-            QuantityUnits: quantityUnits);
+            QuantityUnits: quantityUnits,
+            TransitionalPackagingUnits: transitionalPackagingUnits,
+            RecyclabilityRating: recyclabilityRating);
 }

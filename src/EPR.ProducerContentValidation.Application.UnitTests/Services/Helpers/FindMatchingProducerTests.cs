@@ -104,6 +104,7 @@ public class FindMatchingProducerTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             BlobName: "ExampleBlobName",
             ErrorCodes: new List<string> { "E001", "E002" });

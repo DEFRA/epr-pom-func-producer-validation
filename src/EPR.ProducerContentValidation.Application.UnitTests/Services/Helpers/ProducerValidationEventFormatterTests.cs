@@ -35,6 +35,7 @@ public class ProducerValidationEventFormatterTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             SubmissionPeriod: "2023");
 
@@ -60,6 +61,8 @@ public class ProducerValidationEventFormatterTests
         result.ToHomeNation.Should().Be("Germany");
         result.QuantityKg.Should().Be("100");
         result.QuantityUnits.Should().Be("200");
+        result.TransitionalPackagingUnits.Should().Be("50");
+        result.RecyclabilityRating.Should().Be("A");
         result.ErrorCodes.Should().Contain(errorCode);
     }
 
@@ -82,6 +85,7 @@ public class ProducerValidationEventFormatterTests
             ToHomeNation: null,
             QuantityKg: null,
             QuantityUnits: null,
+            TransitionalPackagingUnits: null,
             RecyclabilityRating: null,
             SubmissionPeriod: "2023");
 
@@ -107,6 +111,8 @@ public class ProducerValidationEventFormatterTests
         result.ToHomeNation.Should().BeEmpty();
         result.QuantityKg.Should().BeEmpty();
         result.QuantityUnits.Should().BeEmpty();
+        result.TransitionalPackagingUnits.Should().BeEmpty();
+        result.RecyclabilityRating.Should().BeEmpty();
         result.ErrorCodes.Should().Contain(errorCode);
     }
 
@@ -129,6 +135,7 @@ public class ProducerValidationEventFormatterTests
             ToHomeNation: "Germany",
             QuantityKg: "100",
             QuantityUnits: "200",
+            TransitionalPackagingUnits: "50",
             RecyclabilityRating: "A",
             SubmissionPeriod: "2023");
 

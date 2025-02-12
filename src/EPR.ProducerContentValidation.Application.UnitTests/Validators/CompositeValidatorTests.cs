@@ -129,6 +129,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
                 producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
@@ -151,6 +152,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
                 producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
@@ -217,6 +219,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
                 producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
@@ -263,6 +266,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
                 producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
@@ -312,6 +316,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
                 producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
@@ -359,6 +364,7 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
                 producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
@@ -450,6 +456,7 @@ public class CompositeValidatorTests
                 producerRowOne.ToHomeNation,
                 producerRowOne.QuantityKg,
                 producerRowOne.QuantityUnits,
+                producerRowOne.TransitionalPackagingUnits,
                 producerRowOne.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCode.ValidationContextErrorKey });
@@ -468,6 +475,7 @@ public class CompositeValidatorTests
             producerRowOne.ToHomeNation,
             producerRowOne.QuantityKg,
             producerRowOne.QuantityUnits,
+            producerRowOne.TransitionalPackagingUnits,
             producerRowOne.RecyclabilityRating,
             BlobName,
             new List<string> { ErrorCodeOne });
