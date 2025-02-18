@@ -18,6 +18,36 @@ public class QuantityKgValidatorTests
     }
 
     [TestMethod]
+    [DataRow("0")]
+    public void QuantityKgValidator_Passes_When_MatchOtherZeroReturnsCondition_And_QuantityKg_IsZero(string quantityKg)
+    {
+        // Arrange
+        var model = new ProducerRow(null, "2024-P3", "105863", 1, null, "L", "OW", "O2", "OT", "Zero returns", "EN", null, quantityKg, null, "January to June 2024");
+
+        // Act
+        var result = _systemUnderTest.TestValidate(model);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(x => x.QuantityKg);
+    }
+
+    [TestMethod]
+    [DataRow("0")]
+    public void QuantityKgValidator_FailsValidation_When_Doesnot_MatchOtherZeroReturnsCondition_And_QuantityKg_IsZero(string quantityKg)
+    {
+        // Arrange
+        var model = new ProducerRow(null, "2024-P3", "105863", 1, null, "L", "OW", "O2", "OT", "Zero", "EN", null, quantityKg, null, "January to June 2024");
+
+        // Act
+        var result = _systemUnderTest.TestValidate(model);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.QuantityKg)
+            .WithErrorCode(ErrorCode.QuantityKgInvalidErrorCode);
+    }
+
+    [TestMethod]
     [DataRow("1")]
     [DataRow("9223372036854775807")]
     public void QuantityKgValidator_PassesValidation_WhenQuantityKgIs(string quantityKg)
