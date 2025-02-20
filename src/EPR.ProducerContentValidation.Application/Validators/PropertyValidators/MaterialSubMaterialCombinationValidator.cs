@@ -43,8 +43,8 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
             RuleFor(x => x.MaterialSubType)
                .Empty()
                .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)
-               .When((x, context) => (IsLargeProducerRecyclabilityRatingValidationEnabled(x, context)
-                && IsLargeProducerMaterialSubTypeRequiredBefore2025(x)) || !IsLargeProducerRecyclabilityRatingValidationEnabled(x, context));
+               .When((x, context) => (IsLargeProducerRecyclabilityRatingValidationEnabled(context)
+                && IsLargeProducerMaterialSubTypeRequiredBefore2025(x)) || !IsLargeProducerRecyclabilityRatingValidationEnabled(context));
 
             // Scenario 7 - Invalid material subtype
             RuleFor(x => x.MaterialSubType)
@@ -77,8 +77,7 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
         return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
                && PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
                && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase) || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
-               && (DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase) || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase))
-               && MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase);
+               && (DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase) || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool IsLargeProducerMaterialSubTypeRequiredBefore2025(ProducerRow row)
@@ -86,14 +85,12 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
         return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
                && !string.IsNullOrEmpty(row.WasteType)
                && !string.IsNullOrEmpty(row.PackagingCategory)
-               && MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase)
                && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
     }
 
     private static bool IsSubmissionPeriodBefore2025(string? dataSubmissionPeriod)
     {
-        // string dataSubmissionPeriod = "2025-H1";
-        Regex regex = new Regex(@"(\d{4})");  // Match the first 4 digits
+        Regex regex = new Regex(@"(\d{4})");
         Match match = regex.Match(dataSubmissionPeriod);
         if (match.Success)
         {
@@ -113,7 +110,7 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
         }
     }
 
-    private static bool IsLargeProducerRecyclabilityRatingValidationEnabled(ProducerRow row, ValidationContext<ProducerRow> context)
+    private static bool IsLargeProducerRecyclabilityRatingValidationEnabled(ValidationContext<ProducerRow> context)
     {
         if (context.RootContextData.TryGetValue(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation, out var flag))
         {

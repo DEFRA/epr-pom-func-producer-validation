@@ -12,12 +12,6 @@ using Models;
 
 public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 {
-    private readonly ImmutableList<string> _plasticMaterialSubTypeCodes = new List<string>
-    {
-        MaterialSubType.Flexible,
-        MaterialSubType.Rigid
-    }.ToImmutableList();
-
     public RecyclabilityRatingValidator()
     {
         // Scenario 3 - Missing recyclability data
@@ -54,24 +48,6 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
                && (ReferenceDataGenerator.MaterialTypes.Where(o => !o.Equals(MaterialType.Plastic)).Contains(row.MaterialType) || (MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase) && (MaterialSubType.Rigid.Equals(row.MaterialSubType, StringComparison.OrdinalIgnoreCase) || MaterialSubType.Flexible.Equals(row.MaterialSubType, StringComparison.OrdinalIgnoreCase))));
     }
 
-    private static bool IsLargeProducerMaterialSubTypeRequired(ProducerRow row)
-    {
-        return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
-               && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase) || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
-               && (DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase) || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase))
-               && MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static bool IsLargeProducerMaterialSubTypeRequiredBefore2025(ProducerRow row)
-    {
-        return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && !string.IsNullOrEmpty(row.WasteType)
-               && !string.IsNullOrEmpty(row.PackagingCategory)
-               && MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase)
-               && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
-    }
-
     private static bool IsLargeProducerRecyclabilityRatingRequiredBefore2025(ProducerRow row)
     {
         return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
@@ -83,8 +59,7 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 
     private static bool IsSubmissionPeriodBefore2025(string? dataSubmissionPeriod)
     {
-        // string dataSubmissionPeriod = "2025-H1";
-        Regex regex = new Regex(@"(\d{4})");  // Match the first 4 digits
+        Regex regex = new Regex(@"(\d{4})");
         Match match = regex.Match(dataSubmissionPeriod);
         if (match.Success)
         {
