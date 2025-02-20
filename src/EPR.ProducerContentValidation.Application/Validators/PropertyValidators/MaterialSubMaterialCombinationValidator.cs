@@ -90,7 +90,7 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
 
     private static bool IsSubmissionPeriodBefore2025(string? dataSubmissionPeriod)
     {
-        Regex regex = new Regex(@"(\d{4})");
+        Regex regex = new Regex(@"(\d{4})", RegexOptions.NonBacktracking);
         Match match = regex.Match(dataSubmissionPeriod);
         if (match.Success)
         {
