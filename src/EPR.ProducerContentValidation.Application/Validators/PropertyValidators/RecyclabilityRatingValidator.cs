@@ -10,7 +10,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Models;
 
-public class LargeProducerRecyclabilityRatingValidator : AbstractValidator<ProducerRow>
+public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 {
     private readonly ImmutableList<string> _plasticMaterialSubTypeCodes = new List<string>
     {
@@ -18,26 +18,8 @@ public class LargeProducerRecyclabilityRatingValidator : AbstractValidator<Produ
         MaterialSubType.Rigid
     }.ToImmutableList();
 
-    public LargeProducerRecyclabilityRatingValidator()
+    public RecyclabilityRatingValidator()
     {
-        // Scenario 4 - Missing Plastic material breakdown
-        RuleFor(x => x.MaterialSubType)
-       .NotEmpty()
-       .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeRequired)
-       .When(x => IsLargeProducerMaterialSubTypeRequired(x));
-
-        // Scenario 5 - Material subtype not required
-        RuleFor(x => x.MaterialSubType)
-       .Empty()
-       .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)
-       .When(x => IsLargeProducerMaterialSubTypeRequiredBefore2025(x));
-
-        // Scenario 7 - Invalid material subtype
-        RuleFor(x => x.MaterialSubType)
-        .IsInAllowedValues(_plasticMaterialSubTypeCodes)
-        .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)
-        .When(x => IsLargeProducerMaterialSubTypeRequired(x));
-
         // Scenario 3 - Missing recyclability data
         RuleFor(x => x.RecyclabilityRating)
         .NotEmpty()
@@ -60,15 +42,7 @@ public class LargeProducerRecyclabilityRatingValidator : AbstractValidator<Produ
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
         var producerRow = context.InstanceToValidate;
-
-        // return !result.Errors.Exists(x => ErrorCode.MaterialTypeInvalidErrorCode.Equals(x.ErrorCode));
         return ProducerSize.Large.Equals(producerRow.ProducerSize);
-    }
-
-    private static bool IsValidMaterialSubTypeForPlastic(string subType)
-    {
-        return subType.Equals(MaterialSubType.Flexible, StringComparison.OrdinalIgnoreCase) ||
-               subType.Equals(MaterialSubType.Rigid, StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsLargeProducerRecyclabilityRatingRequired(ProducerRow row)

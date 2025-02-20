@@ -52,6 +52,7 @@ public class ValidatorsPerformanceTests
         var compositeValidatorUnderTest = new CompositeValidator(
             validationOptionsMock.Object,
             submissionConfigOptions.Object,
+            featureManagerMock.Object,
             errorCountServiceMock.Object,
             AutoMapperHelpers.GetMapper<ProducerProfile>(),
             producerRowValidatorFactory,

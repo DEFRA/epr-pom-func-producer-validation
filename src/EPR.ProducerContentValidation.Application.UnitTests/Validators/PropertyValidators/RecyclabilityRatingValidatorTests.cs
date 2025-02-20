@@ -9,14 +9,14 @@ using Models;
 using Moq;
 
 [TestClass]
-public class LargeProducerRecyclabilityRatingValidatorTests : LargeProducerRecyclabilityRatingValidator
+public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
 {
-    private readonly LargeProducerRecyclabilityRatingValidator _systemUnderTest;
+    private readonly RecyclabilityRatingValidator _systemUnderTest;
     private Mock<IFeatureManager> _featureManagerMock;
 
-    public LargeProducerRecyclabilityRatingValidatorTests()
+    public RecyclabilityRatingValidatorTests()
     {
-        _systemUnderTest = new LargeProducerRecyclabilityRatingValidator();
+        _systemUnderTest = new RecyclabilityRatingValidator();
         _featureManagerMock = new Mock<IFeatureManager>();
     }
 
@@ -35,51 +35,6 @@ public class LargeProducerRecyclabilityRatingValidatorTests : LargeProducerRecyc
 
         // Assert
         result.ShouldNotHaveValidationErrorFor(x => x.RecyclabilityRating);
-    }
-
-    [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
-    public void LargeProducerRecyclabilityRatingValidator_Missing_Plastic_Material_SubType(string dataSubmissionPeriod, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
-    {
-        // Arrange
-        var producerRow = BuildProducerRow(dataSubmissionPeriod, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
-
-        // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
-             .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeRequired);
-    }
-
-    [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2023P1, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Red)]
-    public void LargeProducerRecyclabilityRatingValidator_Plastic_Material_SubType_Not_Required_Before_2025(string dataSubmissionPeriod, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
-    {
-        // Arrange
-        var producerRow = BuildProducerRow(dataSubmissionPeriod, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
-
-        // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
-        .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial);
-    }
-
-    [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.HDPE, RecyclabilityRating.Red)]
-    public void LargeProducerRecyclabilityRatingValidator_Invalid_Plastic_Material_SubType(string dataSubmissionPeriod, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
-    {
-        // Arrange
-        var producerRow = BuildProducerRow(dataSubmissionPeriod, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
-
-        // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
-            .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode);
     }
 
     [TestMethod]
