@@ -14,7 +14,7 @@ public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
     public DataSubmissionPeriodValidator()
     {
         // Do not allow Large producer to use the submission period "2024-P0"
-        RuleFor(x => x.SubmissionPeriod)
+        RuleFor(x => x.DataSubmissionPeriod)
             .NotEqual(DataSubmissionPeriodForP0)
             .WithErrorCode(ErrorCode.LargeProducersCannotSubmitforPeriodP0ErrorCode)
             .When((row, context) => row.ProducerSize.Equals(ProducerSize.Large, StringComparison.CurrentCultureIgnoreCase));
