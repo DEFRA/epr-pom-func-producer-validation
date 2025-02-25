@@ -46,11 +46,7 @@ public static class ErrorCode
     public const string PackagingTypeForLargeProducerInvalidErrorCode = "53";
     public const string InvalidSubmissionPeriodFor2023P1P2 = "54";
     public const string InvalidSubmissionPeriodFor2023P3 = "55";
-    public const string InvalidSubmissionPeriodFor2024P1P2P3 = "65";
-    public const string InvalidSubmissionPeriodFor2024P4 = "66";
-    public const string InvalidSubmissionPeriodFor2025H1 = "67";
-    public const string InvalidSubmissionPeriodFor2025H2 = "68";
-    public const string InvalidSubmissionPeriodFor2025P0 = "69";
+
     public const string TransitionalPackagingUnitsInvalidErrorCode = "90";
     public const string InvalidOrganisationSizeValue = "895";
     public const string PomFileSmallOrganisationSizeInvalidErrorCode = "901";
@@ -68,6 +64,9 @@ public static class ErrorCode
     public const string LargeProducerRecyclabilityRatingNotRequired = "102";
     public const string LargeProducerPlasticMaterialSubTypeInvalidErrorCode = "103";
     public const string LargeProducerRecyclabilityRatingInvalidErrorCode = "104";
+    public const string SmallProducerPlasticMaterialSubTypeNotRequired = "105";
+    public const string SmallProducerRecyclabilityRatingNotRequired = "106";
+    public const string SmallProducerOnlyPlasticMaterialTypeAllowed = "107";
 
     /* Issue codes for warnings */
     public const string WarningPackagingMaterialWeightLessThan100 = "59";

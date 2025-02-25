@@ -90,7 +90,6 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [DataRow(MaterialType.Steel)]
     [DataRow(MaterialType.Glass)]
     [DataRow(MaterialType.PaperCard)]
-    [DataRow(MaterialType.Plastic)]
     [DataRow(MaterialType.FibreComposite)]
     public void MaterialSubMaterialCombinationValidator_ContainsErrorForMaterialCombination_WhenSubTypePresentAndMaterialIs(string materialType)
     {
@@ -194,11 +193,8 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         // Arrange
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
-        var context = new ValidationContext<ProducerRow>(producerRow);
-        context.RootContextData[FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation] = true;
-
         // Act
-        var result = _systemUnderTest.TestValidate(context);
+        var result = _systemUnderTest.TestValidate(producerRow);
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
@@ -221,12 +217,11 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2023P1, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Red)]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Red)]
-    public void MaterialSubMaterialCombinationValidator_Large_Producer_Plastic_Material_SubType_Not_Required_When_Flag_Disabled(string dataSubmissionPeriod, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
+    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerSize.Small, PackagingType.Household,  MaterialType.Plastic, MaterialSubType.Rigid)]
+    public void MaterialSubMaterialCombinationValidator_SmallProducer_PlasticMaterial_SubType_NotRequired(string dataSubmissionPeriod, string producerSize, string packagingType, string materialType, string materialSubType)
     {
         // Arrange
-        var producerRow = BuildProducerRow(dataSubmissionPeriod, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
+        var producerRow = BuildProducerRow(dataSubmissionPeriod, producerSize, packagingType, null, materialType, materialSubType, null);
 
         var context = new ValidationContext<ProducerRow>(producerRow);
         context.RootContextData[FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation] = false;
@@ -236,22 +231,18 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
-        .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial);
+        .WithErrorCode(ErrorCode.SmallProducerPlasticMaterialSubTypeNotRequired);
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2023P1, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Red)]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.PaperCard, MaterialSubType.Rigid, RecyclabilityRating.Red)]
-    public void MaterialSubMaterialCombinationValidator_Large_Producer_Plastic_Material_SubType_Not_Required_When_Flag_Enabled(string dataSubmissionPeriod, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
+    [DataRow(DataSubmissionPeriod.Year2023P1, ProducerSize.Small, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
+    public void MaterialSubMaterialCombinationValidator_SmallProducer_Plastic_Material_SubType_Not_Required_Before_2025(string dataSubmissionPeriod, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType)
     {
         // Arrange
-        var producerRow = BuildProducerRow(dataSubmissionPeriod, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
-
-        var context = new ValidationContext<ProducerRow>(producerRow);
-        context.RootContextData[FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation] = true;
+        var producerRow = BuildProducerRow(dataSubmissionPeriod, producerSize, packagingType, packagingClass, materialType, materialSubType, null);
 
         // Act
-        var result = _systemUnderTest.TestValidate(context);
+        var result = _systemUnderTest.TestValidate(producerRow);
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)

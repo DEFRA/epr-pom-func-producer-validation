@@ -85,6 +85,22 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
        .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingNotRequired);
     }
 
+    [TestMethod]
+    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerSize.Small, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Aluminium, "", RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerSize.Small, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Green)]
+    public void RecyclabilityRatingValidator_Recyclability_Code_Not_Required_For_SmallProducer(string dataSubmissionPeriod, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(dataSubmissionPeriod, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
+       .WithErrorCode(ErrorCode.SmallProducerRecyclabilityRatingNotRequired);
+    }
+
     private static ProducerRow BuildProducerRow(string producerSize)
     {
         return new ProducerRow(null, null, null, 1, null, producerSize, null, null, null, null, null, null, null, null, null, null, null);

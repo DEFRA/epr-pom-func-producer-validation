@@ -33,20 +33,25 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
 
         When(x => x.MaterialType == MaterialType.Plastic, () =>
         {
-            // Scenario 4 - Missing Plastic material breakdown
+            // Missing Plastic material breakdown
             RuleFor(x => x.MaterialSubType)
                .NotEmpty()
                .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeRequired)
                .When(x => IsLargeProducerMaterialSubTypeRequired(x));
 
-            // Scenario 5 - Material subtype not required
+            // Material subtype not required for Large or Small Organisation before 2025
             RuleFor(x => x.MaterialSubType)
                .Empty()
                .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)
-               .When((x, context) => (IsLargeProducerRecyclabilityRatingValidationEnabled(context)
-                && IsLargeProducerMaterialSubTypeRequiredBefore2025(x)) || !IsLargeProducerRecyclabilityRatingValidationEnabled(context));
+               .When((x) => IsLargeProducerMaterialSubTypeRequiredBefore2025(x) || IsSmallProducerMaterialSubTypeRequiredBefore2025(x));
 
-            // Scenario 7 - Invalid material subtype
+            // Material subtype not required for Small Organisation
+            RuleFor(x => x.MaterialSubType)
+               .Empty()
+               .WithErrorCode(ErrorCode.SmallProducerPlasticMaterialSubTypeNotRequired)
+               .When((x) => IsSmallProducerMaterialSubTypeNotRequired(x));
+
+            // Invalid material subtype
             RuleFor(x => x.MaterialSubType)
                .IsInAllowedValues(_plasticMaterialSubTypeCodes)
                .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)
@@ -83,8 +88,18 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
     private static bool IsLargeProducerMaterialSubTypeRequiredBefore2025(ProducerRow row)
     {
         return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && !string.IsNullOrEmpty(row.WasteType)
-               && !string.IsNullOrEmpty(row.PackagingCategory)
+               && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
+    }
+
+    private static bool IsSmallProducerMaterialSubTypeNotRequired(ProducerRow row)
+    {
+        return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+               && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsSmallProducerMaterialSubTypeRequiredBefore2025(ProducerRow row)
+    {
+        return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
                && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
     }
 

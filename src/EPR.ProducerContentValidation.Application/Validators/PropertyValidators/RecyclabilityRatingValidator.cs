@@ -7,36 +7,35 @@ using Constants;
 using EPR.ProducerContentValidation.Application.ReferenceData;
 using EPR.ProducerContentValidation.Application.Validators.CustomValidators;
 using FluentValidation;
-using FluentValidation.Results;
 using Models;
 
 public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 {
     public RecyclabilityRatingValidator()
     {
-        // Scenario 3 - Missing recyclability data
+        // Missing recyclability data
         RuleFor(x => x.RecyclabilityRating)
         .NotEmpty()
         .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingRequired)
         .When(x => IsLargeProducerRecyclabilityRatingRequired(x));
 
-        // Scenario 8 - Invalid Recyclability codes
+        // Invalid Recyclability codes
         RuleFor(x => x.RecyclabilityRating)
        .IsInAllowedValues(ReferenceDataGenerator.RecyclabilityRatings)
        .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)
        .When(x => IsLargeProducerRecyclabilityRatingRequired(x) && !string.IsNullOrEmpty(x.RecyclabilityRating));
 
-        // Scenario 6 - Recyclability data not required
+        // Recyclability data not required for Large Producer before 2025
         RuleFor(x => x.RecyclabilityRating)
         .Empty()
         .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingNotRequired)
         .When(x => IsLargeProducerRecyclabilityRatingRequiredBefore2025(x));
-    }
 
-    protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
-    {
-        var producerRow = context.InstanceToValidate;
-        return ProducerSize.Large.Equals(producerRow.ProducerSize);
+        // Recyclability data not required for Small Producer
+        RuleFor(x => x.RecyclabilityRating)
+        .Empty()
+        .WithErrorCode(ErrorCode.SmallProducerRecyclabilityRatingNotRequired)
+        .When(x => IsSmallProducerRecyclabilityRatingNotRequired(x));
     }
 
     private static bool IsLargeProducerRecyclabilityRatingRequired(ProducerRow row)
@@ -55,6 +54,12 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
                && !string.IsNullOrEmpty(row.PackagingCategory)
                && !string.IsNullOrEmpty(row.MaterialType)
                && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
+    }
+
+    private static bool IsSmallProducerRecyclabilityRatingNotRequired(ProducerRow row)
+    {
+        return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+               && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsSubmissionPeriodBefore2025(string? dataSubmissionPeriod)
