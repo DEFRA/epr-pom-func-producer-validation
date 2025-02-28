@@ -55,7 +55,7 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
             RuleFor(x => x.MaterialSubType)
                .IsInAllowedValues(_plasticMaterialSubTypeCodes)
                .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)
-               .When((x) => IsLargeProducerMaterialSubTypeRequired(x));
+               .When((x) => !string.IsNullOrWhiteSpace(x.MaterialSubType) && IsLargeProducerMaterialSubTypeRequired(x));
         }).Otherwise(() =>
           {
               RuleFor(x => x.MaterialSubType)
