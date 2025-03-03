@@ -7,20 +7,22 @@ public static class HelperFunctions
 {
     public static bool MatchOtherZeroReturnsCondition(ProducerRow producerRow)
     {
-        var hasOWWasteType = !string.IsNullOrWhiteSpace(producerRow.WasteType) && producerRow.WasteType.Equals(PackagingType.SelfManagedOrganisationWaste);
-        var hasO2PackagingCategory = !string.IsNullOrWhiteSpace(producerRow.PackagingCategory) && producerRow.PackagingCategory.Equals(PackagingClass.WasteOrigin);
-        var hasOTMaterialType = !string.IsNullOrWhiteSpace(producerRow.MaterialType) && producerRow.MaterialType.Equals(MaterialType.Other);
-        var hasZeroreReturnsMaterialSubType = !string.IsNullOrWhiteSpace(producerRow.MaterialSubType) && producerRow.MaterialSubType.Equals(MaterialSubType.ZeroReturns, StringComparison.OrdinalIgnoreCase);
+        var isLargeProducer = !string.IsNullOrWhiteSpace(producerRow.ProducerSize) && producerRow.ProducerSize.Equals(ProducerSize.Large);
+        var isOWWasteType = !string.IsNullOrWhiteSpace(producerRow.WasteType) && producerRow.WasteType.Equals(PackagingType.SelfManagedOrganisationWaste);
+        var isO2PackagingCategory = !string.IsNullOrWhiteSpace(producerRow.PackagingCategory) && producerRow.PackagingCategory.Equals(PackagingClass.WasteOrigin);
+        var isOTMaterialType = !string.IsNullOrWhiteSpace(producerRow.MaterialType) && producerRow.MaterialType.Equals(MaterialType.Other);
 
-        return hasOWWasteType && hasO2PackagingCategory &&
-            hasOTMaterialType && hasZeroreReturnsMaterialSubType;
+        return isLargeProducer
+            && isOWWasteType
+            && isO2PackagingCategory
+            && isOTMaterialType;
     }
 
     public static bool HasZeroValue(string? value)
     {
-        return value is not null &&
-            !value.Contains(' ') &&
-            !value.StartsWith('-') &&
-            value.Equals("0");
+        return value is not null
+            && !value.Contains(' ')
+            && !value.StartsWith('-')
+            && value.Equals("0");
     }
 }

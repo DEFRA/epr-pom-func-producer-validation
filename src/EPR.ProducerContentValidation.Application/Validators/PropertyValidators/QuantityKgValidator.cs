@@ -13,8 +13,7 @@ public class QuantityKgValidator : AbstractValidator<ProducerRow>
     {
         PackagingType.SelfManagedOrganisationWaste,
         PackagingClass.WasteOrigin,
-        MaterialType.Other,
-        MaterialSubType.ZeroReturns
+        MaterialType.Other
     }.ToImmutableList();
 
     public QuantityKgValidator()
@@ -25,8 +24,8 @@ public class QuantityKgValidator : AbstractValidator<ProducerRow>
             .When(row => !HelperFunctions.MatchOtherZeroReturnsCondition(row));
 
         RuleFor(x => x.QuantityKg)
-            .IsLongAndGreaterThanOrEqualTo(0)
-           .WithErrorCode(ErrorCode.QuantityKgInvalidErrorCode)
-           .When(row => HelperFunctions.MatchOtherZeroReturnsCondition(row));
+            .IsLongAndEqualTo(0)
+            .WithErrorCode(ErrorCode.QuantityKgInvalidErrorCode)
+            .When(row => HelperFunctions.MatchOtherZeroReturnsCondition(row));
     }
 }

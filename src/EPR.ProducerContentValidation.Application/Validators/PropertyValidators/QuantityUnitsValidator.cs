@@ -10,14 +10,21 @@ public class QuantityUnitsValidator : AbstractValidator<ProducerRow>
 {
     public QuantityUnitsValidator()
     {
-        RuleFor(x => x.QuantityUnits)
-            .IsLongAndGreaterThanOrNull(0)
-            .WithErrorCode(ErrorCode.QuantityUnitsInvalidErrorCode)
-            .When(row => !Helperfunctions.MatchOtherZeroReturnsCondition(row));
+        When(row => Helperfunctions.MatchOtherZeroReturnsCondition(row), () =>
+        {
+            RuleFor(x => x.QuantityUnits)
+            .Must(IsNullOrEmpty)
+            .WithErrorCode(ErrorCode.QuantityUnitWasteTypeInvalidErrorCode);
+        }).Otherwise(() =>
+        {
+            RuleFor(x => x.QuantityUnits)
+           .IsLongAndGreaterThanOrNull(0)
+           .WithErrorCode(ErrorCode.QuantityUnitsInvalidErrorCode);
+        });
+    }
 
-        RuleFor(x => x.QuantityUnits)
-            .IsLongAndGreaterThanOrEqualOrNull(0)
-            .WithErrorCode(ErrorCode.QuantityUnitsInvalidErrorCode)
-            .When(row => Helperfunctions.MatchOtherZeroReturnsCondition(row));
+    private static bool IsNullOrEmpty(string number)
+    {
+        return string.IsNullOrWhiteSpace(number);
     }
 }
