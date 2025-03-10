@@ -3,6 +3,7 @@
         <AzureFunctionsVersion>v4</AzureFunctionsVersion>
         <SonarQubeTestProject>false</SonarQubeTestProject>
         <TargetFramework>net8.0</TargetFramework>
+        <UserSecretsId>f5649d0b-74d7-4319-aa6e-87a78c16fe14</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Azure.Identity" Version="1.13.1" />
