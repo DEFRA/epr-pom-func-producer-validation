@@ -35,4 +35,9 @@ public static class CustomValidators
     {
         return ruleBuilder.Must(x => x is null || (!x.ToString().Contains(' ') && !x.ToString().StartsWith('0') && long.TryParse(x.ToString(), out var value) && value > greaterThanValue));
     }
+
+    public static IRuleBuilderOptions<T, TProperty> IsLongAndEqualTo<T, TProperty>(this IRuleBuilder<T, TProperty> ruleBuilder, long equalToValue)
+    {
+        return ruleBuilder.Must(x => x is not null && !x.ToString().Contains(' ') && !x.ToString().StartsWith('-') && long.TryParse(x.ToString(), out var value) && value == equalToValue);
+    }
 }
