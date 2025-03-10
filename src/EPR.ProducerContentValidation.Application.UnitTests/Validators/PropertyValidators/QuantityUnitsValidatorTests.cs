@@ -64,9 +64,6 @@ public class QuantityUnitsValidatorTests
     [DataRow(" ", "zero returns")]
     [DataRow(null, "test")]
     [DataRow("", "my zero test")]
-
-    // [DataRow("0", "zero returns")]
-    // [DataRow("10", "Plastic")]
     public void QuantityUnitsValidator_Passes_When_MatchOtherZeroReturnsCondition_And_QuantityUnit_Is(string quantityUnits, string packagingMaterialSubType)
     {
         // Arrange
