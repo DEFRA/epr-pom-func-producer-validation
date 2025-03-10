@@ -60,6 +60,7 @@ public static class ErrorCode
     /* Issue codes for warnings */
     public const string WarningPackagingMaterialWeightLessThan100 = "59";
     public const string WarningPackagingMaterialWeightLessThanLimitKg = "60";
+    public const string WarningZeroPackagingMaterialWeight = "61";
     public const string WarningOnlyOnePackagingMaterialReported = "62";
     public const string WarningPackagingTypePackagingMaterial = "63";
     public const string WarningPackagingTypeQuantityUnitsLessThanQuantityKgs = "64";
