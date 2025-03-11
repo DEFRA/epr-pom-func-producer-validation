@@ -14,7 +14,7 @@ public class QuantityUnitsValidator : AbstractValidator<ProducerRow>
         {
             RuleFor(x => x.QuantityUnits)
             .Must(IsNullOrEmpty)
-            .WithErrorCode(ErrorCode.QuantityUnitWasteTypeInvalidErrorCode);
+            .WithErrorCode(ErrorCode.QuantityUnitsInvalidErrorCode);
         }).Otherwise(() =>
         {
             RuleFor(x => x.QuantityUnits)

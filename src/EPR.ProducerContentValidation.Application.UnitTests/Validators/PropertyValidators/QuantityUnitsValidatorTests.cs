@@ -83,7 +83,7 @@ public class QuantityUnitsValidatorTests
     public void QuantityUnitsValidator_Fails_When_MatchOtherZeroReturnsCondition_But_QuantityUnit_Is(string quantityUnits)
     {
         // Arrange
-        var model = new ProducerRow(null, "2024-P3", "105863", 1, null, "L", "OW", "O2", "OT", null, "EN", null, "0", quantityUnits, "January to June 2024");
+        var model = new ProducerRow(null, "2024-P3", "105863", 1, null, "L", "OW", "O2", "OT", "rubber", "EN", null, "0", quantityUnits, "January to June 2024");
 
         // Act
         var result = _systemUnderTest.TestValidate(model);
@@ -91,7 +91,7 @@ public class QuantityUnitsValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.QuantityUnits)
-            .WithErrorCode(ErrorCode.QuantityUnitWasteTypeInvalidErrorCode);
+            .WithErrorCode(ErrorCode.QuantityUnitsInvalidErrorCode);
     }
 
     [TestMethod]
