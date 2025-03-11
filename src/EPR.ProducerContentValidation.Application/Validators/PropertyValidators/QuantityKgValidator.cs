@@ -24,7 +24,7 @@ public class QuantityKgValidator : AbstractValidator<ProducerRow>
             .When(row => !HelperFunctions.MatchOtherZeroReturnsCondition(row));
 
         RuleFor(x => x.QuantityKg)
-            .IsLongAndEqualTo(0)
+            .IsLongGreaterThanAndEqualTo(0)
             .WithErrorCode(ErrorCode.QuantityKgInvalidErrorCode)
             .When(row => HelperFunctions.MatchOtherZeroReturnsCondition(row));
     }
