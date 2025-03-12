@@ -19,7 +19,8 @@ public class QuantityKgValidatorTests
 
     [TestMethod]
     [DataRow("0")]
-    public void QuantityKgValidator_Passes_When_MatchOtherZeroReturnsCondition_And_QuantityKg_IsZero(string quantityKg)
+    [DataRow("25000")]
+    public void QuantityKgValidator_Passes_When_MatchOtherZeroReturnsCondition_And_QuantityKgIs(string quantityKg)
     {
         // Arrange
         var model = new ProducerRow(null, "2024-P0", "105761", 1, null, "L", "OW", "O2", "OT", "Zero returns", "EN", null, quantityKg, "0", "January to June 2024");
@@ -47,7 +48,11 @@ public class QuantityKgValidatorTests
     }
 
     [TestMethod]
+    [DataRow(null)]
+    [DataRow(" ")]
     [DataRow("0")]
+    [DataRow("-1")]
+    [DataRow("xxx")]
     public void QuantityKgValidator_Fails_Validation_When_Doesnot_MatchOtherZeroReturnsCondition_And_QuantityKg_IsZero(string quantityKg)
     {
         // Arrange

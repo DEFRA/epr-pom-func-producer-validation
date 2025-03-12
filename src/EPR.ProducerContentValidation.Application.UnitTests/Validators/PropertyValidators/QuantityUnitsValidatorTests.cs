@@ -95,6 +95,44 @@ public class QuantityUnitsValidatorTests
     }
 
     [TestMethod]
+    [DataRow("rubber", "0")]
+    [DataRow("rubber", "0.1")]
+    [DataRow(" ", "1")]
+    [DataRow(null, "100")]
+    public void QuantityUnitsValidator_Fails_When_MatchOtherZeroReturnsCondition_WithZeroQuantityWeight_But_QuantityUnit_IsNotNull(string materialSubType, string quantityUnits)
+    {
+        // Arrange
+        var model = new ProducerRow(null, "2024-P3", "105863", 1, null, "L", "OW", "O2", "OT", materialSubType, "EN", null, "0", quantityUnits, "January to June 2024");
+
+        // Act
+        var result = _systemUnderTest.TestValidate(model);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.QuantityUnits)
+            .WithErrorCode(ErrorCode.QuantityUnitsInvalidErrorCode);
+    }
+
+    [TestMethod]
+    [DataRow("rubber", null)]
+    [DataRow("Zero return", null)]
+    [DataRow(" ", " ")]
+    [DataRow(" ", null)]
+    [DataRow(null, " ")]
+    [DataRow(null, null)]
+    public void QuantityUnitsValidator_Passes_When_MatchOtherZeroReturnsCondition_WithZeroQuantityWeight_But_HasMaterialSubType_And_QuantityUnit_IsNull(string materialSubType, string quantityUnits)
+    {
+        // Arrange
+        var model = new ProducerRow(null, "2024-P3", "105863", 1, null, "L", "OW", "O2", "OT", materialSubType, "EN", null, "0", quantityUnits, "January to June 2024");
+
+        // Act
+        var result = _systemUnderTest.TestValidate(model);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(x => x.QuantityUnits);
+    }
+
+    [TestMethod]
     [DataRow(" ")]
     public void QuantityUnitsValidator_FailsValidation_When_Doesnot_MatchOtherZeroReturnsCondition_And_QuantityUnit_IsNull(string quantityUnits)
     {

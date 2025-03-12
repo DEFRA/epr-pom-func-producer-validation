@@ -1,7 +1,6 @@
 ﻿namespace EPR.ProducerContentValidation.Application.UnitTests.Validators.PropertyValidators.WarningValidators;
 
 using Constants;
-using EPR.ProducerContentValidation.Application.Validators;
 using EPR.ProducerContentValidation.Application.Validators.PropertyValidators.WarningValidators;
 using FluentAssertions;
 using FluentValidation;
@@ -13,12 +12,12 @@ using Models;
 [TestClass]
 public class QuantityKgValidatorTests : QuantityKgValidator
 {
-    private ProducerRowWarningValidator _systemUnderTest;
+    private QuantityKgValidator _systemUnderTest;
 
     [TestInitialize]
     public void Initialize()
     {
-        _systemUnderTest = new ProducerRowWarningValidator();
+        _systemUnderTest = new QuantityKgValidator();
     }
 
     [TestMethod]
