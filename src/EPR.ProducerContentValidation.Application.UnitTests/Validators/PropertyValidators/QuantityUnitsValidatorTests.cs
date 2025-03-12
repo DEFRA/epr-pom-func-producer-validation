@@ -148,6 +148,25 @@ public class QuantityUnitsValidatorTests
             .WithErrorCode(ErrorCode.QuantityUnitsInvalidErrorCode);
     }
 
+    [TestMethod]
+    [DataRow("xx")]
+    [DataRow("001   ")]
+    [DataRow(" 12")]
+    [DataRow("25000")]
+    public void QuantityUnitsValidator_FailsValidation_WhenDoes_MatchOtherZeroReturnsConditions_And_QuantityWeightisZero_But_QuantityUnit_IsNot_NullOrEmpty(string quantityUnits)
+    {
+        // Arrange
+        var model = new ProducerRow(null, "2024-P3", "105863", 1, null, "L", "OW", "O2", "OT", "Zero", "EN", null, "0", quantityUnits, "January to June 2024");
+
+        // Act
+        var result = _systemUnderTest.TestValidate(model);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.QuantityUnits)
+            .WithErrorCode(ErrorCode.QuantityUnitsInvalidErrorCode);
+    }
+
     private static ProducerRow BuildProducerRow(string quantityUnits)
     {
         return new ProducerRow(null, null, null, 1, null, null, null, null, null, null, null, null, null, quantityUnits, null);
