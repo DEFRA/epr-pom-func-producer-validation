@@ -1,4 +1,4 @@
-﻿namespace EPR.ProducerContentValidation.Application.UnitTests.Validators.PropertyValidators;
+namespace EPR.ProducerContentValidation.Application.UnitTests.Validators.PropertyValidators;
 
 using Application.Validators.PropertyValidators;
 using Constants;
