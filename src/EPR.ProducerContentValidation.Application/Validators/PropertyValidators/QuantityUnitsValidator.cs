@@ -10,7 +10,7 @@ public class QuantityUnitsValidator : AbstractValidator<ProducerRow>
 {
     public QuantityUnitsValidator()
     {
-        When(row => Helperfunctions.MatchOtherZeroReturnsCondition(row), () =>
+        When(row => Helperfunctions.MatchOtherZeroReturnsCondition(row) && Helperfunctions.HasZeroValue(row.QuantityKg), () =>
         {
             RuleFor(x => x.QuantityUnits)
             .Must(IsNullOrEmpty)
