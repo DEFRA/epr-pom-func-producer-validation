@@ -10,14 +10,16 @@ public class QuantityKgValidator : AbstractValidator<ProducerRow>
 {
     public QuantityKgValidator()
     {
-        RuleFor(x => x.QuantityKg)
-            .IsLongAndGreaterThan(0)
-            .WithErrorCode(ErrorCode.QuantityKgInvalidErrorCode)
-            .When(row => !HelperFunctions.MatchOtherZeroReturnsCondition(row));
-
-        RuleFor(x => x.QuantityKg)
+        When(row => HelperFunctions.MatchOtherZeroReturnsCondition(row) && string.IsNullOrWhiteSpace(row.QuantityUnits), () =>
+        {
+            RuleFor(x => x.QuantityKg)
             .IsLongGreaterThanOrEqualTo(0)
-            .WithErrorCode(ErrorCode.QuantityKgInvalidErrorCode)
-            .When(row => HelperFunctions.MatchOtherZeroReturnsCondition(row));
+            .WithErrorCode(ErrorCode.QuantityKgInvalidErrorCode);
+        }).Otherwise(() =>
+        {
+            RuleFor(x => x.QuantityKg)
+            .IsLongAndGreaterThan(0)
+            .WithErrorCode(ErrorCode.QuantityKgInvalidErrorCode);
+        });
     }
 }
