@@ -132,14 +132,4 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
             return false;
         }
     }
-
-    private static bool IsLargeProducerRecyclabilityRatingValidationEnabled(ValidationContext<ProducerRow> context)
-    {
-        if (context.RootContextData.TryGetValue(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation, out var flag))
-        {
-            return (bool)flag;
-        }
-
-        return false;
-    }
 }
