@@ -59,7 +59,15 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
     private static bool IsSmallProducerRecyclabilityRatingNotRequired(ProducerRow row)
     {
         return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
+               && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
+               && !string.IsNullOrEmpty(row.ProducerType)
+               && (PackagingType.SmallOrganisationPackagingAll.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase) || PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase))
+               && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
+                   || PackagingClass.SecondaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
+                   || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
+                   || PackagingClass.TransitPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
+                   || PackagingClass.TotalPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
+                   && MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsSubmissionPeriodBefore2025(string? dataSubmissionPeriod)
