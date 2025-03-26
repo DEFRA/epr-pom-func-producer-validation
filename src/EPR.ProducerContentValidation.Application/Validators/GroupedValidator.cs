@@ -39,15 +39,18 @@ public class GroupedValidator : IGroupedValidator
         {
             // Error Validators
             var submissionPeriodValidator = new ConsistentDataSubmissionPeriodsGroupedValidator(_mapper, _issueCountService);
+            var organisationSizeValidator = new ConsistentOrganisationSizeGroupedValidator(_mapper, _issueCountService);
             var selfManagedWasteTransferValidator = new SelfManagedWasteTransfersGroupedValidator(_mapper, _issueCountService);
 
             var submissionPeriodsTask = submissionPeriodValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
+            var organisationSizeTask = organisationSizeValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
             var selfManagedWasteTransfersTask = selfManagedWasteTransferValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
 
             groupedValidatorTasks.AddRange(new List<Task>
             {
                 submissionPeriodsTask,
-                selfManagedWasteTransfersTask
+                selfManagedWasteTransfersTask,
+                organisationSizeTask
             });
         }
 
