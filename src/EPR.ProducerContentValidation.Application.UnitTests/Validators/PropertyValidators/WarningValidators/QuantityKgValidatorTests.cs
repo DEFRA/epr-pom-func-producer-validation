@@ -1,7 +1,6 @@
 ﻿namespace EPR.ProducerContentValidation.Application.UnitTests.Validators.PropertyValidators.WarningValidators;
 
 using Constants;
-using EPR.ProducerContentValidation.Application.Validators;
 using EPR.ProducerContentValidation.Application.Validators.PropertyValidators.WarningValidators;
 using FluentAssertions;
 using FluentValidation;
@@ -13,12 +12,12 @@ using Models;
 [TestClass]
 public class QuantityKgValidatorTests : QuantityKgValidator
 {
-    private ProducerRowWarningValidator _systemUnderTest;
+    private QuantityKgValidator _systemUnderTest;
 
     [TestInitialize]
     public void Initialize()
     {
-        _systemUnderTest = new ProducerRowWarningValidator();
+        _systemUnderTest = new QuantityKgValidator();
     }
 
     [TestMethod]
@@ -39,9 +38,9 @@ public class QuantityKgValidatorTests : QuantityKgValidator
     }
 
     [TestMethod]
+    [DataRow("10")]
     [DataRow("99")]
     [DataRow("80")]
-    [DataRow("0")]
     [DataRow(" 0")]
     [DataRow("0 ")]
     [DataRow("")]
@@ -65,6 +64,22 @@ public class QuantityKgValidatorTests : QuantityKgValidator
         result
             .ShouldHaveValidationErrorFor(x => x.QuantityKg)
             .WithErrorCode(ErrorCode.WarningPackagingMaterialWeightLessThan100);
+    }
+
+    [TestMethod]
+    [DataRow("0")]
+    public void ProducerRow_WarningValidator_FailsValidation_When_QuantityKg_IsZero_And_MatchOtherZeroReturnsCondition(string quantityKg)
+    {
+        // Arrange
+        var model = new ProducerRow(null, "2024-P3", "105863", 1, null, "L", "OW", "O2", "OT", "Zero returns", "EN", null, quantityKg, null, "January to June 2024");
+
+        // Act
+        var result = _systemUnderTest.TestValidate(model);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.QuantityKg)
+            .WithErrorCode(ErrorCode.WarningZeroPackagingMaterialWeight);
     }
 
     [TestMethod]
