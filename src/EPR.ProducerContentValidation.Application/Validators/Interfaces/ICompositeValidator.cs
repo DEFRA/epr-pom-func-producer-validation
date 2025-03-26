@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
+﻿using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
-using FluentValidation.Results;
 
 namespace EPR.ProducerContentValidation.Application.Validators.Interfaces;
 
