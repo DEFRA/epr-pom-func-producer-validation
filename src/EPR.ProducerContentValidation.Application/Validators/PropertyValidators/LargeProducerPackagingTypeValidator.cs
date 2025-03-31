@@ -22,7 +22,9 @@ public class LargeProducerPackagingTypeValidator : AbstractValidator<ProducerRow
         PackagingType.SelfManagedConsumerWaste,
         PackagingType.SelfManagedOrganisationWaste,
         PackagingType.Household,
-        PackagingType.NonHousehold
+        PackagingType.NonHousehold,
+        PackagingType.HouseholdDrinksContainers,
+        PackagingType.PublicBin
     }.ToImmutableList();
 
     public LargeProducerPackagingTypeValidator()

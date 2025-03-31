@@ -24,6 +24,8 @@ public class LargeProducerPackagingTypeValidatorTests : LargeProducerPackagingTy
     [DataRow(PackagingType.SelfManagedOrganisationWaste)]
     [DataRow(PackagingType.Household)]
     [DataRow(PackagingType.NonHousehold)]
+    [DataRow(PackagingType.HouseholdDrinksContainers)]
+    [DataRow(PackagingType.PublicBin)]
     public void LargeProducerPackagingTypeValidator_DoesNotContainErrorForPackagingType_WhenPackagingTypeIs(string packagingType)
     {
         // Arrange
@@ -37,8 +39,6 @@ public class LargeProducerPackagingTypeValidatorTests : LargeProducerPackagingTy
     }
 
     [TestMethod]
-    [DataRow(PackagingType.PublicBin)]
-    [DataRow(PackagingType.HouseholdDrinksContainers)]
     [DataRow(PackagingType.NonHouseholdDrinksContainers)]
     [DataRow(PackagingType.ReusablePackaging)]
     [DataRow(PackagingType.SmallOrganisationPackagingAll)]
