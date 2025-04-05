@@ -64,6 +64,6 @@ public class ProducerIdValidatorTests : ProducerIdValidator
 
     private static ProducerRow BuildProducerRow(string producerId)
     {
-        return new ProducerRow(null, null, producerId, 1, null, null, null, null, null, null, null, null, null, null, null);
+        return new ProducerRow(null, null, producerId, 1, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 }

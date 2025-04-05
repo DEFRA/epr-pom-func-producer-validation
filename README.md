@@ -33,7 +33,9 @@ An example of payload passed into the Azure service bus can be seen below.
       "FromHomeNation": null,
       "ToHomeNation": null,
       "QuantityKg": 1234,
-      "QuantityUnits": 1000
+      "QuantityUnits": 1000,
+      "TransitionalPackagingUnits": 10,
+      "RecyclabilityRating": "A",
     }
   ]
 }

@@ -89,5 +89,6 @@ public class ProducerRowEqualityComparerTests
         fromHomeNation,
         "1",
         "1",
+        "a",
         "submissionPeriod");
 }

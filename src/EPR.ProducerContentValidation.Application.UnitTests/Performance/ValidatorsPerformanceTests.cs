@@ -52,6 +52,7 @@ public class ValidatorsPerformanceTests
         var compositeValidatorUnderTest = new CompositeValidator(
             validationOptionsMock.Object,
             submissionConfigOptions.Object,
+            featureManagerMock.Object,
             errorCountServiceMock.Object,
             AutoMapperHelpers.GetMapper<ProducerProfile>(),
             producerRowValidatorFactory,
@@ -97,7 +98,7 @@ public class ValidatorsPerformanceTests
         {
             SubmissionPeriod.SubmissionPeriodP1,
             SubmissionPeriod.SubmissionPeriodP2,
-            SubmissionPeriod.SubmissionPeriodP3,
+            SubmissionPeriod.SubmissionPeriodP3
         }.ToArray();
 
         var rowNumber = 0;
@@ -119,7 +120,8 @@ public class ValidatorsPerformanceTests
             .RuleFor(x => x.QuantityKg, f => f.Random.Number(50, 1000).ToString())
             .RuleFor(x => x.QuantityUnits, f => f.Random.Number(750, 1500).ToString())
             .RuleFor(x => x.SubmissionPeriod, f => f.Random.ArrayElement(submissionPeriods))
-            .RuleFor(x => x.TransitionalPackagingUnits, f => f.Random.Number(1, 100).ToString());
+            .RuleFor(x => x.TransitionalPackagingUnits, f => f.Random.Number(1, 100).ToString())
+            .RuleFor(x => x.RecyclabilityRating, f => f.Random.ArrayElement(ReferenceDataGenerator.RecyclabilityRatings.ToArray()));
 
         var producerRows = testProducerRows.Generate(totalRows - duplicateRows);
 

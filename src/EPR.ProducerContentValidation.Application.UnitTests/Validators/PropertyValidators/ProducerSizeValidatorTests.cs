@@ -50,6 +50,6 @@ public class ProducerSizeValidatorTests
 
     private static ProducerRow BuildProducerRow(string producerSize)
     {
-        return new ProducerRow(null, null, null, 1, null, producerSize, null, null, null, null, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, null, producerSize, null, null, null, null, null, null, null, null, null, null);
     }
 }

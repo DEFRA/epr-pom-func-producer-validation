@@ -114,6 +114,7 @@ public class PackagingTypePackagingMaterialValidatorTests : PackagingTypePackagi
             null,
             null,
             null,
+            null,
             null);
     }
 }

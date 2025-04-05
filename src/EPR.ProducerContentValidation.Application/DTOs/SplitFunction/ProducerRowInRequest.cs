@@ -18,4 +18,8 @@ public record ProducerRowInRequest(
     string? ToHomeNation,
     string? QuantityKg,
     string? QuantityUnits,
-    string? SubmissionPeriod);
+    string? SubmissionPeriod,
+    string? ProducerName,
+    string? ProducerAddress,
+    string? TransitionalPackagingUnits,
+    string? RecyclabilityRating);

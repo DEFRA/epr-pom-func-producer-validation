@@ -365,6 +365,8 @@ public class DuplicateValidatorTests
         string toHomeNation = "ToHomeNation",
         string quantityKg = "QuantityKg",
         string quantityUnits = "QuantityUnits",
+        string transitionalPackagingUnits = "TransitionalPackagingUnits",
+        string recyclabilityRating = "RecyclabilityRating",
         string submissionPeriod = "SubmissionPeriod") =>
         new(
             SubsidiaryId: subsidiaryId,
@@ -381,5 +383,7 @@ public class DuplicateValidatorTests
             ToHomeNation: toHomeNation,
             QuantityKg: quantityKg,
             QuantityUnits: quantityUnits,
+            TransitionalPackagingUnits: transitionalPackagingUnits,
+            RecyclabilityRating: recyclabilityRating,
             SubmissionPeriod: submissionPeriod);
 }

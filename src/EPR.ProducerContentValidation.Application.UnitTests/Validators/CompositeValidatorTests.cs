@@ -86,9 +86,12 @@ public class CompositeValidatorTests
         _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ProducerRow>(), default))
             .ReturnsAsync(_validationResultMock.Object);
 
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation)).ReturnsAsync(true);
+
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
             Microsoft.Extensions.Options.Options.Create(submissionPeriodOptions),
+            _featureManagerMock.Object,
             _issueCountServiceMock.Object,
             _mapper,
             _producerRowValidatorFactoryMock.Object,
@@ -129,6 +132,8 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -150,6 +155,8 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -215,6 +222,8 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -260,6 +269,8 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -308,6 +319,8 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -354,6 +367,8 @@ public class CompositeValidatorTests
                 producerRow.ToHomeNation,
                 producerRow.QuantityKg,
                 producerRow.QuantityUnits,
+                producerRow.TransitionalPackagingUnits,
+                producerRow.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCodeOne })
         });
@@ -393,6 +408,7 @@ public class CompositeValidatorTests
             "ToHomeNation",
             "100",
             "1",
+            "A",
             "SubmissionPeriod");
 
         var producerRows = new List<ProducerRow> { producerRowOne };
@@ -405,6 +421,7 @@ public class CompositeValidatorTests
         var compositeValidator = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
             Microsoft.Extensions.Options.Options.Create(submissionPeriodOptions),
+            _featureManagerMock.Object,
             _issueCountServiceMock.Object,
             _mapper,
             producerRowValidatorFactory,
@@ -443,6 +460,8 @@ public class CompositeValidatorTests
                 producerRowOne.ToHomeNation,
                 producerRowOne.QuantityKg,
                 producerRowOne.QuantityUnits,
+                producerRowOne.TransitionalPackagingUnits,
+                producerRowOne.RecyclabilityRating,
                 BlobName,
                 new List<string> { ErrorCode.ValidationContextErrorKey });
         var warning = new ProducerValidationEventIssueRequest(
@@ -460,6 +479,8 @@ public class CompositeValidatorTests
             producerRowOne.ToHomeNation,
             producerRowOne.QuantityKg,
             producerRowOne.QuantityUnits,
+            producerRowOne.TransitionalPackagingUnits,
+            producerRowOne.RecyclabilityRating,
             BlobName,
             new List<string> { ErrorCodeOne });
         errors.Add(existingError);
@@ -494,6 +515,7 @@ public class CompositeValidatorTests
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
             submissionPeriodOptions.Object,
+            _featureManagerMock.Object,
             _issueCountServiceMock.Object,
             _mapper,
             _producerRowValidatorFactoryMock.Object,

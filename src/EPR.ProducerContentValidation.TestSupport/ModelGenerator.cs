@@ -21,6 +21,7 @@ public static class ModelGenerator
             "ToHomeNation",
             "1",
             "1",
+            "A",
             "SubmissionPeriod");
     }
 }

@@ -103,6 +103,6 @@ public class NonHouseholdDrinksContainerQuantityUnitsValidatorTests : NonHouseho
 
     private static ProducerRow BuildProducerRow(string packagingType, string? quantityUnits)
     {
-        return new ProducerRow(null, null, null, 1, null, ProducerSize.Large, packagingType, null, null, null, null, null, "1", quantityUnits, null);
+        return new ProducerRow(null, null, null, 1, null, ProducerSize.Large, packagingType, null, null, null, null, null, "1", quantityUnits, null, null);
     }
 }

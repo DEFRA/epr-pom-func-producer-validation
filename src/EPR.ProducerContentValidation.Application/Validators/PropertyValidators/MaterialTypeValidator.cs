@@ -13,5 +13,17 @@ public class MaterialTypeValidator : AbstractValidator<ProducerRow>
         RuleFor(x => x.MaterialType)
             .IsInAllowedValues(ReferenceDataGenerator.MaterialTypes)
             .WithErrorCode(ErrorCode.MaterialTypeInvalidErrorCode);
+
+        RuleFor(x => x.MaterialType)
+           .Must(x => x.Equals(MaterialType.Plastic, StringComparison.OrdinalIgnoreCase))
+           .WithErrorCode(ErrorCode.SmallProducerOnlyPlasticMaterialTypeAllowed)
+                   .When((x, context) => IsSmallProducerMaterialTypeCheckRequired(x));
+    }
+
+    private static bool IsSmallProducerMaterialTypeCheckRequired(ProducerRow row)
+    {
+        return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+               && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
+               && PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase);
     }
 }

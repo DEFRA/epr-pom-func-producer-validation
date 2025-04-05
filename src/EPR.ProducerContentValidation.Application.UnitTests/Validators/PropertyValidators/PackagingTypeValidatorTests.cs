@@ -177,6 +177,6 @@ public class PackagingTypeValidatorTests : PackagingTypeValidator
 
     private static ProducerRow BuildProducerRow(string producerType = null, string packagingType = null, string producerSize = null)
     {
-        return new ProducerRow(null, null, null, 1, producerType, producerSize, packagingType, null, null, null, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, producerType, producerSize, packagingType, null, null, null, null, null, null, null, null, null);
     }
 }

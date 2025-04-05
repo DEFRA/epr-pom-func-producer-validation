@@ -24,7 +24,11 @@ public static class DtoGenerator
                 "ToHomeNation",
                 "1",
                 "1",
-                "2023P3")
+                "2023P3",
+                "ProducerName",
+                "ProducerAddress",
+                "10",
+                "A")
         };
 
         return new ProducerValidationInRequest
@@ -56,6 +60,8 @@ public static class DtoGenerator
                 "ToHomeNation",
                 "1",
                 "1",
+                "1",
+                "A",
                 "blobName",
                 new List<string> { "Error" })
         };
