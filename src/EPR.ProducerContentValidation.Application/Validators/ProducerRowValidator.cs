@@ -23,7 +23,16 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new ToHomeNationValidator());           // large producer only
         Include(new FromHomeNationValidator());         // large producer only
         Include(new MaterialSubMaterialCombinationValidator());
-        Include(new LargeProducerPackagingTypeValidator());     // large producer only
+
+        if (featureManager.IsEnabledAsync(FeatureFlags.EnableModulationLargeProducerHDCPBSubmissions).Result)
+        {
+            Include(new LargeProducerPackagingTypeValidator(featureManager));     // large producer only
+        }
+        else
+        {
+            Include(new LargeProducerPackagingTypeValidator());
+        }
+
         Include(new ToHomeNationPackagingTypeValidator());      // large producer only
         Include(new HomeNationCombinationValidator());          // large producer only
         Include(new HouseholdDrinksContainerQuantityUnitsValidator());

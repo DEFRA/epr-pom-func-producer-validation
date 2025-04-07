@@ -6,16 +6,20 @@ using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using FluentValidation.TestHelper;
+using Microsoft.FeatureManagement;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
+using Moq;
 
 [TestClass]
 public class LargeProducerPackagingTypeValidatorTests : LargeProducerPackagingTypeValidator
 {
     private readonly LargeProducerPackagingTypeValidator _systemUnderTest;
+    private Mock<IFeatureManager> _featureManagerMock;
 
     public LargeProducerPackagingTypeValidatorTests()
     {
+        _featureManagerMock = new Mock<IFeatureManager>();
         _systemUnderTest = new LargeProducerPackagingTypeValidator();
     }
 
