@@ -15,6 +15,6 @@
     "Validation:IsLatest": true,
     "FeatureManagement:EnableSubsidiaryValidationPom": false,
     "FeatureManagement:EnableSmallProducerPackagingTypeEnhancedValidation": false,
-    "FeatureManagement:EnableLargeProducerRecyclabilityRatingValidation": true
+    "FeatureManagement:EnableLargeProducerRecyclabilityRatingValidation": false
   }
 }

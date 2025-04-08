@@ -6,7 +6,6 @@ using Constants;
 using CustomValidators;
 using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.FeatureManagement;
 using Models;
 
 public class LargeProducerPackagingTypeValidator : AbstractValidator<ProducerRow>

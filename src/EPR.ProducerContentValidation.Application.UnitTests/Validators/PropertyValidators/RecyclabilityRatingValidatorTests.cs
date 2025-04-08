@@ -88,7 +88,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
 
     [TestMethod]
     [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.PaperCard, "")]
-    public void LargeProducerRecyclabilityRatingValidator_Missing_Recyclability_Code(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType)
+    public void LargeProducerRecyclabilityRatingValidator_HH_Missing_Recyclability_Code(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType)
     {
         // Arrange
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, null);

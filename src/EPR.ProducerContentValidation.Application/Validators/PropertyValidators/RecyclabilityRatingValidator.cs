@@ -13,11 +13,11 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 {
     public RecyclabilityRatingValidator()
     {
-        // Missing recyclability data
+        // Recyclability data required for Large Producer in 2025
         RuleFor(x => x.RecyclabilityRating)
         .NotEmpty()
         .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingRequired)
-        .When(x => IsLargeProducerRecyclabilityRatingRequired(x));
+        .When(x => IsLargeProducerRecyclabilityRatingRequiredAfter2025(x));
 
         // Invalid Recyclability codes
         RuleFor(x => x.RecyclabilityRating)
@@ -41,19 +41,29 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
     private static bool IsLargeProducerRecyclabilityRatingRequired(ProducerRow row)
     {
         return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
-               && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase) || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
-               && (DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase) || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase))
-               && (ReferenceDataGenerator.MaterialTypes.Where(o => !o.Equals(MaterialType.Plastic)).Contains(row.MaterialType) || (MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase) && (MaterialSubType.Rigid.Equals(row.MaterialSubType, StringComparison.OrdinalIgnoreCase) || MaterialSubType.Flexible.Equals(row.MaterialSubType, StringComparison.OrdinalIgnoreCase))));
+                && PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
+                && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase) || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
+                && (DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase) || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase))
+                && (ReferenceDataGenerator.MaterialTypes.Where(o => !o.Equals(MaterialType.Plastic)).Contains(row.MaterialType) || (MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase) && (MaterialSubType.Rigid.Equals(row.MaterialSubType, StringComparison.OrdinalIgnoreCase) || MaterialSubType.Flexible.Equals(row.MaterialSubType, StringComparison.OrdinalIgnoreCase))));
     }
 
     private static bool IsLargeProducerRecyclabilityRatingRequiredBefore2025(ProducerRow row)
     {
         return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && !string.IsNullOrEmpty(row.WasteType)
-               && !string.IsNullOrEmpty(row.PackagingCategory)
-               && !string.IsNullOrEmpty(row.MaterialType)
-               && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
+                && !string.IsNullOrEmpty(row.WasteType)
+                && !string.IsNullOrEmpty(row.PackagingCategory)
+                && !string.IsNullOrEmpty(row.MaterialType)
+                && !(DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase) || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase))
+                && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
+    }
+
+    private static bool IsLargeProducerRecyclabilityRatingRequiredAfter2025(ProducerRow row)
+    {
+        return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+                && (PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase) || PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase) || PackagingType.PublicBin.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase))
+                && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase) || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
+                && (DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase) || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase))
+                && (ReferenceDataGenerator.MaterialTypes.Where(o => !o.Equals(MaterialType.Plastic)).Contains(row.MaterialType) || (MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase) && (MaterialSubType.Rigid.Equals(row.MaterialSubType, StringComparison.OrdinalIgnoreCase) || MaterialSubType.Flexible.Equals(row.MaterialSubType, StringComparison.OrdinalIgnoreCase))));
     }
 
     private static bool IsSmallProducerRecyclabilityRatingNotRequired(ProducerRow row)
