@@ -70,7 +70,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.PaperCard, "", "")]
+    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.PaperCard, "", "S")]
     [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Aluminium, "", "K-D")]
     [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid, "Z")]
     public void LargeProducerRecyclabilityRatingValidator_Invalid_Recyclability_Code(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
@@ -98,7 +98,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
-            .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode);
+            .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingRequired);
     }
 
     [TestMethod]
