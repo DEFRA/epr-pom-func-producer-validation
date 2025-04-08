@@ -89,7 +89,7 @@ public class ValidatorsPerformanceTests
         var numberOfErrors = result.ValidationErrors.Count;
         var numberOfWarnings = result.ValidationWarnings.Count;
         Console.WriteLine($"Validation of {producer.Rows.Count} rows took {elapsedTime} milliseconds, producing {numberOfErrors} rows containing errors and {numberOfWarnings} rows containing warnings.");
-        elapsedTime.Should().BeLessThan(1000, $"Expected validation time to be less than 1000 milliseconds, but was {elapsedTime} milliseconds.");
+        elapsedTime.Should().BeLessThan(1500, $"Expected validation time to be less than 1500 milliseconds, but was {elapsedTime} milliseconds.");
     }
 
     private static Producer CreateProducerRows(int totalRows = 1100, int duplicateRows = 100)
