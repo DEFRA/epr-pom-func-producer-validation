@@ -51,6 +51,8 @@ public class SubsidiaryDetailsRequestBuilderTests
                 ToHomeNation: "Nation 1",
                 QuantityKg: "100",
                 QuantityUnits: "500",
+                TransitionalPackagingUnits: "10",
+                RecyclabilityRating: "A",
                 SubmissionPeriod: "Period 1"),
             new ProducerRow(
                 SubsidiaryId: string.Empty,
@@ -67,6 +69,8 @@ public class SubsidiaryDetailsRequestBuilderTests
                 ToHomeNation: "Nation 2",
                 QuantityKg: "200",
                 QuantityUnits: "1000",
+                TransitionalPackagingUnits: "10",
+                RecyclabilityRating: "A",
                 SubmissionPeriod: "Period 2")
         };
 
@@ -104,6 +108,8 @@ public class SubsidiaryDetailsRequestBuilderTests
                 ToHomeNation: "Nation 1",
                 QuantityKg: "100",
                 QuantityUnits: "500",
+                TransitionalPackagingUnits: "10",
+                RecyclabilityRating: "A",
                 SubmissionPeriod: "Period 1")
         };
 
@@ -136,6 +142,8 @@ public class SubsidiaryDetailsRequestBuilderTests
                 ToHomeNation: "Nation 1",
                 QuantityKg: "100",
                 QuantityUnits: "500",
+                TransitionalPackagingUnits: "10",
+                RecyclabilityRating: "A",
                 SubmissionPeriod: "Period 1"),
             new ProducerRow(
                 SubsidiaryId: "SubId2",
@@ -152,6 +160,8 @@ public class SubsidiaryDetailsRequestBuilderTests
                 ToHomeNation: "Nation 2",
                 QuantityKg: "200",
                 QuantityUnits: "1000",
+                TransitionalPackagingUnits: "10",
+                RecyclabilityRating: "A",
                 SubmissionPeriod: "Period 2")
         };
 
@@ -189,6 +199,8 @@ public class SubsidiaryDetailsRequestBuilderTests
                 ToHomeNation: "Nation 1",
                 QuantityKg: "100",
                 QuantityUnits: "500",
+                TransitionalPackagingUnits: "10",
+                RecyclabilityRating: "A",
                 SubmissionPeriod: "Period 1"),
             new ProducerRow(
                 SubsidiaryId: "SubId2",
@@ -205,6 +217,8 @@ public class SubsidiaryDetailsRequestBuilderTests
                 ToHomeNation: "Nation 2",
                 QuantityKg: "200",
                 QuantityUnits: "1000",
+                TransitionalPackagingUnits: "10",
+                RecyclabilityRating: "A",
                 SubmissionPeriod: "Period 2")
         };
 
@@ -239,6 +253,8 @@ public class SubsidiaryDetailsRequestBuilderTests
                 ToHomeNation: "Nation 1",
                 QuantityKg: "100",
                 QuantityUnits: "500",
+                TransitionalPackagingUnits: "10",
+                RecyclabilityRating: "A",
                 SubmissionPeriod: "Period 1")
         };
 

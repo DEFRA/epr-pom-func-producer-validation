@@ -111,6 +111,6 @@ public class QuantityUnitPackagingTypeValidatorTests : QuantityUnitPackagingType
 
     private static ProducerRow BuildProducerRow(string? quantityUnit, string packagingType)
     {
-        return new ProducerRow(null, null, null, 1, null, null, packagingType, null, null, null, null, null, null, quantityUnit, null);
+        return new ProducerRow(null, null, null, 1, null, null, packagingType, null, null, null, null, null, null, quantityUnit, null, null);
     }
 }

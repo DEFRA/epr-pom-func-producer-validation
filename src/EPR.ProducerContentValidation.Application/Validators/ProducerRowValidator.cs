@@ -23,7 +23,7 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new ToHomeNationValidator());           // large producer only
         Include(new FromHomeNationValidator());         // large producer only
         Include(new MaterialSubMaterialCombinationValidator());
-        Include(new LargeProducerPackagingTypeValidator());     // large producer only
+        Include(new LargeProducerPackagingTypeValidator());
         Include(new ToHomeNationPackagingTypeValidator());      // large producer only
         Include(new HomeNationCombinationValidator());          // large producer only
         Include(new HouseholdDrinksContainerQuantityUnitsValidator());
@@ -55,6 +55,11 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         else
         {
             Include(new SmallProducerPackagingTypeValidator());
+        }
+
+        if (featureManager.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation).Result)
+        {
+            Include(new RecyclabilityRatingValidator()); // large producer only
         }
     }
 }

@@ -151,6 +151,6 @@ public class SmallProducerPackagingTypeValidatorTests : SmallProducerPackagingTy
 
     private static ProducerRow BuildProducerRow(string producerType, string producerSize, string packagingType)
     {
-        return new ProducerRow(null, null, null, 1, producerType, producerSize, packagingType, null, null, null, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, producerType, producerSize, packagingType, null, null, null, null, null, null, null, null, null);
     }
 }

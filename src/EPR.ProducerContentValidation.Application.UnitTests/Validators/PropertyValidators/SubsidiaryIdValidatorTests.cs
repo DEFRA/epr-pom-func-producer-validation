@@ -89,6 +89,6 @@ public class SubsidiaryIdValidatorTests
 
     private static ProducerRow BuildProducerRow(string subsidiaryId)
     {
-        return new ProducerRow(subsidiaryId, null, null, 1, null, null, null, null, null, null, null, null, null, null, null);
+        return new ProducerRow(subsidiaryId, null, null, 1, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 }
