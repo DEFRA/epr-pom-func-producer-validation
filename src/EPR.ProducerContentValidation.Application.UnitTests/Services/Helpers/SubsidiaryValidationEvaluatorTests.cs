@@ -46,7 +46,9 @@ public class SubsidiaryValidationEvaluatorTests
             FromHomeNation = "Nation1",
             ToHomeNation = "Nation2",
             QuantityKg = "100",
-            QuantityUnits = "Units"
+            QuantityUnits = "Units",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
         var subsidiary = new SubsidiaryDetail { SubsidiaryExists = false, SubsidiaryBelongsToAnyOtherOrganisation = true };
         var expectedRequest = new ProducerValidationEventIssueRequest(
@@ -64,6 +66,8 @@ public class SubsidiaryValidationEvaluatorTests
             row.ToHomeNation,
             row.QuantityKg,
             row.QuantityUnits,
+            row.TransitionalPackagingUnits,
+            row.RecyclabilityRating,
             ErrorCodes: new List<string> { ErrorCode.SubsidiaryIdDoesNotExist });
 
         _mockFormatter.Setup(f => f.Format(row, ErrorCode.SubsidiaryIdDoesNotExist, It.IsAny<string>())).Returns(expectedRequest);
@@ -98,7 +102,9 @@ public class SubsidiaryValidationEvaluatorTests
             FromHomeNation = "Nation1",
             ToHomeNation = "Nation2",
             QuantityKg = "100",
-            QuantityUnits = "Units"
+            QuantityUnits = "Units",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
         var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToAnyOtherOrganisation = true };
         var expectedRequest = new ProducerValidationEventIssueRequest(
@@ -116,6 +122,8 @@ public class SubsidiaryValidationEvaluatorTests
             row.ToHomeNation,
             row.QuantityKg,
             row.QuantityUnits,
+            row.TransitionalPackagingUnits,
+            row.RecyclabilityRating,
             ErrorCodes: new List<string> { ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation });
 
         _mockFormatter.Setup(f => f.Format(row, ErrorCode.SubsidiaryIdIsAssignedToADifferentOrganisation, It.IsAny<string>())).Returns(expectedRequest);
@@ -150,7 +158,9 @@ public class SubsidiaryValidationEvaluatorTests
             FromHomeNation = "Nation1",
             ToHomeNation = "Nation2",
             QuantityKg = "100",
-            QuantityUnits = "Units"
+            QuantityUnits = "Units",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
         var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToAnyOtherOrganisation = false, SubsidiaryDoesNotBelongToAnyOrganisation = true };
         var expectedResponse = new ProducerValidationEventIssueRequest(
@@ -168,6 +178,8 @@ public class SubsidiaryValidationEvaluatorTests
             row.ToHomeNation,
             row.QuantityKg,
             row.QuantityUnits,
+            row.TransitionalPackagingUnits,
+            row.RecyclabilityRating,
             ErrorCodes: new List<string> { ErrorCode.SubsidiaryDoesNotBelongToAnyOrganisation });
 
         _mockFormatter.Setup(f => f.Format(row, ErrorCode.SubsidiaryDoesNotBelongToAnyOrganisation, It.IsAny<string>())).Returns(expectedResponse);
@@ -202,7 +214,9 @@ public class SubsidiaryValidationEvaluatorTests
             FromHomeNation = "Nation1",
             ToHomeNation = "Nation2",
             QuantityKg = "100",
-            QuantityUnits = "Units"
+            QuantityUnits = "Units",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
         var subsidiary = new SubsidiaryDetail { SubsidiaryExists = true, SubsidiaryBelongsToAnyOtherOrganisation = false };
         string blobName = string.Empty;

@@ -103,6 +103,6 @@ public class HouseholdDrinksContainerQuantityUnitsValidatorTests : HouseholdDrin
 
     private static ProducerRow BuildProducerRow(string packagingType, string? quantityUnits)
     {
-        return new ProducerRow(null, null, null, 1, null, null, packagingType, null, null, null, null, null, "1", quantityUnits, null);
+        return new ProducerRow(null, null, null, 1, null, null, packagingType, null, null, null, null, null, "1", quantityUnits, null, null);
     }
 }

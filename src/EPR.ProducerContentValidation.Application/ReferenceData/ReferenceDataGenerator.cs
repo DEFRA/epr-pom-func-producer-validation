@@ -71,6 +71,18 @@ public static class ReferenceDataGenerator
     {
         DataSubmissionPeriod.Year2023P1,
         DataSubmissionPeriod.Year2023P2,
-        DataSubmissionPeriod.Year2023P3
+        DataSubmissionPeriod.Year2023P3,
+        DataSubmissionPeriod.Year2025H1,
+        DataSubmissionPeriod.Year2025H2
+    }.ToImmutableList();
+
+    public static readonly ImmutableList<string> RecyclabilityRatings = new List<string>()
+    {
+        RecyclabilityRating.Red,
+        RecyclabilityRating.Amber,
+        RecyclabilityRating.Green,
+        RecyclabilityRating.RedMedical,
+        RecyclabilityRating.AmberMedical,
+        RecyclabilityRating.GreenMedical
     }.ToImmutableList();
 }

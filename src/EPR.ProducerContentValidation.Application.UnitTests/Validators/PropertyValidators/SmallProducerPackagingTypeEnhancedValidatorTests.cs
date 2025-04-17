@@ -182,7 +182,7 @@ public class SmallProducerPackagingTypeEnhancedValidatorTests : SmallProducerPac
 
     private static ProducerRow BuildProducerRow(string producerType, string producerSize, string packagingType)
     {
-        return new ProducerRow(null, null, null, 1, producerType, producerSize, packagingType, null, null, null, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, producerType, producerSize, packagingType, null, null, null, null, null, null, null, null, null);
     }
 
     private static ProducerRow BuildProducerRow(string producerType, string producerSize, string packagingType, string packagingClass, string fromCountry, string toCountry, string weight, string quantity)

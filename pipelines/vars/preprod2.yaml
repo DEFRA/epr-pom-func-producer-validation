@@ -1,0 +1,6 @@
+variables:
+  azureSubscription: 'AZR-RWD-PRE2'
+  docker.imageName: 'producervalidation'
+  acr.azureContainerRegistryName: 'prerwdinfac2401'
+  acr.repositoryName: 'producervalidationrepository'
+  serviceName: 'PRERWDWEBFA2402'

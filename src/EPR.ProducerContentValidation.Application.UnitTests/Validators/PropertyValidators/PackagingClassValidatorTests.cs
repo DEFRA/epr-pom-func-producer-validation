@@ -62,6 +62,6 @@ public class PackagingClassValidatorTests
 
     private static ProducerRow BuildProducerRow(string packagingClass)
     {
-        return new ProducerRow(null, null, null, 1, null, null, null, packagingClass, null, null, null, null, null, null, null);
+        return new ProducerRow(null, null, null, 1, null, null, null, packagingClass, null, null, null, null, null, null, null, null);
     }
 }
