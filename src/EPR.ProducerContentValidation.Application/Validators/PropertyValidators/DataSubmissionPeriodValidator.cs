@@ -9,8 +9,16 @@ using Models;
 
 public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
 {
+    private const string DataSubmissionPeriodForP0 = "2024-P0";
+
     public DataSubmissionPeriodValidator()
     {
+        // Do not allow Large producer to use the submission period "2024-P0"
+        RuleFor(x => x.SubmissionPeriod)
+            .NotEqual(DataSubmissionPeriodForP0)
+            .WithErrorCode(ErrorCode.LargeProducersCannotSubmitforPeriodP0ErrorCode)
+            .When((row, context) => row.ProducerSize.Equals(ProducerSize.Large, StringComparison.CurrentCultureIgnoreCase));
+
         // The data submission period must be one of the configured period codes
         // E.g. "P1-2024" must be in the configured periods
         RuleFor(x => x.DataSubmissionPeriod)
