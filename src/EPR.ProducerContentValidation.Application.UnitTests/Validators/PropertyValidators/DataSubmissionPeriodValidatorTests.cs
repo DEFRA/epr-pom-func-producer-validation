@@ -195,6 +195,32 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
     }
 
     [TestMethod]
+    public void ShouldValidateSubmissionPeriods_ForLargeProducer_AndP0SubmissionPeriod_AndProvideErrorCode()
+    {
+        var submissionPeriod = "2024-P0";
+        var expectedErrorCode = ErrorCode.LargeProducersCannotSubmitforPeriodP0ErrorCode;
+
+        // Arrange
+        fixture.Customize<ProducerRow>(c =>
+            c.With(r => r.SubmissionPeriod, submissionPeriod)
+             .With(r => r.ProducerSize, ProducerSize.Large));
+
+        var model = fixture.Create<ProducerRow>();
+        var context = new ValidationContext<ProducerRow>(model);
+        var validator = new DataSubmissionPeriodValidator();
+
+        // Act
+        var result = validator.TestValidate(context);
+
+        // Assert
+        result.Errors.Should().HaveCount(1);
+
+        result
+            .ShouldHaveValidationErrorFor(x => x.SubmissionPeriod)
+            .WithErrorCode(expectedErrorCode);
+    }
+
+    [TestMethod]
     public void ShouldFailValidation_WhenConfigMissingForValidationPeriod()
     {
         // Arrange

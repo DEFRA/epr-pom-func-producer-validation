@@ -57,6 +57,7 @@ public static class ErrorCode
     public const string PomFileSmallOrganisationSizePackagingMaterialWeightInvalidErrorCode = "906";
     public const string PomFileSmallOrganisationSizePackagingMaterialQuantityInvalidErrorCode = "907";
     public const string PomFileSmallOrganisationHDCSizePackagingClassInvalidErrorCode = "908";
+    public const string LargeProducersCannotSubmitforPeriodP0ErrorCode = "909";
 
     /*Modulation - Recyclability rating error codes*/
     public const string LargeProducerRecyclabilityRatingRequired = "100";
