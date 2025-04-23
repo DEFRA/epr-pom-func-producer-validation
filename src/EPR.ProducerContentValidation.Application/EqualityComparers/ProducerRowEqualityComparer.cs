@@ -24,7 +24,8 @@ public class ProducerRowEqualityComparer : EqualityComparer<ProducerRow>
                && string.Equals(x.FromHomeNation, y.FromHomeNation, StringComparison.OrdinalIgnoreCase)
                && string.Equals(x.ToHomeNation, y.ToHomeNation, StringComparison.OrdinalIgnoreCase)
                && string.Equals(x.DataSubmissionPeriod, y.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
-               && string.Equals(x.SubsidiaryId, y.SubsidiaryId, StringComparison.OrdinalIgnoreCase);
+               && string.Equals(x.SubsidiaryId, y.SubsidiaryId, StringComparison.OrdinalIgnoreCase)
+               && string.Equals(x.RecyclabilityRating, y.RecyclabilityRating, StringComparison.OrdinalIgnoreCase);
     }
 
     public override int GetHashCode(ProducerRow obj)

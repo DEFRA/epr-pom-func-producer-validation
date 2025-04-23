@@ -27,6 +27,8 @@ public static class ProducerValidationEventIssueRequestMerger
             string ToHomeNation,
             string QuantityKg,
             string QuantityUnits,
+            string TransitionalPackagingUnits,
+            string RecyclabilityRating,
             string BlobName),
             ProducerValidationEventIssueRequest>();
 
@@ -47,6 +49,8 @@ public static class ProducerValidationEventIssueRequestMerger
                 request.ToHomeNation,
                 request.QuantityKg,
                 request.QuantityUnits,
+                request.TransitionalPackagingUnits,
+                request.RecyclabilityRating,
                 request.BlobName);
 
             if (mergedDict.TryGetValue(key, out var existingRequest))

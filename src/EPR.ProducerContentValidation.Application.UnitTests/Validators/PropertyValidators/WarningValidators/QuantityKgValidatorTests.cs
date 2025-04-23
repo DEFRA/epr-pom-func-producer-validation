@@ -186,6 +186,7 @@ public class QuantityKgValidatorTests : QuantityKgValidator
             null,
             quantityKg,
             null,
+            null,
             null);
     }
 }

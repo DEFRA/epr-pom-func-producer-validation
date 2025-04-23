@@ -36,7 +36,9 @@ public class SubsidiaryMatcherTests
             FromHomeNation = "NationA",
             ToHomeNation = "NationB",
             QuantityKg = "500",
-            QuantityUnits = "10"
+            QuantityUnits = "10",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
 
         var subsidiaryDetails = new List<SubsidiaryDetail>
@@ -78,7 +80,9 @@ public class SubsidiaryMatcherTests
             FromHomeNation = "NationA",
             ToHomeNation = "NationB",
             QuantityKg = "500",
-            QuantityUnits = "10"
+            QuantityUnits = "10",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
 
         var subsidiaryDetails = new List<SubsidiaryDetail>
@@ -119,7 +123,9 @@ public class SubsidiaryMatcherTests
             FromHomeNation = "NationA",
             ToHomeNation = "NationB",
             QuantityKg = "500",
-            QuantityUnits = "10"
+            QuantityUnits = "10",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
 
         var org = new SubsidiaryOrganisationDetail
@@ -154,7 +160,9 @@ public class SubsidiaryMatcherTests
             FromHomeNation = "NationA",
             ToHomeNation = "NationB",
             QuantityKg = "500",
-            QuantityUnits = "10"
+            QuantityUnits = "10",
+            TransitionalPackagingUnits = "50",
+            RecyclabilityRating = "A"
         };
 
         var subsidiaryDetails = new List<SubsidiaryDetail>

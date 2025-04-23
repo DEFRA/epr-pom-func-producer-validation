@@ -15,5 +15,7 @@ public record ProducerValidationEventIssueRequest(
     string ToHomeNation,
     string QuantityKg,
     string QuantityUnits,
+    string TransitionalPackagingUnits,
+    string RecyclabilityRating,
     string? BlobName = null,
     List<string> ErrorCodes = null);

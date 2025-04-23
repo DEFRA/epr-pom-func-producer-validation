@@ -169,6 +169,6 @@ public class QuantityUnitsValidatorTests
 
     private static ProducerRow BuildProducerRow(string quantityUnits)
     {
-        return new ProducerRow(null, null, null, 1, null, null, null, null, null, null, null, null, null, quantityUnits, null);
+        return new ProducerRow(null, null, null, 1, null, null, null, null, null, null, null, null, null, quantityUnits, null, null);
     }
 }
