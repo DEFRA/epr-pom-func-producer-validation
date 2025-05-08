@@ -221,6 +221,60 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
     }
 
     [TestMethod]
+    public void ShouldValidateSubmissionPeriods_ForSmallProducer_AndNonP0SubmissionPeriod_AndProvideErrorCode()
+    {
+        var submissionPeriod = "2024-P1";
+        var expectedErrorCode = ErrorCode.SmallProducersCanOnlySubmitforPeriodP0ErrorCode;
+
+        // Arrange
+        fixture.Customize<ProducerRow>(c =>
+            c.With(r => r.SubmissionPeriod, submissionPeriod)
+             .With(r => r.ProducerSize, ProducerSize.Small));
+
+        var model = fixture.Create<ProducerRow>();
+        var context = new ValidationContext<ProducerRow>(model);
+        var validator = new DataSubmissionPeriodValidator();
+
+        // Act
+        var result = validator.TestValidate(context);
+
+        // Assert
+        result.Errors.Should().HaveCount(1);
+
+        result
+            .ShouldHaveValidationErrorFor(x => x.SubmissionPeriod)
+            .WithErrorCode(expectedErrorCode);
+    }
+
+    [TestMethod]
+    [DataRow("2024-P1", ErrorCode.SmallProducersCanOnlySubmitforPeriodP0ErrorCode, 1)]
+    [DataRow("2024-P0", "", 0)]
+    public void ShouldValidateSubmissionPeriods_ForSmallProducer_AndNonP0SubmissionPeriod_AndProvideErrorCode2(string submissionPeriod, string expectedErrorCode, int errorCount)
+    {
+        // Arrange
+        fixture.Customize<ProducerRow>(c =>
+            c.With(r => r.SubmissionPeriod, submissionPeriod)
+             .With(r => r.ProducerSize, ProducerSize.Small));
+
+        var model = fixture.Create<ProducerRow>();
+        var context = new ValidationContext<ProducerRow>(model);
+        var validator = new DataSubmissionPeriodValidator();
+
+        // Act
+        var result = validator.TestValidate(context);
+
+        // Assert
+        result.Errors.Should().HaveCount(errorCount);
+
+        if (errorCount > 0)
+        {
+            result
+                .ShouldHaveValidationErrorFor(x => x.SubmissionPeriod)
+                .WithErrorCode(expectedErrorCode);
+        }
+    }
+
+    [TestMethod]
     public void ShouldFailValidation_WhenConfigMissingForValidationPeriod()
     {
         // Arrange
