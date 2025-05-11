@@ -179,7 +179,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
         // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
+        var result = _systemUnderTest.TestValidate(CreateContextWithFeatureFlag(producerRow));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
@@ -194,7 +194,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
         // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
+        var result = _systemUnderTest.TestValidate(CreateContextWithFeatureFlag(producerRow));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
@@ -209,7 +209,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
         // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
+        var result = _systemUnderTest.TestValidate(CreateContextWithFeatureFlag(producerRow));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
@@ -224,7 +224,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
         // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
+        var result = _systemUnderTest.TestValidate(CreateContextWithFeatureFlag(producerRow));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
@@ -239,7 +239,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
         // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
+        var result = _systemUnderTest.TestValidate(CreateContextWithFeatureFlag(producerRow));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
@@ -254,7 +254,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
         // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
+        var result = _systemUnderTest.TestValidate(CreateContextWithFeatureFlag(producerRow));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
@@ -269,7 +269,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
         // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
+        var result = _systemUnderTest.TestValidate(CreateContextWithFeatureFlag(producerRow));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
@@ -284,7 +284,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
         // Act
-        var result = _systemUnderTest.TestValidate(producerRow);
+        var result = _systemUnderTest.TestValidate(CreateContextWithFeatureFlag(producerRow));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
@@ -326,6 +326,69 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial);
     }
 
+    [TestMethod]
+    [DataRow(true, "", true)]
+    [DataRow(false, "", false)]
+    public void AC2_SubtypeRequiredOnly_WhenFlagOn(bool isFlagOn, string subtype, bool shouldError)
+    {
+        var row = BuildProducerRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, subtype, RecyclabilityRating.Red);
+        var context = CreateContextWithFeatureFlag(row, isFlagOn);
+
+        var result = _systemUnderTest.TestValidate(context);
+
+        if (shouldError)
+        {
+            result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
+                .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeRequired);
+        }
+        else
+        {
+            result.ShouldNotHaveValidationErrorFor(x => x.MaterialSubType);
+        }
+    }
+
+    [TestMethod]
+    [DataRow(true, "PET", true)]
+    [DataRow(false, "PET", false)]
+    public void AC4_InvalidSubtypeShouldOnlyRaiseError_WhenFlagOn(bool isFlagOn, string subtype, bool shouldError)
+    {
+        var row = BuildProducerRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, subtype, RecyclabilityRating.Red);
+        var context = CreateContextWithFeatureFlag(row, isFlagOn);
+
+        var result = _systemUnderTest.TestValidate(context);
+
+        if (shouldError)
+        {
+            result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
+                .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode);
+        }
+        else
+        {
+            result.ShouldNotHaveValidationErrorFor(x => x.MaterialSubType);
+        }
+    }
+
+    [TestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public void AC6_SubtypeBefore2025_ShouldRaiseError_WhenFlagOn(bool isFlagOn)
+    {
+        var row = BuildProducerRow("2024-P1", ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, string.Empty);
+        var context = CreateContextWithFeatureFlag(row, isFlagOn);
+
+        var result = _systemUnderTest.TestValidate(context);
+
+        if (isFlagOn)
+        {
+            result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
+                .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial);
+        }
+        else
+        {
+            result.ShouldNotHaveValidationErrorFor(x => x.MaterialSubType);
+        }
+    }
+
     private static ProducerRow BuildProducerRow(string materialType, string? materialSubType)
     {
         return new ProducerRow(null, null, null, 1, null, null, null, null, materialType, materialSubType, null, null, null, null, null, null);
@@ -334,5 +397,12 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     private static ProducerRow BuildProducerRow(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         return new ProducerRow(null, dataSubmissionPeriod, null, 1, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, null, null, null, null, null, null, recyclabilityRating);
+    }
+
+    private static ValidationContext<ProducerRow> CreateContextWithFeatureFlag(ProducerRow row, bool isEnabled = true)
+    {
+        var context = new ValidationContext<ProducerRow>(row);
+        context.RootContextData[FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation] = isEnabled;
+        return context;
     }
 }
