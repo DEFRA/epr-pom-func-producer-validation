@@ -1,9 +1,9 @@
 ﻿namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
 
 using System.Collections.Immutable;
-using System.Text.RegularExpressions;
 using Constants;
 using EPR.ProducerContentValidation.Application.Validators.CustomValidators;
+using EPR.ProducerContentValidation.Application.Validators.HelperFunctions;
 using FluentValidation;
 using FluentValidation.Results;
 using Models;
@@ -79,7 +79,7 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
 
     private static bool IsLargeProducerMaterialSubTypeRequired(ProducerRow row, ValidationContext<ProducerRow> context)
     {
-        var isFlagOn = IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
+        var isFlagOn = HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
         if (!isFlagOn)
         {
             return false;
@@ -97,14 +97,14 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
 
     private static bool IsLargeProducerMaterialSubTypeRequiredBefore2025(ProducerRow row, ValidationContext<ProducerRow> context)
     {
-        var isFlagOn = IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
+        var isFlagOn = HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
         if (!isFlagOn)
         {
             return false;
         }
 
         return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-            && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
+            && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
     }
 
     private static bool IsSmallProducerMaterialSubTypeNotRequired(ProducerRow row)
@@ -124,35 +124,6 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
     private static bool IsSmallProducerMaterialSubTypeRequiredBefore2025(ProducerRow row)
     {
         return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
-    }
-
-    private static bool IsSubmissionPeriodBefore2025(string? dataSubmissionPeriod)
-    {
-        Regex regex = new Regex(@"(\d{4})", RegexOptions.NonBacktracking);
-        Match match = regex.Match(dataSubmissionPeriod);
-        if (match.Success)
-        {
-            string year = match.Groups[1].Value;
-            if (int.TryParse(year, out int result))
-            {
-                return result < 2025;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    private static bool IsFeatureFlagOn(ValidationContext<ProducerRow> context, string featureFlag)
-    {
-        return context.RootContextData.TryGetValue(featureFlag, out var flagObj)
-               && flagObj is bool isEnabled
-               && isEnabled;
+               && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
     }
 }
