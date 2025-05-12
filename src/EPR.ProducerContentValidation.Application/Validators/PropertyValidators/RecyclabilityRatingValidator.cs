@@ -1,9 +1,9 @@
 ﻿namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
 
-using System.Text.RegularExpressions;
 using Constants;
 using EPR.ProducerContentValidation.Application.ReferenceData;
 using EPR.ProducerContentValidation.Application.Validators.CustomValidators;
+using EPR.ProducerContentValidation.Application.Validators.HelperFunctions;
 using FluentValidation;
 using Models;
 
@@ -51,12 +51,12 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
             && !string.IsNullOrEmpty(row.WasteType)
             && !string.IsNullOrEmpty(row.PackagingCategory)
             && !string.IsNullOrEmpty(row.MaterialType)
-            && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
+            && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
     }
 
     private static bool IsLargeProducerRecyclabilityRatingRequiredAfter2025(ProducerRow row, ValidationContext<ProducerRow> context)
     {
-        var isFlagOn = IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
+        var isFlagOn = HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
 
         if (isFlagOn)
         {
@@ -83,34 +83,5 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
                    || PackagingClass.TransitPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
                    || PackagingClass.TotalPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
                    && MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static bool IsSubmissionPeriodBefore2025(string? dataSubmissionPeriod)
-    {
-        Regex regex = new Regex(@"(\d{4})", RegexOptions.NonBacktracking);
-        Match match = regex.Match(dataSubmissionPeriod);
-        if (match.Success)
-        {
-            string year = match.Groups[1].Value;
-            if (int.TryParse(year, out int result))
-            {
-                return result < 2025;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    private static bool IsFeatureFlagOn(ValidationContext<ProducerRow> context, string featureFlag)
-    {
-        return context.RootContextData.TryGetValue(featureFlag, out var flagObj)
-            && flagObj is bool isEnabled
-            && isEnabled;
     }
 }
