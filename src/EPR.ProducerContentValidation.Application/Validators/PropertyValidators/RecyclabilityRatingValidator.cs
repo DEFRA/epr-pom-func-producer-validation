@@ -59,8 +59,7 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 
     private static bool IsSmallProducerRecyclabilityRatingNotRequired(ProducerRow row)
     {
-        return
-        ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+        return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
         && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
         && !string.IsNullOrEmpty(row.ProducerType)
         && (PackagingType.SmallOrganisationPackagingAll.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
