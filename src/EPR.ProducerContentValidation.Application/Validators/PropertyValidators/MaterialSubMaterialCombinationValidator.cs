@@ -57,12 +57,12 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
                .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)
                .When((x, ctx) => !string.IsNullOrWhiteSpace(x.MaterialSubType) && IsLargeProducerMaterialSubTypeRequired(x, ctx));
         }).Otherwise(() =>
-          {
-              RuleFor(x => x.MaterialSubType)
+        {
+            RuleFor(x => x.MaterialSubType)
                 .Empty()
                 .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)
                 .When(x => (x.MaterialType != MaterialType.Other));
-          });
+        });
     }
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
@@ -72,58 +72,42 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
 
     private static bool IsInvalidMaterialSubType(string subType)
     {
-        return subType.Equals(MaterialSubType.Plastic, StringComparison.OrdinalIgnoreCase) ||
-               subType.Equals(MaterialSubType.HDPE, StringComparison.OrdinalIgnoreCase) ||
-               subType.Equals(MaterialSubType.PET, StringComparison.OrdinalIgnoreCase);
+        return subType.Equals(MaterialSubType.Plastic, StringComparison.OrdinalIgnoreCase)
+           || subType.Equals(MaterialSubType.HDPE, StringComparison.OrdinalIgnoreCase)
+           || subType.Equals(MaterialSubType.PET, StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsLargeProducerMaterialSubTypeRequired(ProducerRow row, ValidationContext<ProducerRow> context)
     {
-        var isFlagOn = HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
-        if (!isFlagOn)
-        {
-            return false;
-        }
-
-        return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-            && (PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
-                || PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
-                || PackagingType.PublicBin.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase))
-            && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
-            && (DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
-                || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase));
+        return HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
+        && HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod);
     }
 
     private static bool IsLargeProducerMaterialSubTypeRequiredBefore2025(ProducerRow row, ValidationContext<ProducerRow> context)
     {
-        var isFlagOn = HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
-        if (!isFlagOn)
-        {
-            return false;
-        }
-
-        return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-            && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
+        return HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
+           && ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+           && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
     }
 
     private static bool IsSmallProducerMaterialSubTypeNotRequired(ProducerRow row)
     {
-        return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
-               && !string.IsNullOrEmpty(row.ProducerType)
-               && (PackagingType.SmallOrganisationPackagingAll.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase) || PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase))
-               && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                   || PackagingClass.SecondaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                   || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                   || PackagingClass.TransitPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                   || PackagingClass.TotalPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
-                   && MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase);
+       return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+        && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
+        && !string.IsNullOrEmpty(row.ProducerType)
+        && (PackagingType.SmallOrganisationPackagingAll.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
+            || PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase))
+        && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
+            || PackagingClass.SecondaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
+            || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
+            || PackagingClass.TransitPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
+            || PackagingClass.TotalPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
+        && MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsSmallProducerMaterialSubTypeRequiredBefore2025(ProducerRow row)
     {
         return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
+           && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
     }
 }
