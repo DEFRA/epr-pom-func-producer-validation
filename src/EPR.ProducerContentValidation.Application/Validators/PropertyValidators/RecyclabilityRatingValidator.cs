@@ -52,8 +52,7 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 
     private static bool IsLargeProducerRecyclabilityRatingRequiredAfter2025(ProducerRow row, ValidationContext<ProducerRow> context)
     {
-        return
-        HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
+        return HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
         && HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod);
     }
 
