@@ -1,9 +1,9 @@
 ﻿namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
 
 using System.Collections.Immutable;
-using System.Text.RegularExpressions;
 using Constants;
 using EPR.ProducerContentValidation.Application.Validators.CustomValidators;
+using EPR.ProducerContentValidation.Application.Validators.HelperFunctions;
 using FluentValidation;
 using FluentValidation.Results;
 using Models;
@@ -37,13 +37,13 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
             RuleFor(x => x.MaterialSubType)
                .NotEmpty()
                .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeRequired)
-               .When(x => IsLargeProducerMaterialSubTypeRequired(x));
+               .When((x, ctx) => IsLargeProducerMaterialSubTypeRequired(x, ctx));
 
             // Material subtype not required for Large or Small Organisation before 2025
             RuleFor(x => x.MaterialSubType)
                .Empty()
                .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)
-               .When((x) => IsLargeProducerMaterialSubTypeRequiredBefore2025(x) || IsSmallProducerMaterialSubTypeRequiredBefore2025(x));
+               .When((x, ctx) => IsLargeProducerMaterialSubTypeRequiredBefore2025(x, ctx) || IsSmallProducerMaterialSubTypeRequiredBefore2025(x));
 
             // Material subtype not required for Small Organisation
             RuleFor(x => x.MaterialSubType)
@@ -55,7 +55,7 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
             RuleFor(x => x.MaterialSubType)
                .IsInAllowedValues(_plasticMaterialSubTypeCodes)
                .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)
-               .When((x) => !string.IsNullOrWhiteSpace(x.MaterialSubType) && IsLargeProducerMaterialSubTypeRequired(x));
+               .When((x, ctx) => !string.IsNullOrWhiteSpace(x.MaterialSubType) && IsLargeProducerMaterialSubTypeRequired(x, ctx));
         }).Otherwise(() =>
           {
               RuleFor(x => x.MaterialSubType)
@@ -77,18 +77,34 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
                subType.Equals(MaterialSubType.PET, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static bool IsLargeProducerMaterialSubTypeRequired(ProducerRow row)
+    private static bool IsLargeProducerMaterialSubTypeRequired(ProducerRow row, ValidationContext<ProducerRow> context)
     {
+        var isFlagOn = HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
+        if (!isFlagOn)
+        {
+            return false;
+        }
+
         return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && (PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase) || PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase) || PackagingType.PublicBin.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase))
-               && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase) || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
-               && (DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase) || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase));
+            && (PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
+                || PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
+                || PackagingType.PublicBin.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase))
+            && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
+                || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
+            && (DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
+                || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase));
     }
 
-    private static bool IsLargeProducerMaterialSubTypeRequiredBefore2025(ProducerRow row)
+    private static bool IsLargeProducerMaterialSubTypeRequiredBefore2025(ProducerRow row, ValidationContext<ProducerRow> context)
     {
+        var isFlagOn = HelperFunctions.IsFeatureFlagOn(context, FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
+        if (!isFlagOn)
+        {
+            return false;
+        }
+
         return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
+            && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
     }
 
     private static bool IsSmallProducerMaterialSubTypeNotRequired(ProducerRow row)
@@ -108,28 +124,6 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
     private static bool IsSmallProducerMaterialSubTypeRequiredBefore2025(ProducerRow row)
     {
         return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && IsSubmissionPeriodBefore2025(row.DataSubmissionPeriod);
-    }
-
-    private static bool IsSubmissionPeriodBefore2025(string? dataSubmissionPeriod)
-    {
-        Regex regex = new Regex(@"(\d{4})", RegexOptions.NonBacktracking);
-        Match match = regex.Match(dataSubmissionPeriod);
-        if (match.Success)
-        {
-            string year = match.Groups[1].Value;
-            if (int.TryParse(year, out int result))
-            {
-                return result < 2025;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+               && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
     }
 }
