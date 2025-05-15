@@ -84,7 +84,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
-            .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode);
+            .WithErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode);
     }
 
     [TestMethod]
@@ -200,8 +200,10 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
 
         var result = _systemUnderTest.TestValidate(context);
 
+        var expectedErrorCode = isFlagOn ? ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode : ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode;
+
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
-              .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode);
+              .WithErrorCode(expectedErrorCode);
     }
 
     [TestMethod]
