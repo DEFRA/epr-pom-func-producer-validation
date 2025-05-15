@@ -219,14 +219,26 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow("2025-H1", "L", PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Glass, "", "Invalid", ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)]
-    [DataRow("2025-H2", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Aluminium, "", "123", ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)]
-    [DataRow("2025-H2", "L", PackagingType.HouseholdDrinksContainers, "", MaterialType.Glass, "", "Fake", ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)]
-    public void Should_Fail_When_InvalidRecyclabilityCode(string period, string orgSize, string pkgType, string pkgClass, string material, string subType, string rating, string expectedError)
+    [DataRow(true, "2025-H1", "L", PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Glass, "", "Invalid", ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)]
+    [DataRow(true, "2025-H2", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Aluminium, "", "123", ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)]
+    [DataRow(true, "2025-H2", "L", PackagingType.HouseholdDrinksContainers, "", MaterialType.Glass, "", "Fake", ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)]
+    [DataRow(false, "2025-H1", "L", PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Glass, "", "Invalid", ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)]
+    [DataRow(false, "2025-H2", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Aluminium, "", "123", ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)]
+    [DataRow(false, "2025-H2", "L", PackagingType.HouseholdDrinksContainers, "", MaterialType.Glass, "", "Fake", ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)]
+    public void Should_Fail_When_InvalidRecyclabilityCode_WithCorrectErrorCodeBasedOnFlag(
+        bool featureFlagOn,
+        string period,
+        string orgSize,
+        string pkgType,
+        string pkgClass,
+        string material,
+        string subType,
+        string rating,
+        string expectedError)
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, rating);
         var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = true;
+        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = featureFlagOn;
 
         var validator = new RecyclabilityRatingValidator();
         var result = validator.TestValidate(context);

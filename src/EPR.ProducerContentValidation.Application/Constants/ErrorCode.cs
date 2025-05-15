@@ -68,6 +68,7 @@ public static class ErrorCode
     public const string SmallProducerPlasticMaterialSubTypeNotRequired = "105";
     public const string SmallProducerRecyclabilityRatingNotRequired = "106";
     public const string SmallProducerOnlyPlasticMaterialTypeAllowed = "107";
+    public const string LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode = "108";
 
     /* Issue codes for warnings */
     public const string WarningPackagingMaterialWeightLessThan100 = "59";

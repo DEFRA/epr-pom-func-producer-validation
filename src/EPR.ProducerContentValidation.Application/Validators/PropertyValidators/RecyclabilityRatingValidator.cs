@@ -16,10 +16,23 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingRequired)
             .When((row, ctx) => IsLargeProducerRecyclabilityRatingRequiredAfter2025(row, ctx));
 
+        // Enhanced error message when feature flag is ON
+        RuleFor(x => x.RecyclabilityRating)
+            .IsInAllowedValues(ReferenceDataGenerator.RecyclabilityRatings)
+            .WithErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)
+            .When((row, ctx) =>
+                HelperFunctions.IsFeatureFlagOn(ctx, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
+                && !string.IsNullOrEmpty(row.RecyclabilityRating)
+                && IsLargeProducerRecyclabilityRatingRequired(row));
+
+        // Default error message when feature flag is OFF
         RuleFor(x => x.RecyclabilityRating)
             .IsInAllowedValues(ReferenceDataGenerator.RecyclabilityRatings)
             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)
-            .When(x => IsLargeProducerRecyclabilityRatingRequired(x) && !string.IsNullOrEmpty(x.RecyclabilityRating));
+            .When((row, ctx) =>
+                !HelperFunctions.IsFeatureFlagOn(ctx, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
+                && !string.IsNullOrEmpty(row.RecyclabilityRating)
+                && IsLargeProducerRecyclabilityRatingRequired(row));
 
         RuleFor(x => x.RecyclabilityRating)
             .Empty()
