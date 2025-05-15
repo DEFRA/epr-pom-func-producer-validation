@@ -42,6 +42,7 @@ public static class ErrorCode
     public const string SelfManagedWasteTransferInvalidErrorCode = "48";
     public const string NullFromHomeNationInvalidWasteTypeErrorCode = "49";
     public const string DataSubmissionPeriodInconsistentErrorCode = "50";
+    public const string OrganisationSizeInconsistentErrorCode = "93";
     public const string PackagingMaterialSubtypeInvalidForMaterialType = "51";
     public const string PackagingTypeForLargeProducerInvalidErrorCode = "53";
     public const string InvalidSubmissionPeriodFor2023P1P2 = "54";
