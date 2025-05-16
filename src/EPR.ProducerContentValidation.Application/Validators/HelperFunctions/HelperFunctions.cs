@@ -61,4 +61,25 @@ public static class HelperFunctions
             && flagObj is bool isEnabled
             && isEnabled;
     }
+
+    public static bool ShouldApply2025HouseholdRulesForLargeProducer(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod)
+    {
+        return ProducerSize.Large.Equals(producerSize, StringComparison.OrdinalIgnoreCase)
+            && IsHouseholdRelatedWasteType(wasteType)
+            && (
+                PackagingClass.PrimaryPackaging.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
+                || PackagingClass.ShipmentPackaging.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
+                || string.IsNullOrWhiteSpace(packagingCategory)
+                || PackagingClass.PublicBin.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase))
+                && (DataSubmissionPeriod.Year2025H1.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase)
+                || DataSubmissionPeriod.Year2025H2.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool IsHouseholdRelatedWasteType(string? wasteType)
+    {
+        return !string.IsNullOrEmpty(wasteType) &&
+            (wasteType.Equals(PackagingType.Household, StringComparison.OrdinalIgnoreCase)
+             || wasteType.Equals(PackagingType.HouseholdDrinksContainers, StringComparison.OrdinalIgnoreCase)
+             || wasteType.Equals(PackagingType.PublicBin, StringComparison.OrdinalIgnoreCase));
+    }
 }

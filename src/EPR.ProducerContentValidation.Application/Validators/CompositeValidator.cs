@@ -49,6 +49,7 @@ public class CompositeValidator : ICompositeValidator
     public async Task ValidateAndFetchForIssuesAsync(IEnumerable<ProducerRow> producerRows, List<ProducerValidationEventIssueRequest> errors, List<ProducerValidationEventIssueRequest> warnings, string blobName)
     {
         var flag = await _featureManager.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
+        var enhancedProducerflag = await _featureManager.IsEnabledAsync(FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation);
         foreach (var row in producerRows)
         {
             var errorContext = new ValidationContext<ProducerRow>(row);
@@ -57,6 +58,8 @@ public class CompositeValidator : ICompositeValidator
             errorContext.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
             errorContext.RootContextData.Add(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation, flag);
             warningContext.RootContextData.Add(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation, flag);
+            errorContext.RootContextData.Add(FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation, enhancedProducerflag);
+            warningContext.RootContextData.Add(FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation, enhancedProducerflag);
             warningContext.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
 
             await ValidateIssue(row, errors, blobName, IssueType.Error, errorContext);
