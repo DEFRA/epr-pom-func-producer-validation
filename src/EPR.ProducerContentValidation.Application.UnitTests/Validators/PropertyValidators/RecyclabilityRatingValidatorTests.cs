@@ -235,6 +235,8 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
 
     [TestMethod]
     [DataRow("2023-P1", "L", PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Glass, "", RecyclabilityRating.Red, ErrorCode.LargeProducerRecyclabilityRatingNotRequired)]
+    [DataRow("2023-P1", "L", PackagingType.HouseholdDrinksContainers, "", MaterialType.Glass, "", RecyclabilityRating.Red, ErrorCode.LargeProducerRecyclabilityRatingNotRequired)]
+    [DataRow("2023-P1", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Glass, "", RecyclabilityRating.Red, ErrorCode.LargeProducerRecyclabilityRatingNotRequired)]
     public void Should_Fail_When_RecyclabilityRatingProvided_Before2025(string period, string orgSize, string pkgType, string pkgClass, string material, string subType, string rating, string expectedError)
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, rating);

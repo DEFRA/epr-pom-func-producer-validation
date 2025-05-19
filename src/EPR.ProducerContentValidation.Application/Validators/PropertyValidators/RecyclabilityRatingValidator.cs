@@ -62,9 +62,12 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 
     private static bool IsLargeProducerRecyclabilityRatingNotRequiredBefore2025(ProducerRow row)
     {
+        var isHouseholdDrinksContainerWithEmptyPackaging = PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
+                                                            && string.IsNullOrEmpty(row.PackagingCategory);
+
         return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
             && !string.IsNullOrEmpty(row.WasteType)
-            && !string.IsNullOrEmpty(row.PackagingCategory)
+            && (!string.IsNullOrEmpty(row.PackagingCategory) || isHouseholdDrinksContainerWithEmptyPackaging)
             && !string.IsNullOrEmpty(row.MaterialType)
             && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
     }
