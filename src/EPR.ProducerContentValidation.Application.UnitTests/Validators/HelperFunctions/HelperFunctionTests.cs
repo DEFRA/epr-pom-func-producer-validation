@@ -92,4 +92,26 @@ public class HelperFunctionTests
 
         Assert.AreEqual(expectedResult, result);
     }
+
+    [TestMethod]
+    [DataRow("L", "HH", "P1", "2025-H1", true)]
+    [DataRow("L", "HH", "P1", "2025-H2", true)]
+    [DataRow("L", "HDC", "", "2025-H1", true)]
+    [DataRow("L", "PB", "", "2025-H2", true)]
+    [DataRow("L", "PB", "B1", "2025-H2", true)]
+    [DataRow("L", "HH", null, "2025-H1", true)]
+    [DataRow("S", "HH", "P1", "2025-H1", false)]
+    [DataRow("s", "HH", "P1", "2025-H1", false)]
+    [DataRow(null, "HH", "P1", "2025-H1", false)]
+    [DataRow("L", "NH", "P1", "2025-H1", false)]
+    [DataRow("L", null, "P1", "2025-H1", false)]
+    [DataRow("L", "HH", "Other", "2025-H1", false)]
+    [DataRow("L", "HH", "P1", "2024-P1", false)]
+    [DataRow("L", "HH", "P1", null, false)]
+
+    public void ShouldCorrectlyApply2025Rules(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod, bool expected)
+    {
+        var result = HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(producerSize, wasteType, packagingCategory, submissionPeriod);
+        result.Should().Be(expected);
+    }
 }
