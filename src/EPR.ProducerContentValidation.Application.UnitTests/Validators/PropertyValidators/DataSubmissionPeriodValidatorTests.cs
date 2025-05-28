@@ -202,7 +202,7 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
 
         // Arrange
         fixture.Customize<ProducerRow>(c =>
-            c.With(r => r.SubmissionPeriod, submissionPeriod)
+            c.With(r => r.DataSubmissionPeriod, submissionPeriod)
              .With(r => r.ProducerSize, ProducerSize.Large));
 
         var model = fixture.Create<ProducerRow>();
@@ -216,7 +216,7 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
         result.Errors.Should().HaveCount(1);
 
         result
-            .ShouldHaveValidationErrorFor(x => x.SubmissionPeriod)
+            .ShouldHaveValidationErrorFor(x => x.DataSubmissionPeriod)
             .WithErrorCode(expectedErrorCode);
     }
 
@@ -238,5 +238,59 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.DataSubmissionPeriod);
+    }
+
+    [TestMethod]
+    public void ShouldValidateSubmissionPeriods_ForSmallProducer_AndNonP0SubmissionPeriod_AndProvideErrorCode()
+    {
+        var dataSubmissionPeriod = "2024-P1";
+        var expectedErrorCode = ErrorCode.SmallProducersCanOnlySubmitforPeriodP0ErrorCode;
+
+        // Arrange
+        fixture.Customize<ProducerRow>(c =>
+            c.With(r => r.DataSubmissionPeriod, dataSubmissionPeriod)
+             .With(r => r.ProducerSize, ProducerSize.Small));
+
+        var model = fixture.Create<ProducerRow>();
+        var context = new ValidationContext<ProducerRow>(model);
+        var validator = new DataSubmissionPeriodValidator();
+
+        // Act
+        var result = validator.TestValidate(context);
+
+        // Assert
+        result.Errors.Should().HaveCount(1);
+
+        result
+            .ShouldHaveValidationErrorFor(x => x.DataSubmissionPeriod)
+            .WithErrorCode(expectedErrorCode);
+    }
+
+    [TestMethod]
+    [DataRow("2024-P1", ErrorCode.SmallProducersCanOnlySubmitforPeriodP0ErrorCode, 1)]
+    [DataRow("2024-P0", "", 0)]
+    public void ShouldValidateSubmissionPeriods_ForSmallProducer_AndNonP0SubmissionPeriod_AndProvideErrorCode2(string dataSubmissionPeriod, string expectedErrorCode, int errorCount)
+    {
+        // Arrange
+        fixture.Customize<ProducerRow>(c =>
+            c.With(r => r.DataSubmissionPeriod, dataSubmissionPeriod)
+             .With(r => r.ProducerSize, ProducerSize.Small));
+
+        var model = fixture.Create<ProducerRow>();
+        var context = new ValidationContext<ProducerRow>(model);
+        var validator = new DataSubmissionPeriodValidator();
+
+        // Act
+        var result = validator.TestValidate(context);
+
+        // Assert
+        result.Errors.Should().HaveCount(errorCount);
+
+        if (errorCount > 0)
+        {
+            result
+                .ShouldHaveValidationErrorFor(x => x.DataSubmissionPeriod)
+                .WithErrorCode(expectedErrorCode);
+        }
     }
 }

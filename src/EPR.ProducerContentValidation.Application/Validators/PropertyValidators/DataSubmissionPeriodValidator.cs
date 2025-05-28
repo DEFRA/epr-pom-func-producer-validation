@@ -9,13 +9,19 @@ using Models;
 
 public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
 {
-    private const string DataSubmissionPeriodForP0 = "2024-P0";
+    private const string DataSubmissionPeriodP0Only = "P0";
 
     public DataSubmissionPeriodValidator()
     {
-        // Do not allow Large producer to use the submission period "2024-P0"
-        RuleFor(x => x.SubmissionPeriod)
-            .NotEqual(DataSubmissionPeriodForP0)
+        // Small producers can only submit data for the period P0
+        RuleFor(x => x.DataSubmissionPeriod)
+            .Must(value => value.Contains(DataSubmissionPeriodP0Only))
+            .WithErrorCode(ErrorCode.SmallProducersCanOnlySubmitforPeriodP0ErrorCode)
+            .When((row, context) => row.ProducerSize.Equals(ProducerSize.Small, StringComparison.CurrentCultureIgnoreCase));
+
+        // Large producers cannot submit data for the period P0
+        RuleFor(x => x.DataSubmissionPeriod)
+            .Must(value => !value.Contains(DataSubmissionPeriodP0Only))
             .WithErrorCode(ErrorCode.LargeProducersCannotSubmitforPeriodP0ErrorCode)
             .When((row, context) => row.ProducerSize.Equals(ProducerSize.Large, StringComparison.CurrentCultureIgnoreCase));
 
