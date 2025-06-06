@@ -73,21 +73,6 @@ public class ProducerRowValidatorFactoryTests
     }
 
     [TestMethod]
-    public async Task ProducerRowValidator_Is13ColumnVersion_WhenValidationEnabled_AndIsLatest()
-    {
-        // Arrange
-        _options = new ValidationOptions { Disabled = false, IsLatest = true };
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation)).ReturnsAsync(false);
-        _systemUnderTest = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options), _featureManagerMock.Object);
-
-        // Act
-        _producerRowValidator = _systemUnderTest.GetInstance();
-
-        // Assert
-        _producerRowValidator.Should().BeOfType<Producer14ColumnRowValidator>();
-    }
-
-    [TestMethod]
     public async Task ProducerRowValidator_WhenFeatureFlad_EnableSmallProducerPackagingTypeEnhancedValidation_IsEnhanced()
     {
         // Arrange

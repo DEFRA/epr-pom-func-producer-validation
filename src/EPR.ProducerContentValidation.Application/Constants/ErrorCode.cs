@@ -49,6 +49,7 @@ public static class ErrorCode
     public const string InvalidSubmissionPeriodFor2023P3 = "55";
 
     public const string TransitionalPackagingUnitsInvalidErrorCode = "90";
+    public const string TransitionalPackagingUnitsNotAllowedForThisPeriod = "91";
     public const string InvalidOrganisationSizeValue = "895";
     public const string PomFileSmallOrganisationSizeInvalidErrorCode = "901";
     public const string PomFileSmallOrganisationSizePackagingTypeInvalidErrorCode = "902";
