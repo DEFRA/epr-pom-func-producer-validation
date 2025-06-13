@@ -30,6 +30,7 @@ public class TransitionalPackagingUnitsValidatorTests
     }
 
     [TestMethod]
+    [DataRow(null, null)]
     [DataRow("2024P1", null)]
     [DataRow("2024P1", "1")]
     public void TransitionalPackagingUnitsValidator_ShouldNotHaveValidationError_WhenEmptyValueAndPeriodIs2024(string period, string units)
