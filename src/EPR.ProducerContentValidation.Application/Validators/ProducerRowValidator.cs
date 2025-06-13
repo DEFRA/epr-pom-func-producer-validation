@@ -47,6 +47,7 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new NonHouseholdDrinksContainerPackagingClassValidator());      // large producer only
         Include(new DataSubmissionPeriodValidator());
         Include(new SubsidiaryIdValidator());
+        Include(new TransitionalPackagingUnitsValidator());
 
         if (featureManager.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation).Result)
         {
