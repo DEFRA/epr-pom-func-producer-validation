@@ -295,6 +295,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.SecondaryPackaging, MaterialType.Plastic, MaterialSubType.Plastic)]
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TransitPackaging, MaterialType.Plastic, MaterialSubType.Plastic)]
+    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
     public void MaterialSubMaterialCombinationValidator_SmallProducer_PlasticMaterial_SubType_NotRequired(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType)
     {
         // Arrange
