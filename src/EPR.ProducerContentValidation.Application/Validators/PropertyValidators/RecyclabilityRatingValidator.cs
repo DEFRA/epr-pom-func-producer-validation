@@ -37,7 +37,7 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
         RuleFor(x => x.RecyclabilityRating)
             .Empty()
             .WithErrorCode(ErrorCode.SmallProducerRecyclabilityRatingNotRequired)
-            .When(x => IsSmallProducerRecyclabilityRatingNotRequired(x));
+            .When(HelperFunctions.ShouldApplySmallProducer2025RuleForMaterialSubTypeAndRecyclabilityRating);
 
         // Rating is required only if feature flag is OFF
         RuleFor(x => x.RecyclabilityRating)
@@ -70,20 +70,5 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
             && (!string.IsNullOrEmpty(row.PackagingCategory) || isHouseholdDrinksContainerWithEmptyPackaging)
             && !string.IsNullOrEmpty(row.MaterialType)
             && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
-    }
-
-    private static bool IsSmallProducerRecyclabilityRatingNotRequired(ProducerRow row)
-    {
-        return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-            && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
-            && !string.IsNullOrEmpty(row.ProducerType)
-            && (PackagingType.SmallOrganisationPackagingAll.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
-                || PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase))
-            && (PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                || PackagingClass.SecondaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                || PackagingClass.TransitPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                || PackagingClass.TotalPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase))
-            && MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase);
     }
 }
