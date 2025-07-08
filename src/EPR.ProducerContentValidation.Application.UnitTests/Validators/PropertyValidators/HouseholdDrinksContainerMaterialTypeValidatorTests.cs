@@ -116,8 +116,44 @@ public class HouseholdDrinksContainerMaterialTypeValidatorTests : HouseholdDrink
         result.ShouldNotHaveValidationErrorFor(x => x.MaterialType);
     }
 
-    private static ProducerRow BuildProducerRow(string packagingType, string? materialType)
+    [DataRow(MaterialType.Wood)]
+    [DataRow(MaterialType.PaperCard)]
+    [DataRow(MaterialType.FibreComposite)]
+    [DataRow(MaterialType.Other)]
+    [TestMethod]
+    public void MaterialTypePackagingTypeValidator_ContainsError_WhenIsSmallProducerAndMaterialTypeIs(string materialType)
     {
-        return new ProducerRow(null, null, "123456", 0, null, ProducerSize.Large, packagingType, null, materialType, null, null, null, "1", "1", null, null);
+        // Arrange
+        var producerRow = BuildProducerRow(PackagingType.HouseholdDrinksContainers, materialType, ProducerSize.Small);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.MaterialType)
+            .WithErrorCode(ErrorCode.MaterialTypeInvalidWasteTypeErrorCode);
+    }
+
+    [DataRow(MaterialType.Plastic)]
+    [DataRow(MaterialType.Aluminium)]
+    [DataRow(MaterialType.Steel)]
+    [DataRow(MaterialType.Glass)]
+    [TestMethod]
+    public void MaterialTypePackagingTypeValidator_DoesNotContainsError_WhenIsSmallProducerAndMaterialTypeIs(string materialType)
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(PackagingType.HouseholdDrinksContainers, materialType, ProducerSize.Small);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(x => x.MaterialType);
+    }
+
+    private static ProducerRow BuildProducerRow(string packagingType, string? materialType, string producerSize = ProducerSize.Large)
+    {
+        return new ProducerRow(null, null, "123456", 0, null, producerSize, packagingType, null, materialType, null, null, null, "1", "1", null, null);
     }
 }
