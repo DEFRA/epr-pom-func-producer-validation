@@ -252,16 +252,17 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow(PackagingType.SelfManagedConsumerWaste, MaterialType.Plastic)]
-    [DataRow(PackagingType.SelfManagedOrganisationWaste, MaterialType.Aluminium)]
-    [DataRow(PackagingType.HouseholdDrinksContainers, MaterialType.Plastic)]
-    [DataRow(PackagingType.SmallOrganisationPackagingAll, MaterialType.Steel)]
-    public void Should_Fail_When_RecyclabilityRating_Provided_For_InvalidWasteAndMaterialType_WhenFlagEnabled(string packagingType, string materialType)
+    [DataRow(ProducerSize.Large, PackagingType.SelfManagedConsumerWaste, MaterialType.Plastic)]
+    [DataRow(ProducerSize.Large, PackagingType.SelfManagedOrganisationWaste, MaterialType.Aluminium)]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Plastic)] // not glass
+    [DataRow(ProducerSize.Large, PackagingType.SmallOrganisationPackagingAll, MaterialType.Steel)]
+    [DataRow(ProducerSize.Small, PackagingType.PublicBin, MaterialType.Glass)] // triggers !Large branch
+    public void Should_Fail_When_RecyclabilityRating_Provided_For_InvalidWasteAndMaterialType_WhenFlagEnabled(string producerSize, string packagingType, string materialType)
     {
         var row = BuildProducerRow(
             dataSubmissionPeriod: DataSubmissionPeriod.Year2025H1,
             producerType: ProducerType.SuppliedUnderYourBrand,
-            producerSize: ProducerSize.Large,
+            producerSize: producerSize,
             packagingType: packagingType,
             packagingClass: PackagingClass.PrimaryPackaging,
             materialType: materialType,
@@ -277,17 +278,17 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow(PackagingType.Household, MaterialType.Plastic)]
-    [DataRow(PackagingType.Household, MaterialType.Steel)]
-    [DataRow(PackagingType.PublicBin, MaterialType.Aluminium)]
-    [DataRow(PackagingType.PublicBin, MaterialType.Glass)]
-    [DataRow(PackagingType.HouseholdDrinksContainers, MaterialType.Glass)]
-    public void Should_Pass_When_RecyclabilityRating_Provided_For_ValidWasteAndMaterialType_WhenFlagEnabled(string packagingType, string materialType)
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Steel)]
+    [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.Aluminium)]
+    [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.Glass)]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass)]
+    public void Should_Pass_When_RecyclabilityRating_Provided_For_ValidWasteAndMaterialType_WhenFlagEnabled(string producerSize, string packagingType, string materialType)
     {
         var row = BuildProducerRow(
             dataSubmissionPeriod: DataSubmissionPeriod.Year2025H1,
             producerType: ProducerType.SuppliedUnderYourBrand,
-            producerSize: ProducerSize.Large,
+            producerSize: producerSize,
             packagingType: packagingType,
             packagingClass: PackagingClass.PrimaryPackaging,
             materialType: materialType,

@@ -85,11 +85,6 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 
     private static bool IsLargeProducerWithValidWasteAndMaterialType(ProducerRow row)
     {
-        if (!ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
         var packagingType = row.WasteType;
         var materialType = row.MaterialType;
 
