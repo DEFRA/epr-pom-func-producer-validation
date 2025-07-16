@@ -29,11 +29,13 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
                 && !string.IsNullOrEmpty(row.RecyclabilityRating)
                 && IsLargeProducerRecyclabilityRatingApplicable(row));
 
+        // Disallow rating before 2025
         RuleFor(x => x.RecyclabilityRating)
             .Empty()
             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingNotRequired)
             .When(x => IsLargeProducerRecyclabilityRatingNotRequiredBefore2025(x));
 
+        // Disallow rating for small producers
         RuleFor(x => x.RecyclabilityRating)
             .Empty()
             .WithErrorCode(ErrorCode.SmallProducerRecyclabilityRatingNotRequired)
@@ -47,6 +49,15 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
                 !HelperFunctions.IsFeatureFlagOn(ctx, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
                 && string.IsNullOrEmpty(row.RecyclabilityRating)
                 && IsLargeProducerRecyclabilityRatingApplicable(row));
+
+        // Disallow rating for invalid packaging types (e.g., CW, OW, HDC with non-glass)
+        RuleFor(x => x.RecyclabilityRating)
+            .Empty()
+            .WithErrorCode(ErrorCode.LargeProducerInvalidForWasteAndMaterialType)
+            .When((row, ctx) =>
+                HelperFunctions.IsFeatureFlagOn(ctx, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
+                && !IsLargeProducerWithValidWasteAndMaterialType(row)
+                && !string.IsNullOrWhiteSpace(row.RecyclabilityRating));
     }
 
     private static bool IsLargeProducerRecyclabilityRatingApplicable(ProducerRow row)
@@ -70,5 +81,21 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
             && (!string.IsNullOrEmpty(row.PackagingCategory) || isHouseholdDrinksContainerWithEmptyPackaging)
             && !string.IsNullOrEmpty(row.MaterialType)
             && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
+    }
+
+    private static bool IsLargeProducerWithValidWasteAndMaterialType(ProducerRow row)
+    {
+        var packagingType = row.WasteType;
+        var materialType = row.MaterialType;
+
+        bool isHdcGlass =
+            PackagingType.HouseholdDrinksContainers.Equals(packagingType, StringComparison.OrdinalIgnoreCase)
+            && MaterialType.Glass.Equals(materialType, StringComparison.OrdinalIgnoreCase);
+
+        bool isHhOrPb =
+            PackagingType.Household.Equals(packagingType, StringComparison.OrdinalIgnoreCase) ||
+            PackagingType.PublicBin.Equals(packagingType, StringComparison.OrdinalIgnoreCase);
+
+        return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase) && (isHdcGlass || isHhOrPb);
     }
 }
