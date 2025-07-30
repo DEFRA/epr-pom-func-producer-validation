@@ -147,6 +147,8 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TransitPackaging, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Green)]
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TotalPackaging, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Green)]
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Green)]
+    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, null, MaterialType.Plastic, null, RecyclabilityRating.Green)]
+    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, null, MaterialType.Other, "test", RecyclabilityRating.Green)]
     public void RecyclabilityRatingValidator_Recyclability_Code_Not_Required_For_SmallProducer(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -254,10 +256,10 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     [TestMethod]
     [DataRow(ProducerSize.Large, PackagingType.SelfManagedConsumerWaste, MaterialType.Plastic)]
     [DataRow(ProducerSize.Large, PackagingType.SelfManagedOrganisationWaste, MaterialType.Aluminium)]
-    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Plastic)] // not glass
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Plastic)]
     [DataRow(ProducerSize.Large, PackagingType.SmallOrganisationPackagingAll, MaterialType.Steel)]
-    [DataRow(ProducerSize.Small, PackagingType.PublicBin, MaterialType.Glass)] // triggers !Large branch
-    public void Should_Fail_When_RecyclabilityRating_Provided_For_InvalidWasteAndMaterialType_WhenFlagEnabled(string producerSize, string packagingType, string materialType)
+    [DataRow(ProducerSize.Small, PackagingType.PublicBin, MaterialType.Glass, ErrorCode.SmallProducerRecyclabilityRatingNotRequired)]
+    public void Should_Fail_When_RecyclabilityRating_Provided_For_InvalidWasteAndMaterialType_WhenFlagEnabled(string producerSize, string packagingType, string materialType, string errorCode = ErrorCode.LargeProducerInvalidForWasteAndMaterialType)
     {
         var row = BuildProducerRow(
             dataSubmissionPeriod: DataSubmissionPeriod.Year2025H1,
@@ -274,7 +276,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
         var result = _systemUnderTest.TestValidate(context);
 
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
-              .WithErrorCode(ErrorCode.LargeProducerInvalidForWasteAndMaterialType);
+              .WithErrorCode(errorCode);
     }
 
     [TestMethod]

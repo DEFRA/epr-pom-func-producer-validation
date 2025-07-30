@@ -56,6 +56,7 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
             .WithErrorCode(ErrorCode.LargeProducerInvalidForWasteAndMaterialType)
             .When((row, ctx) =>
                 HelperFunctions.IsFeatureFlagOn(ctx, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
+                && ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
                 && !IsLargeProducerWithValidWasteAndMaterialType(row)
                 && !string.IsNullOrWhiteSpace(row.RecyclabilityRating));
     }
