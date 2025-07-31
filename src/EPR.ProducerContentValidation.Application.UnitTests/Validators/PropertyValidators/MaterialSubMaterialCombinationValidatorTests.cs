@@ -396,6 +396,25 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
               .WithErrorCode(expectedError);
     }
 
+    [TestMethod]
+    [DataRow("2025-H1", "L", PackagingType.NonHousehold, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    [DataRow("2025-H2", "L", PackagingType.NonHouseholdDrinksContainers, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.Plastic, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    [DataRow("2025-H1", "L", PackagingType.SelfManagedOrganisationWaste, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.Rigid, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    [DataRow("2025-H2", "L", PackagingType.SelfManagedConsumerWaste, PackagingClass.PublicBin, MaterialType.Plastic, "Random", ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    [DataRow("2025-H1", "L", PackagingType.ReusablePackaging, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.HDPE, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    public void Should_Fail_When_Packingtype_Is_Nonhousehold_And_MaterialSubtype_isnotempty(string period, string orgSize, string pkgType, string pkgClass, string material, string subType, string expectedError)
+    {
+        var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, null);
+        var context = new ValidationContext<ProducerRow>(row);
+        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = true;
+
+        var validator = new MaterialSubMaterialCombinationValidator();
+        var result = validator.TestValidate(context);
+
+        result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
+              .WithErrorCode(expectedError);
+    }
+
     private static ProducerRow BuildProducerRow(string materialType, string? materialSubType)
     {
         return new ProducerRow(null, null, null, 1, null, null, null, null, materialType, materialSubType, null, null, null, null, null, null);
