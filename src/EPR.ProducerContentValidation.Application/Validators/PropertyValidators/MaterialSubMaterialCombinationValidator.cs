@@ -45,11 +45,19 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
                .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)
                .When((x, ctx) => IsLargeProducerMaterialSubTypeRequiredBefore2025(x) || IsSmallProducerMaterialSubTypeRequiredBefore2025(x));
 
-            // Material subtype not required for Small Organisation
+            // Material subtype not required for Large Organisation from 2025 and Non household
+            RuleFor(x => x.MaterialSubType)
+               .Empty()
+               .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)
+               .When((x, ctx) => IsLargeProducerMaterialSubTypeRequiredForNonHousehold(x));
+
+            // Material subtype not required for Small Organisation for any submission year
             RuleFor(x => x.MaterialSubType)
                .Empty()
                .WithErrorCode(ErrorCode.SmallProducerPlasticMaterialSubTypeNotRequired)
-               .When(HelperFunctions.ShouldApplySmallProducer2025RuleForMaterialSubTypeAndRecyclabilityRating);
+               .When((row, ctx) =>
+                        ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+                        && (!string.IsNullOrWhiteSpace(row.MaterialSubType)));
 
             // Invalid material subtype
             RuleFor(x => x.MaterialSubType)
@@ -81,6 +89,12 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
     private static bool IsLargeProducerMaterialSubTypeRequired(ProducerRow row)
     {
         return HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(
+            row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod);
+    }
+
+    private static bool IsLargeProducerMaterialSubTypeRequiredForNonHousehold(ProducerRow row)
+    {
+        return HelperFunctions.ShouldApply2025NonHouseholdRulesForLargeProducer(
             row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod);
     }
 
