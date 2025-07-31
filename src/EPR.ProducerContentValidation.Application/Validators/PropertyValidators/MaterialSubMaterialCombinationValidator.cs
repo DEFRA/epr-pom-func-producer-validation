@@ -45,6 +45,12 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
                .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)
                .When((x, ctx) => IsLargeProducerMaterialSubTypeRequiredBefore2025(x) || IsSmallProducerMaterialSubTypeRequiredBefore2025(x));
 
+            // Material subtype not required for Large Organisation from 2025 and Non household
+            RuleFor(x => x.MaterialSubType)
+               .Empty()
+               .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)
+               .When((x, ctx) => IsLargeProducerMaterialSubTypeRequiredForNonHousehold(x));
+
             // Material subtype not required for Small Organisation
             RuleFor(x => x.MaterialSubType)
                .Empty()
@@ -81,6 +87,12 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
     private static bool IsLargeProducerMaterialSubTypeRequired(ProducerRow row)
     {
         return HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(
+            row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod);
+    }
+
+    private static bool IsLargeProducerMaterialSubTypeRequiredForNonHousehold(ProducerRow row)
+    {
+        return HelperFunctions.ShouldApply2025NonHouseholdRulesForLargeProducer(
             row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod);
     }
 
