@@ -35,11 +35,13 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingNotRequired)
             .When(x => IsLargeProducerRecyclabilityRatingNotRequiredBefore2025(x));
 
-        // Disallow rating for small producers
+        // Disallow rating for small producers for any submission year
         RuleFor(x => x.RecyclabilityRating)
             .Empty()
             .WithErrorCode(ErrorCode.SmallProducerRecyclabilityRatingNotRequired)
-            .When(HelperFunctions.ShouldApplySmallProducer2025RuleForMaterialSubTypeAndRecyclabilityRating);
+               .When((row, ctx) =>
+                        ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+                        && (!string.IsNullOrWhiteSpace(row.RecyclabilityRating)));
 
         // Rating is required only if feature flag is OFF
         RuleFor(x => x.RecyclabilityRating)

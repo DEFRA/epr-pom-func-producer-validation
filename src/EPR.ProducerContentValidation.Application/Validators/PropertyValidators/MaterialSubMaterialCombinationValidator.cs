@@ -51,11 +51,13 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
                .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)
                .When((x, ctx) => IsLargeProducerMaterialSubTypeRequiredForNonHousehold(x));
 
-            // Material subtype not required for Small Organisation
+            // Material subtype not required for Small Organisation for any submission year
             RuleFor(x => x.MaterialSubType)
                .Empty()
                .WithErrorCode(ErrorCode.SmallProducerPlasticMaterialSubTypeNotRequired)
-               .When(HelperFunctions.ShouldApplySmallProducer2025RuleForMaterialSubTypeAndRecyclabilityRating);
+               .When((row, ctx) =>
+                        ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+                        && (!string.IsNullOrWhiteSpace(row.MaterialSubType)));
 
             // Invalid material subtype
             RuleFor(x => x.MaterialSubType)

@@ -93,15 +93,6 @@ public static class HelperFunctions
                 || DataSubmissionPeriod.Year2025H2.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase));
     }
 
-    public static bool ShouldApplySmallProducer2025RuleForMaterialSubTypeAndRecyclabilityRating(ProducerRow row)
-    {
-        return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-            && !string.IsNullOrWhiteSpace(row.DataSubmissionPeriod)
-            && !IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025)
-            && (!string.IsNullOrWhiteSpace(row.RecyclabilityRating)
-                || !string.IsNullOrWhiteSpace(row.MaterialSubType));
-    }
-
     private static bool IsHouseholdRelatedWasteType(string? wasteType)
     {
         return !string.IsNullOrEmpty(wasteType) &&
