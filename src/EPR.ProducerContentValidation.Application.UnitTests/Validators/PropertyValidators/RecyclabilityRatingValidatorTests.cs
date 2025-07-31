@@ -255,15 +255,15 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow(ProducerSize.Large, PackagingType.SelfManagedConsumerWaste, MaterialType.Plastic)]
-    [DataRow(ProducerSize.Large, PackagingType.SelfManagedOrganisationWaste, MaterialType.Aluminium)]
-    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Plastic)]
+    [DataRow(ProducerSize.Large, PackagingType.SelfManagedConsumerWaste, MaterialType.Plastic, ErrorCode.LargeProducerInvalidForWasteAndMaterialType, DataSubmissionPeriod.Year2025H2)]
+    [DataRow(ProducerSize.Large, PackagingType.SelfManagedOrganisationWaste, MaterialType.Aluminium, ErrorCode.LargeProducerInvalidForWasteAndMaterialType, DataSubmissionPeriod.Year2025P0)]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Plastic, ErrorCode.LargeProducerInvalidForWasteAndMaterialType, DataSubmissionPeriod.Year2025H1)]
     [DataRow(ProducerSize.Large, PackagingType.SmallOrganisationPackagingAll, MaterialType.Steel)]
     [DataRow(ProducerSize.Small, PackagingType.PublicBin, MaterialType.Glass, ErrorCode.SmallProducerRecyclabilityRatingNotRequired)]
-    public void Should_Fail_When_RecyclabilityRating_Provided_For_InvalidWasteAndMaterialType_WhenFlagEnabled(string producerSize, string packagingType, string materialType, string errorCode = ErrorCode.LargeProducerInvalidForWasteAndMaterialType)
+    public void Should_Fail_When_RecyclabilityRating_Provided_For_InvalidWasteAndMaterialType_WhenFlagEnabled(string producerSize, string packagingType, string materialType, string errorCode = ErrorCode.LargeProducerInvalidForWasteAndMaterialType, string dataSubmissionPeriod = DataSubmissionPeriod.Year2025H1)
     {
         var row = BuildProducerRow(
-            dataSubmissionPeriod: DataSubmissionPeriod.Year2025H1,
+            dataSubmissionPeriod: dataSubmissionPeriod,
             producerType: ProducerType.SuppliedUnderYourBrand,
             producerSize: producerSize,
             packagingType: packagingType,
@@ -276,7 +276,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
 
         var result = _systemUnderTest.TestValidate(context);
 
-        Assert.AreEqual(1, result.Errors.Count());
+        Assert.AreEqual(1, result.Errors.Count);
 
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
               .WithErrorCode(errorCode);
@@ -301,7 +301,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
 
         var result = _systemUnderTest.TestValidate(context);
 
-        Assert.AreEqual(1, result.Errors.Count());
+        Assert.AreEqual(1, result.Errors.Count);
 
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
              .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingNotRequired);

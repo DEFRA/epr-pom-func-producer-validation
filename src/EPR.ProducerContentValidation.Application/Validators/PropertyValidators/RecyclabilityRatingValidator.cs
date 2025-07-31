@@ -90,7 +90,7 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
     {
         // if datasubmission period is not 2025 then we dont want this rule to apply
         var isSubmissionPeriod2025 = DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
-               || DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
+               || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
                || DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
         if (!isSubmissionPeriod2025)
         {
