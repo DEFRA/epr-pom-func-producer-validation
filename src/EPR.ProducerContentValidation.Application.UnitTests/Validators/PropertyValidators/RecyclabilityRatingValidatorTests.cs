@@ -276,8 +276,35 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
 
         var result = _systemUnderTest.TestValidate(context);
 
+        Assert.AreEqual(1, result.Errors.Count());
+
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
               .WithErrorCode(errorCode);
+    }
+
+    [TestMethod]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, DataSubmissionPeriod.Year2024P2)]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, DataSubmissionPeriod.Year2023P3)]
+    public void Should_Not_Fail_When_RecyclabilityRating_Provided_For_InvalidWasteAndMaterialType_For_OtherThan_2025_WhenFlagEnabled(string producerSize, string packagingType, string materialType, string submissionPeriod)
+    {
+        var row = BuildProducerRow(
+            dataSubmissionPeriod: submissionPeriod,
+            producerType: ProducerType.SuppliedUnderYourBrand,
+            producerSize: producerSize,
+            packagingType: packagingType,
+            packagingClass: PackagingClass.PrimaryPackaging,
+            materialType: materialType,
+            materialSubType: MaterialSubType.Rigid,
+            recyclabilityRating: RecyclabilityRating.Red);
+
+        var context = CreateContextWithFeatureFlag(row, isEnabled: true);
+
+        var result = _systemUnderTest.TestValidate(context);
+
+        Assert.AreEqual(1, result.Errors.Count());
+
+        result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
+             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingNotRequired);
     }
 
     [TestMethod]
