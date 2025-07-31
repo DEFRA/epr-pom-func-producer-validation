@@ -35,11 +35,13 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingNotRequired)
             .When(x => IsLargeProducerRecyclabilityRatingNotRequiredBefore2025(x));
 
-        // Disallow rating for small producers
+        // Disallow rating for small producers for any submission year
         RuleFor(x => x.RecyclabilityRating)
             .Empty()
             .WithErrorCode(ErrorCode.SmallProducerRecyclabilityRatingNotRequired)
-            .When(HelperFunctions.ShouldApplySmallProducer2025RuleForMaterialSubTypeAndRecyclabilityRating);
+               .When((row, ctx) =>
+                        ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+                        && (!string.IsNullOrWhiteSpace(row.RecyclabilityRating)));
 
         // Rating is required only if feature flag is OFF
         RuleFor(x => x.RecyclabilityRating)
@@ -56,6 +58,7 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
             .WithErrorCode(ErrorCode.LargeProducerInvalidForWasteAndMaterialType)
             .When((row, ctx) =>
                 HelperFunctions.IsFeatureFlagOn(ctx, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
+                && ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
                 && !IsLargeProducerWithValidWasteAndMaterialType(row)
                 && !string.IsNullOrWhiteSpace(row.RecyclabilityRating));
     }
@@ -85,6 +88,15 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 
     private static bool IsLargeProducerWithValidWasteAndMaterialType(ProducerRow row)
     {
+        // if datasubmission period is not 2025 then we dont want this rule to apply
+        var isSubmissionPeriod2025 = DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
+               || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
+               || DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
+        if (!isSubmissionPeriod2025)
+        {
+            return true;
+        }
+
         var packagingType = row.WasteType;
         var materialType = row.MaterialType;
 
