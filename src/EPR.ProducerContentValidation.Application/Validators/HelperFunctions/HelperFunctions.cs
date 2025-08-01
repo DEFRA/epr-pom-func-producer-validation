@@ -75,26 +75,22 @@ public static class HelperFunctions
                 || DataSubmissionPeriod.Year2025H2.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase));
     }
 
-    public static bool ShouldApplySmallProducer2025RuleForMaterialSubTypeAndRecyclabilityRating(ProducerRow row)
+    public static bool ShouldApply2025NonHouseholdRulesForLargeProducer(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod)
     {
-        var isSmallProducer2025 = ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-                              && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
-        var isHouseHoldWasteType = PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase);
-
-        var isValidPackagingCategory = PackagingClass.PrimaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                                        || PackagingClass.SecondaryPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                                        || PackagingClass.ShipmentPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                                        || PackagingClass.TransitPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase)
-                                        || PackagingClass.TotalPackaging.Equals(row.PackagingCategory, StringComparison.OrdinalIgnoreCase);
-
-        var isHouseHoldWasteTypeWithEmptyCategory = string.IsNullOrEmpty(row.PackagingCategory) && isHouseHoldWasteType;
-
-        return isSmallProducer2025
-            && !string.IsNullOrEmpty(row.ProducerType)
-            && (PackagingType.SmallOrganisationPackagingAll.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
-                || isHouseHoldWasteType)
-            && (isValidPackagingCategory || isHouseHoldWasteTypeWithEmptyCategory)
-            && MaterialType.Plastic.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase);
+        return ProducerSize.Large.Equals(producerSize, StringComparison.OrdinalIgnoreCase)
+            && IsNonHouseholdRelatedWasteType(wasteType)
+            && (string.IsNullOrWhiteSpace(packagingCategory)
+                || PackagingClass.PrimaryPackaging.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
+                || PackagingClass.SecondaryPackaging.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
+                || PackagingClass.ShipmentPackaging.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
+                || PackagingClass.TransitPackaging.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
+                || PackagingClass.NonPrimaryPackaging.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
+                || PackagingClass.TotalPackaging.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
+                || PackagingClass.TotalRelevantWaste.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
+                || PackagingClass.WasteOrigin.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
+                || PackagingClass.PublicBin.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase))
+                && (DataSubmissionPeriod.Year2025H1.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase)
+                || DataSubmissionPeriod.Year2025H2.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool IsHouseholdRelatedWasteType(string? wasteType)
@@ -103,5 +99,15 @@ public static class HelperFunctions
             (wasteType.Equals(PackagingType.Household, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.HouseholdDrinksContainers, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.PublicBin, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool IsNonHouseholdRelatedWasteType(string? wasteType)
+    {
+        return !string.IsNullOrEmpty(wasteType) &&
+            (wasteType.Equals(PackagingType.NonHousehold, StringComparison.OrdinalIgnoreCase)
+             || wasteType.Equals(PackagingType.SelfManagedConsumerWaste, StringComparison.OrdinalIgnoreCase)
+             || wasteType.Equals(PackagingType.SelfManagedOrganisationWaste, StringComparison.OrdinalIgnoreCase)
+             || wasteType.Equals(PackagingType.ReusablePackaging, StringComparison.OrdinalIgnoreCase)
+             || wasteType.Equals(PackagingType.NonHouseholdDrinksContainers, StringComparison.OrdinalIgnoreCase));
     }
 }

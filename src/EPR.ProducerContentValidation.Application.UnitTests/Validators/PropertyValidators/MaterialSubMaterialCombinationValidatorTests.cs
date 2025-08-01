@@ -296,7 +296,10 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.SecondaryPackaging, MaterialType.Plastic, MaterialSubType.Plastic)]
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TransitPackaging, MaterialType.Plastic, MaterialSubType.Plastic)]
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
-    public void MaterialSubMaterialCombinationValidator_SmallProducer_PlasticMaterial_SubType_NotRequired(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType)
+    [DataRow(DataSubmissionPeriod.Year2024P3, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
+    [DataRow(DataSubmissionPeriod.Year2024P3, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
+    [DataRow(DataSubmissionPeriod.Year2023P3, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
+    public void MaterialSubMaterialCombinationValidator_SmallProducer_PlasticMaterial_SubType_NotRequired(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, bool shouldHaveValidationError = true)
     {
         // Arrange
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, null);
@@ -384,6 +387,25 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [DataRow("2025-H2", "L", PackagingType.HouseholdDrinksContainers, "", MaterialType.Plastic, "Random", ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)]
     [DataRow("2025-H1", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Plastic, "PET", ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)]
     public void Should_Fail_When_InvalidPlasticMaterialSubtype(string period, string orgSize, string pkgType, string pkgClass, string material, string subType, string expectedError)
+    {
+        var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, null);
+        var context = new ValidationContext<ProducerRow>(row);
+        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = true;
+
+        var validator = new MaterialSubMaterialCombinationValidator();
+        var result = validator.TestValidate(context);
+
+        result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
+              .WithErrorCode(expectedError);
+    }
+
+    [TestMethod]
+    [DataRow("2025-H1", "L", PackagingType.NonHousehold, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    [DataRow("2025-H2", "L", PackagingType.NonHouseholdDrinksContainers, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.Plastic, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    [DataRow("2025-H1", "L", PackagingType.SelfManagedOrganisationWaste, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.Rigid, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    [DataRow("2025-H2", "L", PackagingType.SelfManagedConsumerWaste, PackagingClass.PublicBin, MaterialType.Plastic, "Random", ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    [DataRow("2025-H1", "L", PackagingType.ReusablePackaging, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.HDPE, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    public void Should_Fail_When_Packingtype_Is_Nonhousehold_And_MaterialSubtype_isnotempty(string period, string orgSize, string pkgType, string pkgClass, string material, string subType, string expectedError)
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, null);
         var context = new ValidationContext<ProducerRow>(row);

@@ -114,4 +114,17 @@ public class HelperFunctionTests
         var result = HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(producerSize, wasteType, packagingCategory, submissionPeriod);
         result.Should().Be(expected);
     }
+
+    [TestMethod]
+    [DataRow("L", "CW", "P1", "2025-H1", true)]
+    [DataRow("L", "OW", "P1", "2025-H2", true)]
+    [DataRow("L", "NH", "P1", "2025-H1", true)]
+    [DataRow("L", "RU", "P1", "2025-H2", true)]
+    [DataRow("L", "NDC", "P1", "2025-H2", true)]
+    [DataRow("S", "NH", "P1", "2025-H1", false)]
+    public void ShouldCorrectlyApply2025RulesForNonHousehold(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod, bool expected)
+    {
+        var result = HelperFunctions.ShouldApply2025NonHouseholdRulesForLargeProducer(producerSize, wasteType, packagingCategory, submissionPeriod);
+        result.Should().Be(expected);
+    }
 }
