@@ -96,7 +96,7 @@ public class HelperFunctionTests
     [TestMethod]
     [DataRow("L", "HH", "P1", "2025-H1", true)]
     [DataRow("L", "HH", "P1", "2025-H2", true)]
-    [DataRow("L", "HDC", "", "2025-H1", true)]
+    [DataRow("L", "HDC", "", "2025-H1", false)]
     [DataRow("L", "PB", "", "2025-H2", true)]
     [DataRow("L", "PB", "B1", "2025-H2", true)]
     [DataRow("L", "HH", null, "2025-H1", true)]
