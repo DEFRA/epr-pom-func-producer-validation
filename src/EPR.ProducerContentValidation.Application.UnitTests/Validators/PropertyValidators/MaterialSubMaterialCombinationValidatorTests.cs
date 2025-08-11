@@ -220,8 +220,6 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_PackagingType_HDC_Missing_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
-        // TO DO. HDC not required
-
         // Arrange
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
@@ -427,8 +425,6 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [DataRow(PackagingType.HouseholdDrinksContainers, "", "2025-H1")]
     public void MissingPlasticMaterialSubType_ShouldRaise_NO_Error_For_HDC(string packagingType, string packagingClass, string submissionPeriod)
     {
-        // TODO for HDC it should not throw error
-
         // Arrange
         var producerRow = BuildProducerRow(
             dataSubmissionPeriod: submissionPeriod,
