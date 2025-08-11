@@ -73,7 +73,6 @@ public static class HelperFunctions
                 || PackagingClass.PublicBin.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase))
                 && (DataSubmissionPeriod.Year2025H1.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase)
                 || DataSubmissionPeriod.Year2025H2.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase));
-
     }
 
     public static bool ShouldApply2025NonHouseholdRulesForLargeProducer(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod)
