@@ -88,20 +88,26 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
 
     private static bool IsLargeProducerMaterialSubTypeRequired(ProducerRow row)
     {
-        return HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(
+        var ddfdf = HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(
             row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod);
+
+        return ddfdf;
     }
 
     private static bool IsLargeProducerMaterialSubTypeRequiredForNonHousehold(ProducerRow row)
     {
-        return HelperFunctions.ShouldApply2025NonHouseholdRulesForLargeProducer(
+        var dddd = HelperFunctions.ShouldApply2025NonHouseholdRulesForLargeProducer(
             row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod);
+
+        return dddd;
     }
 
     private static bool IsLargeProducerMaterialSubTypeRequiredBefore2025(ProducerRow row)
     {
-        return ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+        var dddd = ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
            && HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
+
+        return dddd;
     }
 
     private static bool IsSmallProducerMaterialSubTypeRequiredBefore2025(ProducerRow row)

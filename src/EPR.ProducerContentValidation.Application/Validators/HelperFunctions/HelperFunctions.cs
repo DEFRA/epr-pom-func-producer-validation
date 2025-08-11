@@ -64,7 +64,7 @@ public static class HelperFunctions
 
     public static bool ShouldApply2025HouseholdRulesForLargeProducer(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod)
     {
-        return ProducerSize.Large.Equals(producerSize, StringComparison.OrdinalIgnoreCase)
+        var dddd = ProducerSize.Large.Equals(producerSize, StringComparison.OrdinalIgnoreCase)
             && IsHouseholdRelatedWasteType(wasteType)
             && (
                 PackagingClass.PrimaryPackaging.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
@@ -73,6 +73,8 @@ public static class HelperFunctions
                 || PackagingClass.PublicBin.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase))
                 && (DataSubmissionPeriod.Year2025H1.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase)
                 || DataSubmissionPeriod.Year2025H2.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase));
+
+        return dddd;
     }
 
     public static bool ShouldApply2025NonHouseholdRulesForLargeProducer(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod)
@@ -95,16 +97,18 @@ public static class HelperFunctions
 
     private static bool IsHouseholdRelatedWasteType(string? wasteType)
     {
-        return !string.IsNullOrEmpty(wasteType) &&
+        var dddd = !string.IsNullOrEmpty(wasteType) &&
             (wasteType.Equals(PackagingType.Household, StringComparison.OrdinalIgnoreCase)
-             || wasteType.Equals(PackagingType.HouseholdDrinksContainers, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.PublicBin, StringComparison.OrdinalIgnoreCase));
+
+        return dddd;
     }
 
     private static bool IsNonHouseholdRelatedWasteType(string? wasteType)
     {
         return !string.IsNullOrEmpty(wasteType) &&
             (wasteType.Equals(PackagingType.NonHousehold, StringComparison.OrdinalIgnoreCase)
+             || wasteType.Equals(PackagingType.HouseholdDrinksContainers, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.SelfManagedConsumerWaste, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.SelfManagedOrganisationWaste, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.ReusablePackaging, StringComparison.OrdinalIgnoreCase)

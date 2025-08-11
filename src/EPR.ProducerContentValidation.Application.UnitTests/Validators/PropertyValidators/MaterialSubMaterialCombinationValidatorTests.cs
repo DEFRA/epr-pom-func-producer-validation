@@ -220,6 +220,23 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_PackagingType_HDC_Missing_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
+        // TO DO. HDC not required
+
+        // Arrange
+        var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
+             .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeRequired);
+    }
+
+    [TestMethod]
+    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
+    public void MaterialSubMaterialCombinationValidator_PackagingType_HD_Missing_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
+    {
         // Arrange
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
@@ -292,6 +309,21 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
+    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, RecyclabilityRating.Red)]
+    public void MaterialSubMaterialCombinationValidator_Large_Producer_Packing_Type_PB_Valid_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
+            .WithErrorCode(ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode);
+    }
+
+    [TestMethod]
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.SecondaryPackaging, MaterialType.Plastic, MaterialSubType.Plastic)]
     [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TransitPackaging, MaterialType.Plastic, MaterialSubType.Plastic)]
@@ -342,10 +374,23 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
+    public void SubtypeBefore2025_ShouldRaiseError_For_PB()
+    {
+        var row = BuildProducerRow("2024-P1", ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, string.Empty);
+
+        var result = _systemUnderTest.TestValidate(row);
+
+        result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
+                .WithErrorCode(ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial);
+    }
+
+    [TestMethod]
     [DataRow(PackagingType.HouseholdDrinksContainers, "", "2025-H1")]
     [DataRow(PackagingType.PublicBin, PackagingClass.PublicBin, "2025-H2")]
     public void MissingPlasticMaterialSubType_ShouldRaiseError_For_HH_HDC_PB(string packagingType, string packagingClass, string submissionPeriod)
     {
+        // TODO for HDC it should not throw error
+
         // Arrange
         var producerRow = BuildProducerRow(
             dataSubmissionPeriod: submissionPeriod,
@@ -405,6 +450,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [DataRow("2025-H1", "L", PackagingType.SelfManagedOrganisationWaste, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.Rigid, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
     [DataRow("2025-H2", "L", PackagingType.SelfManagedConsumerWaste, PackagingClass.PublicBin, MaterialType.Plastic, "Random", ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
     [DataRow("2025-H1", "L", PackagingType.ReusablePackaging, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.HDPE, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
+    [DataRow("2025-H2", "L", PackagingType.HouseholdDrinksContainers, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.Rigid, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
     public void Should_Fail_When_Packingtype_Is_Nonhousehold_And_MaterialSubtype_isnotempty(string period, string orgSize, string pkgType, string pkgClass, string material, string subType, string expectedError)
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, null);

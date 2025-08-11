@@ -20,7 +20,6 @@ public class HouseholdDrinksContainerMaterialTypeValidator : AbstractValidator<P
 
     private readonly ImmutableList<string> _validMaterialTypes = new List<string>()
     {
-        MaterialType.Plastic,
         MaterialType.Aluminium,
         MaterialType.Steel,
         MaterialType.Glass
