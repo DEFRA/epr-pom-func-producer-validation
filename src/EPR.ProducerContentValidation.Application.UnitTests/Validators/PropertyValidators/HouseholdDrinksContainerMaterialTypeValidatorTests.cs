@@ -99,12 +99,25 @@ public class HouseholdDrinksContainerMaterialTypeValidatorTests : HouseholdDrink
             .WithErrorCode(ErrorCode.MaterialTypeInvalidWasteTypeErrorCode);
     }
 
-    [DataRow(MaterialType.Plastic)]
     [DataRow(MaterialType.Aluminium)]
     [DataRow(MaterialType.Steel)]
     [DataRow(MaterialType.Glass)]
     [TestMethod]
     public void MaterialTypePackagingTypeValidator_DoesNotContainsError_WhenMaterialTypeIs(string materialType)
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(PackagingType.HouseholdDrinksContainers, materialType);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(x => x.MaterialType);
+    }
+
+    [DataRow(MaterialType.Plastic)]
+    [TestMethod]
+    public void MaterialTypePackagingTypeValidator_DoesNotContainsError_WhenMaterialTypeIs_PL_For_HDC(string materialType)
     {
         // Arrange
         var producerRow = BuildProducerRow(PackagingType.HouseholdDrinksContainers, materialType);

@@ -97,7 +97,6 @@ public static class HelperFunctions
     {
         return !string.IsNullOrEmpty(wasteType) &&
             (wasteType.Equals(PackagingType.Household, StringComparison.OrdinalIgnoreCase)
-             || wasteType.Equals(PackagingType.HouseholdDrinksContainers, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.PublicBin, StringComparison.OrdinalIgnoreCase));
     }
 
@@ -105,6 +104,7 @@ public static class HelperFunctions
     {
         return !string.IsNullOrEmpty(wasteType) &&
             (wasteType.Equals(PackagingType.NonHousehold, StringComparison.OrdinalIgnoreCase)
+             || wasteType.Equals(PackagingType.HouseholdDrinksContainers, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.SelfManagedConsumerWaste, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.SelfManagedOrganisationWaste, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.ReusablePackaging, StringComparison.OrdinalIgnoreCase)
