@@ -33,8 +33,6 @@ public class SmallProducerPackagingTypeEnhancedValidator : AbstractValidator<Pro
 
     public SmallProducerPackagingTypeEnhancedValidator()
     {
-        // ClassLevelCascadeMode = CascadeMode.Stop;
-
         // Producer size must be small.
         RuleFor(x => x.ProducerSize)
             .Equal(ProducerSize.Small)
@@ -97,9 +95,9 @@ public class SmallProducerPackagingTypeEnhancedValidator : AbstractValidator<Pro
                 && ProducerSize.Small.Equals(producerRow.ProducerSize);
     }
 
-    private bool ValidPackagingMaterialWeight(string amount)
+    private static bool ValidPackagingMaterialWeight(string materialWeight)
     {
-        if (int.TryParse(amount, out var intValue))
+        if (int.TryParse(materialWeight, out var intValue))
         {
             return intValue > 0;
         }
@@ -107,9 +105,9 @@ public class SmallProducerPackagingTypeEnhancedValidator : AbstractValidator<Pro
         return false;
     }
 
-    private bool ValidPackagingMaterialQuantity(string amount)
+    private static bool ValidPackagingMaterialQuantity(string materialQuantity)
     {
-        if (int.TryParse(amount, out var intValue))
+        if (int.TryParse(materialQuantity, out var intValue))
         {
             return intValue > 0;
         }
