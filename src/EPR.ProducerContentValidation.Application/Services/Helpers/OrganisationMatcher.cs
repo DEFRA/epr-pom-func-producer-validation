@@ -9,6 +9,6 @@ public class OrganisationMatcher : IOrganisationMatcher
     public SubsidiaryOrganisationDetail? FindMatchingOrganisation(ProducerRow row, SubsidiaryDetailsResponse response)
     {
         return response.SubsidiaryOrganisationDetails
-                       .FirstOrDefault(org => org.OrganisationReference == row.ProducerId);
+                       .Find(org => org.OrganisationReference == row.ProducerId);
     }
 }

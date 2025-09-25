@@ -22,8 +22,8 @@ public class TransitionalPackagingUnitsValidator : AbstractValidator<ProducerRow
 
     private static bool IsTransitionalPackagingInvalidForPeriod(ProducerRow row)
     {
-        return string.IsNullOrWhiteSpace(row.TransitionalPackagingUnits) == false
-               && IsSubmissionPeriodInYear(row.DataSubmissionPeriod, 2024) == false;
+        return !string.IsNullOrWhiteSpace(row.TransitionalPackagingUnits)
+               && !IsSubmissionPeriodInYear(row.DataSubmissionPeriod, 2024);
     }
 
     private static bool IsSubmissionPeriodInYear(string? dataSubmissionPeriod, int year)

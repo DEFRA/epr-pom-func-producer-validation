@@ -27,7 +27,7 @@ public class ProducerValidationEventIssueRequestFormatter : IProducerValidationE
             QuantityUnits: row.QuantityUnits ?? string.Empty,
             TransitionalPackagingUnits: row.TransitionalPackagingUnits ?? string.Empty,
             RecyclabilityRating: row.RecyclabilityRating ?? string.Empty,
-            blobName = blobName ?? string.Empty,
+            BlobName: blobName,
             ErrorCodes: errorCodes);
     }
 }
