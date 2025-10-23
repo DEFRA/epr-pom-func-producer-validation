@@ -42,9 +42,6 @@ public class StartUp : FunctionsStartup
         .AddResilienceHandler("CompanyDetailsResiliencePipeline", BuildResiliencePipeline<CompanyDetailsApiConfig>(o => TimeSpan.FromSeconds(o.Timeout)));
     }
 
-    private static Action<ResiliencePipelineBuilder<HttpResponseMessage>> BuildResiliencePipeline() =>
-            builder => BuildResiliencePipeline(builder);
-
     private static Action<ResiliencePipelineBuilder<HttpResponseMessage>, ResilienceHandlerContext> BuildResiliencePipeline<TConfig>(Func<TConfig, TimeSpan> timeoutSelector)
         where TConfig : class =>
         (builder, context) =>
