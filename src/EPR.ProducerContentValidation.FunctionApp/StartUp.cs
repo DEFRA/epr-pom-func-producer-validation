@@ -36,7 +36,6 @@ public class StartUp : FunctionsStartup
             var companyDetailsApiConfig = sp.GetRequiredService<IOptions<CompanyDetailsApiConfig>>().Value;
             c.BaseAddress = new Uri(companyDetailsApiConfig.BaseUrl);
             c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            c.Timeout = TimeSpan.FromSeconds(companyDetailsApiConfig.Timeout);
         })
         .AddHttpMessageHandler<CompanyDetailsApiAuthorisationHandler>()
         .AddResilienceHandler("CompanyDetailsResiliencePipeline", BuildResiliencePipeline<CompanyDetailsApiConfig>(o => TimeSpan.FromSeconds(o.Timeout)));
