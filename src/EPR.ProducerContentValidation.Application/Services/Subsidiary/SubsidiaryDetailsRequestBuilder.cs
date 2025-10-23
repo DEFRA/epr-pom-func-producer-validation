@@ -17,13 +17,15 @@ public class SubsidiaryDetailsRequestBuilder : ISubsidiaryDetailsRequestBuilder
                     OrganisationReference = group.Key,
                     SubsidiaryDetails = group
                         .Where(row => !string.IsNullOrEmpty(row.SubsidiaryId))
-                        .Select(row => new SubsidiaryDetail
+                        .GroupBy(row => row.SubsidiaryId)
+                        .Select(rowGroup => new SubsidiaryDetail
                         {
-                            ReferenceNumber = row.SubsidiaryId,
+                            ReferenceNumber = rowGroup.Key,
                         }).ToList(),
                 })
                 .ToList(),
         };
+
         return subsidiaryDetailsRequest;
     }
 }
