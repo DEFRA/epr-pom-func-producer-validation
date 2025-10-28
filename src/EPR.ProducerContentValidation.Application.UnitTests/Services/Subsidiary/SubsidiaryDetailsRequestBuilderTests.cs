@@ -333,13 +333,13 @@ public class SubsidiaryDetailsRequestBuilderTests
     }
 
     [TestMethod]
-    public void CreateRequest_ShouldIgnoreRowsWithWhitespaceSubsidiaryId()
+    public void CreateRequest_ShouldIncludeRowsWithWhitespaceSubsidiaryId()
     {
         // Arrange
         var rows = new List<ProducerRow>
         {
             new(
-                SubsidiaryId: " ",
+                SubsidiaryId: " ", /* This will be allowed as blanks may be added to files by external tools and we do not want to modify any inputs data */
                 DataSubmissionPeriod: "Period 1",
                 ProducerId: "1",
                 RowNumber: 1,
@@ -363,6 +363,6 @@ public class SubsidiaryDetailsRequestBuilderTests
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.SubsidiaryOrganisationDetails.Count);
+        Assert.AreEqual(1, result.SubsidiaryOrganisationDetails.Count);
     }
 }
