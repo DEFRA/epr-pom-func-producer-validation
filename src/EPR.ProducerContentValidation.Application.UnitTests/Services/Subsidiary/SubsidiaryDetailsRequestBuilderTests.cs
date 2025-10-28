@@ -318,8 +318,8 @@ public class SubsidiaryDetailsRequestBuilderTests
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(2, result.SubsidiaryOrganisationDetails.Count);
-        Assert.AreEqual(result.SubsidiaryOrganisationDetails.Count(o => o.OrganisationReference == "1"), 1);
-        Assert.AreEqual(result.SubsidiaryOrganisationDetails.Count(o => o.OrganisationReference == "2"), 1);
+        Assert.AreEqual(1, result.SubsidiaryOrganisationDetails.Count(o => o.OrganisationReference == "1"));
+        Assert.AreEqual(1, result.SubsidiaryOrganisationDetails.Count(o => o.OrganisationReference == "2"));
 
         var firstOrg = result.SubsidiaryOrganisationDetails.Single(o => o.OrganisationReference == "1");
         Assert.IsNotNull(firstOrg);
@@ -339,7 +339,7 @@ public class SubsidiaryDetailsRequestBuilderTests
         var rows = new List<ProducerRow>
         {
             new(
-                SubsidiaryId: string.Empty,
+                SubsidiaryId: " ",
                 DataSubmissionPeriod: "Period 1",
                 ProducerId: "1",
                 RowNumber: 1,
