@@ -101,4 +101,38 @@ public class ProducerRowValidatorFactoryTests
         // Assert
         Assert.IsNotNull(result);
     }
+
+    [TestMethod]
+    public async Task ProducerRowValidatorFactory_StopsAfterFirstError_ThreeRows_OneErrorEach()
+    {
+        // Arrange
+        _options = new ValidationOptions { Disabled = false };
+        _systemUnderTest = new ProducerRowValidatorFactory(
+            Microsoft.Extensions.Options.Options.Create(_options), _featureManagerMock.Object);
+        var validator = _systemUnderTest.GetInstance();
+
+        var rows = new[]
+        {
+            new ProducerRow("SUB-1", "PF", "ABC", 1, "Large", "Large", "Completed", "Household", "Plastic", "Bottle", "England", "England", "1", "kg", "2024P1", null, null),
+
+            new ProducerRow("SUB-1", "PF", "112112", 1, "SO", "L", "Completed", "HH", "Glass", "Can", "England", "England", "1", "1", "2024P1", null, null),
+
+            new ProducerRow("SUB-3", "PF", "654321", 3, "SO", "L", "Completed", "PB", "Glass", "Can", "England", "England", "1", "kg", "2024P1", null, null),
+        };
+
+        // Act
+        var results = await Task.WhenAll(rows.Select(r => validator.ValidateAsync(r)));
+
+        // Assert
+        results.Length.Should().Be(3);
+
+        results[0].IsValid.Should().BeFalse();
+        results[0].Errors.Should().HaveCount(1);
+
+        results[1].IsValid.Should().BeFalse();
+        results[1].Errors.Should().HaveCount(1);
+
+        results[2].IsValid.Should().BeFalse();
+        results[2].Errors.Should().HaveCount(1);
+    }
 }

@@ -12,6 +12,9 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
 {
     public ProducerRowValidator(IFeatureManager featureManager)
     {
+        ClassLevelCascadeMode = CascadeMode.Stop;
+        RuleLevelCascadeMode = CascadeMode.Stop;
+
         Include(new ProducerIdValidator());
         Include(new QuantityKgValidator());
         Include(new QuantityUnitsValidator());
