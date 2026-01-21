@@ -1,21 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <AzureFunctionsVersion>v4</AzureFunctionsVersion>
-        <SonarQubeTestProject>false</SonarQubeTestProject>
         <TargetFramework>net8.0</TargetFramework>
+        <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+        <OutputType>Exe</OutputType>
+        <SonarQubeTestProject>false</SonarQubeTestProject>
         <UserSecretsId>f5649d0b-74d7-4319-aa6e-87a78c16fe14</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Azure.Identity" Version="1.13.1" />
-        <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="5.16.4" />
-        <PackageReference Include="Microsoft.Azure.WebJobs.Logging.ApplicationInsights" Version="3.0.41" />
+        <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.23.0" />
+        <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.15.0" />
+        <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.18.1" />
+        <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.4.1" />
         <PackageReference Include="System.Drawing.Common" Version="8.0.8" />
     </ItemGroup>
     <ItemGroup>
@@ -23,15 +24,11 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="local.settings.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
         <None Update="settings.json">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-        </None>
-        <None Update="local.settings.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
           <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
     </ItemGroup>

@@ -1,43 +1,45 @@
-﻿using EPR.ProducerContentValidation.FunctionApp;
-using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-
-[assembly: FunctionsStartup(typeof(StartUp))]
-
-namespace EPR.ProducerContentValidation.FunctionApp;
-
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
-using Application;
+using EPR.ProducerContentValidation.Application;
 using EPR.ProducerContentValidation.Application.Clients;
 using EPR.ProducerContentValidation.Application.Config;
 using EPR.ProducerContentValidation.Application.Handlers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Polly;
 using Polly.Timeout;
 
+namespace EPR.ProducerContentValidation.FunctionApp;
+
 [ExcludeFromCodeCoverage]
-public class StartUp : FunctionsStartup
+public class Program
 {
-    public override void Configure(IFunctionsHostBuilder builder)
+    public static void Main()
     {
-        var services = builder.Services;
+        var host = new HostBuilder()
+            .ConfigureFunctionsWorkerDefaults()
+            .ConfigureServices((context, services) =>
+            {
+                services.AddFeatureManagement();
+                services.AddApplicationServices();
+                services.AddFunctionServices();
+                services.AddApplicationInsightsTelemetryWorkerService();
 
-        services.AddFeatureManagement();
-        services.AddApplicationServices();
-        services.AddFunctionServices();
-        services.AddApplicationInsightsTelemetry();
+                services.AddHttpClient<ICompanyDetailsApiClient, CompanyDetailsApiClient>((sp, c) =>
+                {
+                    var companyDetailsApiConfig = sp.GetRequiredService<IOptions<CompanyDetailsApiConfig>>().Value;
+                    c.BaseAddress = new Uri(companyDetailsApiConfig.BaseUrl);
+                    c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                })
+                .AddHttpMessageHandler<CompanyDetailsApiAuthorisationHandler>()
+                .AddResilienceHandler("CompanyDetailsResiliencePipeline", BuildResiliencePipeline<CompanyDetailsApiConfig>(o => TimeSpan.FromSeconds(o.Timeout)));
+            })
+            .Build();
 
-        services.AddHttpClient<ICompanyDetailsApiClient, CompanyDetailsApiClient>((sp, c) =>
-        {
-            var companyDetailsApiConfig = sp.GetRequiredService<IOptions<CompanyDetailsApiConfig>>().Value;
-            c.BaseAddress = new Uri(companyDetailsApiConfig.BaseUrl);
-            c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        })
-        .AddHttpMessageHandler<CompanyDetailsApiAuthorisationHandler>()
-        .AddResilienceHandler("CompanyDetailsResiliencePipeline", BuildResiliencePipeline<CompanyDetailsApiConfig>(o => TimeSpan.FromSeconds(o.Timeout)));
+        host.Run();
     }
 
     private static Action<ResiliencePipelineBuilder<HttpResponseMessage>, ResilienceHandlerContext> BuildResiliencePipeline<TConfig>(Func<TConfig, TimeSpan> timeoutSelector)
