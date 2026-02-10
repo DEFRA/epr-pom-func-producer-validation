@@ -71,7 +71,10 @@ public static class ReferenceDataGenerator
     {
         "2023-P1", "2023-P2", "2023-P3",
         "2025-P1", "2025-P2",
+        "2026-P1", "2026-P2",
         "2027-P1", "2027-P2",
+        "2029-P1", "2029-P2",
+        "2037-P1", "2037-P2",
     }.ToImmutableList();
 
     public static readonly ImmutableList<string> RecyclabilityRatings = new List<string>()
