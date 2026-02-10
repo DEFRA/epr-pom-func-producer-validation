@@ -198,7 +198,7 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
     public void ShouldValidateSubmissionPeriods_ForLargeProducer_AndP0SubmissionPeriod_AndProvideErrorCode()
     {
         var submissionPeriod = "2024-P0";
-        var expectedErrorCode = ErrorCode.LargeProducersCannotSubmitforPeriodP0ErrorCode;
+        var expectedErrorCode = ErrorCode.LargeProducersCannotSubmitForPeriodP0ErrorCode;
 
         // Arrange
         fixture.Customize<ProducerRow>(c =>
@@ -244,7 +244,7 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
     public void ShouldValidateSubmissionPeriods_ForSmallProducer_AndNonP0SubmissionPeriod_AndProvideErrorCode()
     {
         var dataSubmissionPeriod = "2024-P1";
-        var expectedErrorCode = ErrorCode.SmallProducersCanOnlySubmitforPeriodP0ErrorCode;
+        var expectedErrorCode = ErrorCode.SmallProducersCanOnlySubmitForPeriodP0ErrorCode;
 
         // Arrange
         fixture.Customize<ProducerRow>(c =>
@@ -267,7 +267,7 @@ public class DataSubmissionPeriodValidatorTests : DataSubmissionPeriodValidator
     }
 
     [TestMethod]
-    [DataRow("2024-P1", ErrorCode.SmallProducersCanOnlySubmitforPeriodP0ErrorCode, 1)]
+    [DataRow("2024-P1", ErrorCode.SmallProducersCanOnlySubmitForPeriodP0ErrorCode, 1)]
     [DataRow("2024-P0", "", 0)]
     public void ShouldValidateSubmissionPeriods_ForSmallProducer_AndNonP0SubmissionPeriod_AndProvideErrorCode2(string dataSubmissionPeriod, string expectedErrorCode, int errorCount)
     {
