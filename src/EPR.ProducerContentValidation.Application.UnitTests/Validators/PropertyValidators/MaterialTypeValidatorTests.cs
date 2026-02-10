@@ -39,8 +39,9 @@ public class MaterialTypeValidatorTests
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerSize.Small, PackagingType.Household, MaterialType.Plastic)]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerSize.Small, PackagingType.Household, MaterialType.Plastic)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025P0, ProducerSize.Small, PackagingType.Household, MaterialType.Plastic)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerSize.Small, PackagingType.Household, MaterialType.Plastic)]
+    [DataRow(DataSubmissionPeriodTestData.Year2027H1, ProducerSize.Small, PackagingType.Household, MaterialType.Plastic)]
     public void MaterialTypeValidator_SmallProducerPeriod2025P0_And_Household_And_Plastic_Novalidation_Errors(string dataSubmissionPeriod, string producerSize, string packagingType, string materialType)
     {
         // Arrange
@@ -54,7 +55,7 @@ public class MaterialTypeValidatorTests
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerSize.Small, PackagingType.Household, MaterialType.PaperCard)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025P0, ProducerSize.Small, PackagingType.Household, MaterialType.PaperCard)]
     public void MaterialTypeValidator_SmallProducerPeriod2025P0MaterialType_WhenNot_Plastic_CheckErrorCode107(string dataSubmissionPeriod, string producerSize, string packagingType, string materialType)
     {
         // Arrange

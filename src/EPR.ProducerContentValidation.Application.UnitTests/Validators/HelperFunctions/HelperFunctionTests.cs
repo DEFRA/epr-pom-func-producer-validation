@@ -75,6 +75,15 @@ public class HelperFunctionTests
     }
 
     [TestMethod]
+    [DataRow("2024-H1", 2025, false)]
+    [DataRow("2025-H1", 2025, true)]
+    public void ShouldCorrectlyExtractYear(string? input, int year, bool expected)
+    {
+        var result = HelperFunctions.ExtractYearFromDataSubmissionPeriod(input);
+        (result == year).Should().Be(expected);
+    }
+
+    [TestMethod]
     [DataRow(true, true)]
     [DataRow(false, false)]
     [DataRow("string", false)]
@@ -96,6 +105,12 @@ public class HelperFunctionTests
     [TestMethod]
     [DataRow("L", "HH", "P1", "2025-H1", true)]
     [DataRow("L", "HH", "P1", "2025-H2", true)]
+    [DataRow("L", "HH", "P1", "2026-H1", true)]
+    [DataRow("L", "HH", "P1", "2026-H2", true)]
+    [DataRow("L", "HH", "P1", "2027-H1", true)]
+    [DataRow("L", "HH", "P1", "2028-H2", true)]
+    [DataRow("L", "HH", "P1", "2028-H1", true)]
+    [DataRow("L", "HH", "P1", "2029-H2", true)]
     [DataRow("L", "HDC", "", "2025-H1", false)]
     [DataRow("L", "PB", "", "2025-H2", true)]
     [DataRow("L", "PB", "B1", "2025-H2", true)]
@@ -111,7 +126,7 @@ public class HelperFunctionTests
 
     public void ShouldCorrectlyApply2025Rules(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod, bool expected)
     {
-        var result = HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(producerSize, wasteType, packagingCategory, submissionPeriod);
+        var result = HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducerFor2025AndBeyond(producerSize, wasteType, packagingCategory, submissionPeriod);
         result.Should().Be(expected);
     }
 
@@ -120,11 +135,18 @@ public class HelperFunctionTests
     [DataRow("L", "OW", "P1", "2025-H2", true)]
     [DataRow("L", "NH", "P1", "2025-H1", true)]
     [DataRow("L", "RU", "P1", "2025-H2", true)]
+    [DataRow("L", "NH", "P1", "2026-H1", true)]
+    [DataRow("L", "RU", "P1", "2026-H2", true)]
+    [DataRow("L", "NH", "P1", "2027-H1", true)]
+    [DataRow("L", "RU", "P1", "2027-H2", true)]
+    [DataRow("L", "NH", "P1", "2028-H1", true)]
+    [DataRow("L", "RU", "P1", "2029-H2", true)]
     [DataRow("L", "NDC", "P1", "2025-H2", true)]
     [DataRow("S", "NH", "P1", "2025-H1", false)]
+    [DataRow("L", "NDC", "P1", "2024-H2", false)]
     public void ShouldCorrectlyApply2025RulesForNonHousehold(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod, bool expected)
     {
-        var result = HelperFunctions.ShouldApply2025NonHouseholdRulesForLargeProducer(producerSize, wasteType, packagingCategory, submissionPeriod);
+        var result = HelperFunctions.ShouldApply2025NonHouseholdRulesForLargeProducerFor2025AndBeyond(producerSize, wasteType, packagingCategory, submissionPeriod);
         result.Should().Be(expected);
     }
 }

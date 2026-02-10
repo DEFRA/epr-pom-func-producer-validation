@@ -1,5 +1,4 @@
 ﻿using EPR.ProducerContentValidation.Application.Models;
-using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Validators;
 using EPR.ProducerContentValidation.Application.Validators.Factories;
 using EPR.ProducerContentValidation.Application.Validators.Factories.Interfaces;
