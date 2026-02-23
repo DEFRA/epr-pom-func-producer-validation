@@ -91,6 +91,50 @@ Go to `src/EPR.ProducerContentValidation.FunctionApp` directory and execute:
 func start
 ```
 
+### Testing Locally with Postman
+
+The function includes an HTTP trigger endpoint for local testing without Service Bus.
+
+1. Start the function app using `func start` (default port is 7071)
+2. Import the Postman collection from `postman/ProducerValidationFunction.postman_collection.json`
+3. Send POST requests to: `http://localhost:7071/api/validate-producer-content`
+
+**Example Request Body:**
+```json
+{
+    "OrganisationId": "0c8e3368-80de-46e0-9a71-f5a64e5b8c33",
+    "UserId": "2f4ec7ed-58c2-43e0-8c9d-744e66075f8b",
+    "SubmissionId": "a0aacc43-4ac9-4cb6-b4b0-7f837c1623e7",
+    "BlobName": "test-blob-name",
+    "ProducerId": "a27bed93-990f-4547-8673-7c050a24d531",
+    "Rows": [
+        {
+            "RowNumber": 1,
+            "ProducerId": "a27bed93-990f-4547-8673-7c050a24d531",
+            "ProducerSize": "L",
+            "DataSubmissionPeriod": "2024-P1",
+            "SubmissionPeriod": "January to June 2024",
+            "ProducerType": "SO",
+            "WasteType": "HDC",
+            "PackagingCategory": "O1",
+            "MaterialType": "PL",
+            "MaterialSubType": null,
+            "FromHomeNation": "EN",
+            "ToHomeNation": "SC",
+            "QuantityKg": "1234",
+            "QuantityUnits": "1000"
+        }
+    ]
+}
+```
+
+**Response:** The function returns the validation results including any errors or warnings found in the producer rows.
+
+**Validation-Only Mode:** To test validation without calling the submission API, add `?skipApiCall=true` to the URL:
+- `http://localhost:7071/api/validate-producer-content?skipApiCall=true`
+
+This is useful for local testing when you only want to check the validation logic without needing the submission API to be running.
+
 ### Docker
 
 Run in terminal at the solution source root:
