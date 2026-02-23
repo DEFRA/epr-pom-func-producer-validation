@@ -95,6 +95,21 @@ func start
 
 The function includes an HTTP trigger endpoint for local testing without Service Bus.
 
+**Important:** The HTTP endpoint is disabled by default and must be explicitly enabled via configuration. This ensures it is not exposed in production or higher environments.
+
+**To enable for local development:**
+Add the following to your `local.settings.json` or `settings.json`:
+```json
+{
+  "Values": {
+    "HttpEndpoint:Enabled": true
+  }
+}
+```
+
+**To disable in higher environments:**
+Ensure `HttpEndpoint:Enabled` is set to `false` or omitted (defaults to false).
+
 1. Start the function app using `func start` (default port is 7071)
 2. Import the Postman collection from `postman/ProducerValidationFunction.postman_collection.json`
 3. Send POST requests to: `http://localhost:7071/api/validate-producer-content`

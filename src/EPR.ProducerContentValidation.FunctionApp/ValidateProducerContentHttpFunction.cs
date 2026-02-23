@@ -19,6 +19,7 @@ public class ValidateProducerContentHttpFunction
     private readonly ISubmissionApiClient _submissionApiClient;
     private readonly ValidationOptions _validationOptions;
     private readonly StorageAccountOptions _storageAccountOptions;
+    private readonly HttpEndpointOptions _httpEndpointOptions;
     private readonly AutoMapper.IMapper _mapper;
     private readonly ILogger<ValidateProducerContentHttpFunction> _logger;
 
@@ -28,6 +29,7 @@ public class ValidateProducerContentHttpFunction
         AutoMapper.IMapper mapper,
         IOptions<ValidationOptions> validationOptions,
         IOptions<StorageAccountOptions> storageAccountOptions,
+        IOptions<HttpEndpointOptions> httpEndpointOptions,
         ILogger<ValidateProducerContentHttpFunction> logger)
     {
         _validationService = validationService;
@@ -35,6 +37,7 @@ public class ValidateProducerContentHttpFunction
         _mapper = mapper;
         _storageAccountOptions = storageAccountOptions.Value;
         _validationOptions = validationOptions.Value;
+        _httpEndpointOptions = httpEndpointOptions.Value;
         _logger = logger;
     }
 
@@ -42,11 +45,20 @@ public class ValidateProducerContentHttpFunction
     public async Task<HttpResponseData> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "validate-producer-content")] HttpRequestData req)
     {
-        _logger.LogInformation("Entering HTTP function");
-        _logger.LogWarning("Validation.Disabled: {0}", _validationOptions.Disabled);
-
         var response = req.CreateResponse(HttpStatusCode.OK);
         response.Headers.Add("Content-Type", "application/json");
+
+        // Check if HTTP endpoint is enabled via configuration
+        if (!_httpEndpointOptions.Enabled)
+        {
+            _logger.LogWarning("HTTP endpoint is disabled via configuration");
+            response.StatusCode = HttpStatusCode.NotFound;
+            await response.WriteStringAsync(JsonSerializer.Serialize(new { error = "Endpoint not found" }));
+            return response;
+        }
+
+        _logger.LogInformation("Entering HTTP function");
+        _logger.LogWarning("Validation.Disabled: {0}", _validationOptions.Disabled);
 
         try
         {
