@@ -16,7 +16,7 @@ using Polly.Timeout;
 namespace EPR.ProducerContentValidation.FunctionApp;
 
 [ExcludeFromCodeCoverage]
-public class Program
+public static class Program
 {
     public static void Main()
     {
