@@ -64,7 +64,9 @@ public class ValidateProducerContentHttpFunction
 
         try
         {
-            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            using var reader = new StreamReader(req.Body);
+            var requestBody = await reader.ReadToEndAsync();
+
             var producerValidationRequest = JsonSerializer.Deserialize<ProducerValidationInRequest>(requestBody, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
