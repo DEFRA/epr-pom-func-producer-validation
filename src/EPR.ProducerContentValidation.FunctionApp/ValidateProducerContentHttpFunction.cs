@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Text.Json;
 using EPR.ProducerContentValidation.Application.DTOs.SplitFunction;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace EPR.ProducerContentValidation.FunctionApp;
 
+[ExcludeFromCodeCoverage]
 public class ValidateProducerContentHttpFunction
 {
     private readonly IValidationService _validationService;
