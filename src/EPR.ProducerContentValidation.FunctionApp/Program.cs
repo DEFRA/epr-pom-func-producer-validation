@@ -4,6 +4,7 @@ using EPR.ProducerContentValidation.Application;
 using EPR.ProducerContentValidation.Application.Clients;
 using EPR.ProducerContentValidation.Application.Config;
 using EPR.ProducerContentValidation.Application.Handlers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Http.Resilience;
@@ -21,6 +22,30 @@ public class Program
     {
         var host = new HostBuilder()
             .ConfigureFunctionsWorkerDefaults()
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                // Get the base directory - works in both local and Docker environments
+                var basePath = context.HostingEnvironment.ContentRootPath ?? AppContext.BaseDirectory;
+
+                // Load appsettings.json - this will be included in Docker image via dotnet publish
+                var appsettingsPath = Path.Combine(basePath, "appsettings.json");
+                if (File.Exists(appsettingsPath))
+                {
+                    config.AddJsonFile(appsettingsPath, optional: false, reloadOnChange: false);
+                }
+
+                // Load environment-specific appsettings if it exists
+                var env = context.HostingEnvironment;
+                var envAppsettingsPath = Path.Combine(basePath, $"appsettings.{env.EnvironmentName}.json");
+                if (File.Exists(envAppsettingsPath))
+                {
+                    config.AddJsonFile(envAppsettingsPath, optional: true, reloadOnChange: false);
+                }
+
+                // Environment variables will automatically override appsettings.json values
+                // This is the standard .NET configuration pattern and works in Docker
+                config.AddEnvironmentVariables();
+            })
             .ConfigureServices((context, services) =>
             {
                 services.AddFeatureManagement();
