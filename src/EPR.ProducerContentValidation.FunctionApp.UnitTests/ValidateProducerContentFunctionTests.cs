@@ -38,7 +38,8 @@ public class ValidateProducerContentFunctionTests
             _submissionApiClientMock.Object,
             _mapperMock.Object,
             _validationOptionsMock.Object,
-            _storageAccountOptionsMock.Object);
+            _storageAccountOptionsMock.Object,
+            _loggerMock.Object);
     }
 
     [TestMethod]
@@ -49,7 +50,7 @@ public class ValidateProducerContentFunctionTests
 
         // Act / Assert
         await _systemUnderTest
-            .Invoking(x => x.RunAsync(producerValidationRequest, _loggerMock.Object))
+            .Invoking(x => x.RunAsync(producerValidationRequest))
             .Should()
             .NotThrowAsync();
     }
@@ -61,7 +62,7 @@ public class ValidateProducerContentFunctionTests
         var request = DtoGenerator.ValidProducerValidationInRequest();
 
         // Act
-        await _systemUnderTest.RunAsync(request, _loggerMock.Object);
+        await _systemUnderTest.RunAsync(request);
 
         // Assert
         _validationServiceMock.Verify(x => x.ValidateAsync(It.IsAny<Producer>()), Times.Once);
@@ -84,7 +85,7 @@ public class ValidateProducerContentFunctionTests
             .ThrowsAsync(new SubmissionApiClientException(exceptionErrorMessage, new Exception()));
 
         // Act
-        await _systemUnderTest.RunAsync(request, _loggerMock.Object);
+        await _systemUnderTest.RunAsync(request);
 
         // Assert
         _loggerMock.VerifyLog(logger => logger.LogError(exceptionErrorMessage), Times.Once);
@@ -103,7 +104,7 @@ public class ValidateProducerContentFunctionTests
             .ThrowsAsync(new Exception(exceptionErrorMessage));
 
         // Act
-        await _systemUnderTest.RunAsync(request, _loggerMock.Object);
+        await _systemUnderTest.RunAsync(request);
 
         // Assert
         _loggerMock.VerifyLog(logger => logger.LogError(exceptionErrorMessage), Times.Once);
@@ -121,7 +122,7 @@ public class ValidateProducerContentFunctionTests
             .ThrowsAsync(new Exception(exceptionErrorMessage));
 
         // Act
-        await _systemUnderTest.RunAsync(request, _loggerMock.Object);
+        await _systemUnderTest.RunAsync(request);
 
         // Assert
         _submissionApiClientMock.Verify(

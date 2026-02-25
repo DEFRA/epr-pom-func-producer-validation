@@ -16,13 +16,13 @@ public class DataSubmissionPeriodValidator : AbstractValidator<ProducerRow>
         // Small producers can only submit data for the period P0
         RuleFor(x => x.DataSubmissionPeriod)
             .Must(value => value.Contains(DataSubmissionPeriodP0Only))
-            .WithErrorCode(ErrorCode.SmallProducersCanOnlySubmitforPeriodP0ErrorCode)
+            .WithErrorCode(ErrorCode.SmallProducersCanOnlySubmitForPeriodP0ErrorCode)
             .When((row, context) => row.ProducerSize.Equals(ProducerSize.Small, StringComparison.CurrentCultureIgnoreCase));
 
         // Large producers cannot submit data for the period P0
         RuleFor(x => x.DataSubmissionPeriod)
             .Must(value => !value.Contains(DataSubmissionPeriodP0Only))
-            .WithErrorCode(ErrorCode.LargeProducersCannotSubmitforPeriodP0ErrorCode)
+            .WithErrorCode(ErrorCode.LargeProducersCannotSubmitForPeriodP0ErrorCode)
             .When((row, context) => row.ProducerSize.Equals(ProducerSize.Large, StringComparison.CurrentCultureIgnoreCase));
 
         // The data submission period must be one of the configured period codes

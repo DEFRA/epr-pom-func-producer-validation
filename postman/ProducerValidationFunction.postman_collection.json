@@ -18,10 +18,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"OrganisationId\": \"0c8e3368-80de-46e0-9a71-f5a64e5b8c33\",\n    \"UserId\": \"2f4ec7ed-58c2-43e0-8c9d-744e66075f8b\",\n    \"SubmissionId\": \"a0aacc43-4ac9-4cb6-b4b0-7f837c1623e7\",\n    \"ProducerId\": \"a27bed93-990f-4547-8673-7c050a24d531\",\n    \"Lines\": [\n        {\n            \"RowNumber\": 1,\n            \"ProducerType\": \"BO\",\n            \"WasteType\": \"Waste Type A\",\n            \"PackagingCategory\": \"PC\",\n            \"MaterialType\": \"MT\",\n            \"MaterialSubType\": \"MST\",\n            \"FromHomeNation\": \"FHC\",\n            \"ToHomeNation\": \"THC\",\n            \"QuantityKg\": 1,\n            \"QuantityUnits\": 1\n        }\n    ]\n}"
+					"raw": "{\n    \"OrganisationId\": \"123456\",\n    \"UserId\": \"2f4ec7ed-58c2-43e0-8c9d-744e66075f8b\",\n    \"SubmissionId\": \"a0aacc43-4ac9-4cb6-b4b0-7f837c1623e7\",\n    \"BlobName\": \"test-blob-name\",\n    \"ProducerId\": \"160213\",\n    \"Rows\": [\n        {\n            \"RowNumber\": 1,\n            \"ProducerId\": \"160213\",\n            \"SubsidiaryId\": null,\n            \"ProducerSize\": \"L\",\n            \"DataSubmissionPeriod\": \"2026-X\",\n            \"SubmissionPeriod\": \"January to June 2026\",\n            \"ProducerType\": \"OM\",\n            \"WasteType\": \"PB\",\n            \"PackagingCategory\": \"B1\",\n            \"MaterialType\": \"PC\",\n            \"MaterialSubType\": null,\n            \"FromHomeNation\": null,\n            \"ToHomeNation\": null,\n            \"QuantityKg\": \"500\",\n            \"QuantityUnits\": null,\n            \"TransitionalPackagingUnits\": null,\n            \"RecyclabilityRating\": \"G\"\n        }\n    ]\n}"
 				},
 				"url": {
-					"raw": "http://localhost:7071/api/validate-producer-content",
+					"raw": "http://localhost:7071/api/validate-producer-content?skipApiCall=true",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -30,6 +30,13 @@
 					"path": [
 						"api",
 						"validate-producer-content"
+					],
+					"query": [
+						{
+							"key": "skipApiCall",
+							"value": "true",
+							"description": "Skip submission API call for validation-only testing"
+						}
 					]
 				}
 			},
@@ -47,10 +54,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"OrganisationId\": \"0c8e3368-80de-46e0-9a71-f5a64e5b8c33\",\n    \"UserId\": \"2f4ec7ed-58c2-43e0-8c9d-744e66075f8b\",\n    \"SubmissionId\": \"a0aacc43-4ac9-4cb6-b4b0-7f837c1623e7\",\n    \"ProducerId\": \"a27bed93-990f-4547-8673-7c050a24d531\",\n    \"Lines\": [\n        {\n            \"RowNumber\": 1,\n            \"ProducerType\": \"B\",\n            \"WasteType\": \"Waste Type\",\n            \"PackagingCategory\": \"PC\",\n            \"MaterialType\": \"MT\",\n            \"MaterialSubType\": \"MST\",\n            \"FromHomeNation\": \"FHC\",\n            \"ToHomeNation\": \"THC\",\n            \"QuantityKg\": 1,\n            \"QuantityUnits\": 1\n        }\n    ]\n}"
+					"raw": "{\n    \"OrganisationId\": \"123456\",\n    \"UserId\": \"2f4ec7ed-58c2-43e0-8c9d-744e66075f8b\",\n    \"SubmissionId\": \"a0aacc43-4ac9-4cb6-b4b0-7f837c1623e7\",\n    \"BlobName\": \"test-blob-name\",\n    \"ProducerId\": \"160213\",\n    \"Rows\": [\n        {\n            \"RowNumber\": 1,\n            \"ProducerId\": \"160213\",\n            \"SubsidiaryId\": null,\n            \"ProducerSize\": \"L\",\n            \"DataSubmissionPeriod\": \"INVALID\",\n            \"SubmissionPeriod\": \"January to June 2026\",\n            \"ProducerType\": \"OM\",\n            \"WasteType\": \"PB\",\n            \"PackagingCategory\": \"B1\",\n            \"MaterialType\": \"PC\",\n            \"MaterialSubType\": null,\n            \"FromHomeNation\": null,\n            \"ToHomeNation\": null,\n            \"QuantityKg\": \"500\",\n            \"QuantityUnits\": null,\n            \"TransitionalPackagingUnits\": null,\n            \"RecyclabilityRating\": \"G\"\n        }\n    ]\n}"
 				},
 				"url": {
-					"raw": "http://localhost:7071/api/validate-producer-content",
+					"raw": "http://localhost:7071/api/validate-producer-content?skipApiCall=true",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -59,6 +66,13 @@
 					"path": [
 						"api",
 						"validate-producer-content"
+					],
+					"query": [
+						{
+							"key": "skipApiCall",
+							"value": "true",
+							"description": "Skip submission API call for validation-only testing"
+						}
 					]
 				}
 			},

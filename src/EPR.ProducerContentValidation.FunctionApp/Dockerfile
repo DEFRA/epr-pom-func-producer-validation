@@ -12,10 +12,7 @@ COPY EPR.ProducerContentValidation.FunctionApp/. ./EPR.ProducerContentValidation
 
 RUN dotnet publish EPR.ProducerContentValidation.FunctionApp/*.csproj --output /home/site/wwwroot
 
-# To enable ssh & remote debugging on app service change the base image to the one below
-# FROM mcr.microsoft.com/azure-functions/dotnet:4-appservice
-FROM mcr.microsoft.com/azure-functions/dotnet:4-dotnet8
-# FROM defradigital/dotnetcore:dotnet8.0
+FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated8.0
 
 # Create a non-root user and set permissions
 RUN groupadd -r dotnet && \

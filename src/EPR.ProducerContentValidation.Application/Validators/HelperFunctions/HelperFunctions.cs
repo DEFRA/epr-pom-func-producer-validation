@@ -1,12 +1,14 @@
 ﻿namespace EPR.ProducerContentValidation.Application.Validators.HelperFunctions;
 
 using System.Text.RegularExpressions;
-using EPR.ProducerContentValidation.Application.Constants;
-using EPR.ProducerContentValidation.Application.Models;
+using Constants;
 using FluentValidation;
+using Models;
 
 public static class HelperFunctions
 {
+    private static readonly Regex FourDigitRegex = new (@"(\d{4})", RegexOptions.NonBacktracking);
+
     public static bool MatchOtherZeroReturnsCondition(ProducerRow producerRow)
     {
         var isLargeProducer = !string.IsNullOrWhiteSpace(producerRow.ProducerSize) && producerRow.ProducerSize.Equals(ProducerSize.Large);
@@ -35,8 +37,7 @@ public static class HelperFunctions
             return false;
         }
 
-        Regex regex = new Regex(@"(\d{4})", RegexOptions.NonBacktracking);
-        Match match = regex.Match(dataSubmissionPeriod);
+        Match match = FourDigitRegex.Match(dataSubmissionPeriod);
         if (match.Success)
         {
             string year = match.Groups[1].Value;
@@ -44,15 +45,9 @@ public static class HelperFunctions
             {
                 return result < cutoffYear;
             }
-            else
-            {
-                return false;
-            }
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     public static bool IsFeatureFlagOn(ValidationContext<ProducerRow> context, string featureFlag)
@@ -62,7 +57,24 @@ public static class HelperFunctions
             && isEnabled;
     }
 
-    public static bool ShouldApply2025HouseholdRulesForLargeProducer(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod)
+    public static int ExtractYearFromDataSubmissionPeriod(string? submissionPeriod)
+    {
+        if (string.IsNullOrWhiteSpace(submissionPeriod))
+        {
+            return 0;
+        }
+
+        var strYear = submissionPeriod.Substring(0, 4);
+
+        if (int.TryParse(strYear, out int result))
+        {
+            return result;
+        }
+
+        return 0;
+    }
+
+    public static bool ShouldApply2025HouseholdRulesForLargeProducerFor2025AndBeyond(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod)
     {
         return ProducerSize.Large.Equals(producerSize, StringComparison.OrdinalIgnoreCase)
             && IsHouseholdRelatedWasteType(wasteType)
@@ -71,11 +83,10 @@ public static class HelperFunctions
                 || PackagingClass.ShipmentPackaging.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
                 || string.IsNullOrWhiteSpace(packagingCategory)
                 || PackagingClass.PublicBin.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase))
-                && (DataSubmissionPeriod.Year2025H1.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase)
-                || DataSubmissionPeriod.Year2025H2.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase));
+                && ExtractYearFromDataSubmissionPeriod(submissionPeriod) >= 2025;
     }
 
-    public static bool ShouldApply2025NonHouseholdRulesForLargeProducer(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod)
+    public static bool ShouldApply2025NonHouseholdRulesForLargeProducerFor2025AndBeyond(string producerSize, string? wasteType, string? packagingCategory, string? submissionPeriod)
     {
         return ProducerSize.Large.Equals(producerSize, StringComparison.OrdinalIgnoreCase)
             && IsNonHouseholdRelatedWasteType(wasteType)
@@ -89,8 +100,7 @@ public static class HelperFunctions
                 || PackagingClass.TotalRelevantWaste.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
                 || PackagingClass.WasteOrigin.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase)
                 || PackagingClass.PublicBin.Equals(packagingCategory, StringComparison.OrdinalIgnoreCase))
-                && (DataSubmissionPeriod.Year2025H1.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase)
-                || DataSubmissionPeriod.Year2025H2.Equals(submissionPeriod, StringComparison.OrdinalIgnoreCase));
+                && ExtractYearFromDataSubmissionPeriod(submissionPeriod) >= 2025;
     }
 
     private static bool IsHouseholdRelatedWasteType(string? wasteType)

@@ -2,7 +2,6 @@
 
 using Application.Validators.PropertyValidators;
 using Constants;
-using FluentValidation;
 using FluentValidation.TestHelper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
@@ -43,6 +42,7 @@ public class TransitionalPackagingUnitsValidatorTests
 
     [TestMethod]
     [DataRow("2025P1", "100")]
+    [DataRow("2027P1", "100")]
     [DataRow("2026-H1", "1")]
     [DataRow("2023-H2", "99")]
     public void TransitionalPackagingUnitsValidator_ShouldHaveErrorCode91_WhenNon2024PeriodWithValue(string period, string units)

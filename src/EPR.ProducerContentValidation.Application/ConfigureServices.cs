@@ -57,6 +57,7 @@ public static class ConfigureServices
         services.ConfigureSection<RedisOptions>(RedisOptions.Section);
         services.ConfigureSection<List<SubmissionPeriodOption>>(SubmissionPeriodOption.Section);
         services.ConfigureSection<CompanyDetailsApiConfig>(CompanyDetailsApiConfig.Section);
+        services.ConfigureSection<HttpEndpointOptions>(HttpEndpointOptions.Section, validate: false);
         return services;
     }
 

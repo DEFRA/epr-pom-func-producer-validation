@@ -65,7 +65,7 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 
     private static bool IsLargeProducerRecyclabilityRatingApplicable(ProducerRow row)
     {
-        return HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(
+        return HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducerFor2025AndBeyond(
             row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod)
             && (
                 ReferenceDataGenerator.MaterialTypes.Where(m => m != MaterialType.Plastic).Contains(row.MaterialType)
@@ -88,11 +88,8 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 
     private static bool IsLargeProducerWithValidWasteAndMaterialType(ProducerRow row)
     {
-        // if datasubmission period is not 2025 then we dont want this rule to apply
-        var isSubmissionPeriod2025 = DataSubmissionPeriod.Year2025H1.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
-               || DataSubmissionPeriod.Year2025H2.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
-               || DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
-        if (!isSubmissionPeriod2025)
+        // if DataSubmissionPeriod less than 2025 then we do not want this rule to apply; so we short circuit.
+        if (HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025))
         {
             return true;
         }

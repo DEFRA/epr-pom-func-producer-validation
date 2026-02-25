@@ -23,7 +23,7 @@ public class MaterialTypeValidator : AbstractValidator<ProducerRow>
     private static bool IsSmallProducerMaterialTypeCheckRequired(ProducerRow row)
     {
         return ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-               && DataSubmissionPeriod.Year2025P0.Equals(row.DataSubmissionPeriod, StringComparison.OrdinalIgnoreCase)
+               && HelperFunctions.HelperFunctions.ExtractYearFromDataSubmissionPeriod(row.DataSubmissionPeriod) >= 2025
                && PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase);
     }
 }

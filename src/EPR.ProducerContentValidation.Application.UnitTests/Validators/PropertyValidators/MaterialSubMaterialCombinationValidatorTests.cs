@@ -172,7 +172,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.PET, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.PET, RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_Wrong_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -187,7 +187,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_Missing_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -202,7 +202,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_PackagingType_PublicBin_Missing_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -217,7 +217,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_PackagingType_HDC_Missing_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -232,7 +232,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "", RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_PackagingType_HD_Missing_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -247,7 +247,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2023P1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2023P1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_Large_Producer_Plastic_Material_SubType_Not_Required_Before_2025(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -262,7 +262,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.PET, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.PET, RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_Large_Producer_Packing_Type_HD_Invalid_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -277,7 +277,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_Large_Producer_Packing_Type_HDC_Invalid_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -292,7 +292,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.PET, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.PET, RecyclabilityRating.Red)]
     public void MaterialSubMaterialCombinationValidator_Large_Producer_Packing_Type_PB_Invalid_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -307,7 +307,10 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2026H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2027H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Flexible, RecyclabilityRating.Red)]
+
     public void MaterialSubMaterialCombinationValidator_Large_Producer_Packing_Type_PB_InValid_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -322,7 +325,10 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.PET, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.PET, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2026H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.PET, RecyclabilityRating.Red)]
+    [DataRow(DataSubmissionPeriodTestData.Year2027H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.PET, RecyclabilityRating.Red)]
+
     public void MaterialSubMaterialCombinationValidator_Large_Producer_Packing_Type_PB_Valid_Plastic_Material_SubType(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         // Arrange
@@ -337,13 +343,14 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
-    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.SecondaryPackaging, MaterialType.Plastic, MaterialSubType.Plastic)]
-    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TransitPackaging, MaterialType.Plastic, MaterialSubType.Plastic)]
-    [DataRow(DataSubmissionPeriod.Year2025P0, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
-    [DataRow(DataSubmissionPeriod.Year2024P3, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
-    [DataRow(DataSubmissionPeriod.Year2024P3, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
-    [DataRow(DataSubmissionPeriod.Year2023P3, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
+    [DataRow(DataSubmissionPeriodTestData.Year2028P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.SecondaryPackaging, MaterialType.Plastic, MaterialSubType.Plastic)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025P0, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TransitPackaging, MaterialType.Plastic, MaterialSubType.Plastic)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025P0, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
+    [DataRow(DataSubmissionPeriodTestData.Year2024P3, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
+    [DataRow(DataSubmissionPeriodTestData.Year2024P3, ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
+    [DataRow(DataSubmissionPeriodTestData.Year2023P3, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.HouseholdDrinksContainers, null, MaterialType.Plastic, MaterialSubType.Flexible)]
     public void MaterialSubMaterialCombinationValidator_SmallProducer_PlasticMaterial_SubType_NotRequired(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, bool shouldHaveValidationError = true)
     {
         // Arrange
@@ -361,7 +368,7 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     }
 
     [TestMethod]
-    [DataRow(DataSubmissionPeriod.Year2023P1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
+    [DataRow(DataSubmissionPeriodTestData.Year2023P1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Small, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
     public void MaterialSubMaterialCombinationValidator_SmallProducer_Plastic_Material_SubType_Not_Required_Before_2025(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType)
     {
         // Arrange
@@ -400,6 +407,8 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [TestMethod]
     [DataRow(PackagingType.Household, "", "2025-H1")]
     [DataRow(PackagingType.PublicBin, PackagingClass.PublicBin, "2025-H2")]
+    [DataRow(PackagingType.PublicBin, PackagingClass.PublicBin, "2026-H2")]
+    [DataRow(PackagingType.PublicBin, PackagingClass.PublicBin, "2028-H2")]
     public void MissingPlasticMaterialSubType_ShouldRaiseError_For_HH_PB(string packagingType, string packagingClass, string submissionPeriod)
     {
         // Arrange
@@ -478,6 +487,8 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [TestMethod]
     [DataRow("2025-H1", "L", PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, "Invalid", ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)]
     [DataRow("2025-H1", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Plastic, "PET", ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)]
+    [DataRow("2026-H1", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Plastic, "PET", ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)]
+    [DataRow("2027-H1", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Plastic, "PET", ErrorCode.LargeProducerPlasticMaterialSubTypeInvalidErrorCode)]
     public void Should_Fail_When_InvalidPlasticMaterialSubtype(string period, string orgSize, string pkgType, string pkgClass, string material, string subType, string expectedError)
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, null);

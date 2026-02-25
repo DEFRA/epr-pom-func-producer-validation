@@ -2,10 +2,10 @@
 
 using System.Collections.Immutable;
 using Constants;
-using EPR.ProducerContentValidation.Application.Validators.CustomValidators;
-using EPR.ProducerContentValidation.Application.Validators.HelperFunctions;
+using CustomValidators;
 using FluentValidation;
 using FluentValidation.Results;
+using HelperFunctions;
 using Models;
 
 public class MaterialSubMaterialCombinationValidator : AbstractValidator<ProducerRow>
@@ -88,13 +88,13 @@ public class MaterialSubMaterialCombinationValidator : AbstractValidator<Produce
 
     private static bool IsLargeProducerMaterialSubTypeRequired(ProducerRow row)
     {
-        return HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducer(
+        return HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducerFor2025AndBeyond(
             row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod);
     }
 
     private static bool IsLargeProducerMaterialSubTypeRequiredForNonHousehold(ProducerRow row)
     {
-        return HelperFunctions.ShouldApply2025NonHouseholdRulesForLargeProducer(
+        return HelperFunctions.ShouldApply2025NonHouseholdRulesForLargeProducerFor2025AndBeyond(
             row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod);
     }
 
