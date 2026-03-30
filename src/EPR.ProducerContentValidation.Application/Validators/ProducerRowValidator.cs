@@ -49,14 +49,7 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new SubsidiaryIdValidator());
         Include(new TransitionalPackagingUnitsValidator());
 
-        if (featureManager.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation).Result)
-        {
-            Include(new SmallProducerPackagingTypeEnhancedValidator());
-        }
-        else
-        {
-            Include(new SmallProducerPackagingTypeValidator());
-        }
+        Include(new SmallProducerPackagingTypeValidator());
 
         if (featureManager.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation).Result)
         {

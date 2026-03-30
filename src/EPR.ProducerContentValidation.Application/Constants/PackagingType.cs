@@ -11,4 +11,5 @@ public static class PackagingType
     public const string HouseholdDrinksContainers = "HDC";
     public const string ReusablePackaging = "RU";
     public const string NonHouseholdDrinksContainers = "NDC";
+    public const string ClosedLoopRecycling = "CLR";
 }

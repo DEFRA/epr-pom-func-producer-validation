@@ -413,7 +413,6 @@ public class CompositeValidatorTests
 
         var producerRows = new List<ProducerRow> { producerRowOne };
 
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation)).ReturnsAsync(false);
         var submissionPeriodOptions = new List<SubmissionPeriodOption>();
         var producerRowValidatorFactory = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options), _featureManagerMock.Object);
         var producerRowWarningValidatorFactory = new ProducerRowWarningValidatorFactory();

@@ -59,6 +59,7 @@ public static class ErrorCode
     public const string PomFileSmallOrganisationHDCSizePackagingClassInvalidErrorCode = "908";
     public const string LargeProducersCannotSubmitForPeriodP0ErrorCode = "909";
     public const string SmallProducersCanOnlySubmitForPeriodP0ErrorCode = "910";
+    public const string ClosedLoopRecyclingPackagingTypeInvalidForSmallProducerErrorCode = "911";
 
     /*Modulation - Recyclability rating error codes*/
     public const string LargeProducerRecyclabilityRatingRequired = "100";

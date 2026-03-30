@@ -1,4 +1,4 @@
-﻿namespace EPR.ProducerContentValidation.Application.UnitTests.Validators.PropertyValidators;
+namespace EPR.ProducerContentValidation.Application.UnitTests.Validators.PropertyValidators;
 
 using Application.Validators.PropertyValidators;
 using Constants;
@@ -44,11 +44,94 @@ public class SmallProducerPackagingTypeValidatorTests : SmallProducerPackagingTy
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.WasteType)
-            .WithErrorCode(ErrorCode.SmallProducerWasteTypeInvalidErrorCode);
+            .WithErrorCode(ErrorCode.PomFileSmallOrganisationSizePackagingTypeInvalidErrorCode);
     }
 
     [TestMethod]
-    public void PreValidate_ReturnsTrue_WhenAllConditionsAreMet()
+    public void SmallProducerPackagingTypeValidator_ContainsError911_WhenPackagingTypeIsClosedLoopRecycling()
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(ProducerType.SoldThroughOnlineMarketplaceYouOwn, ProducerSize.Small, PackagingType.ClosedLoopRecycling);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.WasteType)
+            .WithErrorCode(ErrorCode.ClosedLoopRecyclingPackagingTypeInvalidForSmallProducerErrorCode);
+    }
+
+    [TestMethod]
+    public void SmallProducerPackagingTypeValidator_DoesNotContainError902_WhenPackagingTypeIsClosedLoopRecycling()
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(ProducerType.SoldThroughOnlineMarketplaceYouOwn, ProducerSize.Small, PackagingType.ClosedLoopRecycling);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result.Errors.Should().NotContain(e => e.ErrorCode == ErrorCode.PomFileSmallOrganisationSizePackagingTypeInvalidErrorCode);
+    }
+
+    [TestMethod]
+    public void SmallProducerPackagingTypeValidator_DoesNotContainError_WhenProducerIsLargeAndPackagingTypeIsClosedLoopRecycling()
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(ProducerType.Importer, ProducerSize.Large, PackagingType.ClosedLoopRecycling);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(x => x.WasteType);
+    }
+
+    [TestMethod]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "", "", "1", "1")]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.SecondaryPackaging, "", "", "1", "1")]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.ShipmentPackaging, "", "", "1", "1")]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TransitPackaging, "", "", "1", "1")]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.TotalPackaging, "", "", "1", "1")]
+    [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, "", "", "", "1", "1")]
+    public void SmallProducerPackagingTypeValidator_ContainsValidMatrixValues_ReturnTrue(string producerSize, string packagingType, string packagingClass, string fromCountry, string toCountry, string weight, string quantity)
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize, packagingType, packagingClass, fromCountry, toCountry, weight, quantity);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [TestMethod]
+    [DataRow(ProducerSize.Small, PackagingType.Household, PackagingClass.PrimaryPackaging, "", "", "1", "1", nameof(ProducerRow.WasteType))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.WasteOrigin, "", "", "1", "1", nameof(ProducerRow.PackagingCategory))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "abc", "def", "1", "1", nameof(ProducerRow.FromHomeNation))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "abc", "", "1", "1", nameof(ProducerRow.FromHomeNation))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, PackagingClass.PrimaryPackaging, "", "def", "1", "1", nameof(ProducerRow.ToHomeNation))]
+    [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, "", "", "1", "1", nameof(ProducerRow.PackagingCategory))]
+    [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, "", "", "", "0.5", "1", nameof(ProducerRow.QuantityKg))]
+    [DataRow(ProducerSize.Small, PackagingType.HouseholdDrinksContainers, "", "", "", "1", "0.5", nameof(ProducerRow.QuantityUnits))]
+    [DataRow(ProducerSize.Small, "", PackagingClass.PrimaryPackaging, "abc", "", "1", "1", nameof(ProducerRow.WasteType))]
+    [DataRow(ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll, "", "abc", "", "1", "1", nameof(ProducerRow.PackagingCategory))]
+    public void SmallProducerPackagingTypeValidator_ContainsInvalidMatrixValues_ReturnFalse(string producerSize, string packagingType, string packagingClass, string fromCountry, string toCountry, string weight, string quantity, string errorProperty)
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize, packagingType, packagingClass, fromCountry, toCountry, weight, quantity);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(errorProperty);
+    }
+
+    [TestMethod]
+    public void PreValidate_ReturnsTrue_WhenProducerSizeIsSmall()
     {
         // Arrange
         var producerRow = BuildProducerRow(ProducerType.SoldThroughOnlineMarketplaceYouOwn, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll);
@@ -60,21 +143,6 @@ public class SmallProducerPackagingTypeValidatorTests : SmallProducerPackagingTy
 
         // Assert
         result.Should().BeTrue();
-    }
-
-    [TestMethod]
-    public void PreValidate_ReturnsFalse_WhenProducerTypeIsNotOnlineMarketPlace()
-    {
-        // Arrange
-        var producerRow = BuildProducerRow(ProducerType.SoldAsEmptyPackaging, ProducerSize.Small, PackagingType.SmallOrganisationPackagingAll);
-        var validationContext = new ValidationContext<ProducerRow>(producerRow);
-        var validationResult = new ValidationResult();
-
-        // Act
-        var result = PreValidate(validationContext, validationResult);
-
-        // Assert
-        result.Should().BeFalse();
     }
 
     [TestMethod]
@@ -152,5 +220,10 @@ public class SmallProducerPackagingTypeValidatorTests : SmallProducerPackagingTy
     private static ProducerRow BuildProducerRow(string producerType, string producerSize, string packagingType)
     {
         return new ProducerRow(null, null, null, 1, producerType, producerSize, packagingType, null, null, null, null, null, null, null, null, null);
+    }
+
+    private static ProducerRow BuildProducerRow(string producerType, string producerSize, string packagingType, string packagingClass, string fromCountry, string toCountry, string weight, string quantity)
+    {
+        return new ProducerRow(null, null, null, 1, producerType, producerSize, packagingType, packagingClass, null, null, fromCountry, toCountry, weight, quantity, null, null);
     }
 }

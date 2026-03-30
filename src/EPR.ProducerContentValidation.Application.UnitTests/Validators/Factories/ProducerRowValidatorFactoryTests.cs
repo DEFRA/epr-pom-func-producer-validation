@@ -1,4 +1,3 @@
-﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Validators;
@@ -37,7 +36,6 @@ public class ProducerRowValidatorFactoryTests
     {
         // Arrange
         _options = new ValidationOptions { Disabled = true };
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation)).ReturnsAsync(false);
         _systemUnderTest = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options), _featureManagerMock.Object);
 
         // Act
@@ -62,7 +60,6 @@ public class ProducerRowValidatorFactoryTests
     {
         // Arrange
         _options = new ValidationOptions { Disabled = false, IsLatest = false };
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation)).ReturnsAsync(false);
         _systemUnderTest = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options), _featureManagerMock.Object);
 
         // Act
@@ -70,35 +67,5 @@ public class ProducerRowValidatorFactoryTests
 
         // Assert
         _producerRowValidator.Should().BeOfType<ProducerRowValidator>();
-    }
-
-    [TestMethod]
-    public async Task ProducerRowValidator_WhenFeatureFlad_EnableSmallProducerPackagingTypeEnhancedValidation_IsEnhanced()
-    {
-        // Arrange
-        _options = new ValidationOptions { Disabled = false, IsLatest = true };
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation)).ReturnsAsync(true);
-        var factory = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options), _featureManagerMock.Object);
-
-        // Act
-        var result = factory.GetInstance();
-
-        // Assert
-        Assert.IsNotNull(result);
-    }
-
-    [TestMethod]
-    public async Task ProducerRowValidator_WhenFeatureFlad_NotEnableSmallProducerPackagingTypeEnhancedValidation_IsNotEnhanced()
-    {
-        // Arrange
-        _options = new ValidationOptions { Disabled = false, IsLatest = true };
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation)).ReturnsAsync(true);
-        var factory = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options), _featureManagerMock.Object);
-
-        // Act
-        var result = factory.GetInstance();
-
-        // Assert
-        Assert.IsNotNull(result);
     }
 }
