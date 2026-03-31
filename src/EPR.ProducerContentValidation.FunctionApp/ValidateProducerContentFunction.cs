@@ -34,7 +34,7 @@ public class ValidateProducerContentFunction
         _logger = logger;
     }
 
-    // [Function("ValidateProducerContent")]
+    [Function("ValidateProducerContent")]
     public async Task RunAsync(
         [ServiceBusTrigger("%ServiceBus:SplitQueueName%", Connection = "ServiceBus:ConnectionString")]
         ProducerValidationInRequest producerValidationRequest)
