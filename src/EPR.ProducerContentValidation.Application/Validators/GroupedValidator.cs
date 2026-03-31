@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.Constants;
+﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
@@ -11,12 +10,10 @@ namespace EPR.ProducerContentValidation.Application.Validators;
 
 public class GroupedValidator : IGroupedValidator
 {
-    private readonly IMapper _mapper;
     private readonly IIssueCountService _issueCountService;
 
-    public GroupedValidator(IMapper mapper, IIssueCountService issueCountService)
+    public GroupedValidator(IIssueCountService issueCountService)
     {
-        _mapper = mapper;
         _issueCountService = issueCountService;
     }
 
@@ -38,9 +35,9 @@ public class GroupedValidator : IGroupedValidator
         if (remainingErrorCount > 0)
         {
             // Error Validators
-            var submissionPeriodValidator = new ConsistentDataSubmissionPeriodsGroupedValidator(_mapper, _issueCountService);
-            var organisationSizeValidator = new ConsistentOrganisationSizeGroupedValidator(_mapper, _issueCountService);
-            var selfManagedWasteTransferValidator = new SelfManagedWasteTransfersGroupedValidator(_mapper, _issueCountService);
+            var submissionPeriodValidator = new ConsistentDataSubmissionPeriodsGroupedValidator(_issueCountService);
+            var organisationSizeValidator = new ConsistentOrganisationSizeGroupedValidator(_issueCountService);
+            var selfManagedWasteTransferValidator = new SelfManagedWasteTransfersGroupedValidator(_issueCountService);
 
             var submissionPeriodsTask = submissionPeriodValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
             var organisationSizeTask = organisationSizeValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
@@ -57,8 +54,8 @@ public class GroupedValidator : IGroupedValidator
         if (remainingWarningCount > 0)
         {
             // Warning Validators
-            var singlePackagingMaterialValidator = new SinglePackagingMaterialGroupedValidator(_mapper, _issueCountService);
-            var totalPackagingMaterialValidator = new TotalPackagingMaterialValidator(_mapper, _issueCountService);
+            var singlePackagingMaterialValidator = new SinglePackagingMaterialGroupedValidator(_issueCountService);
+            var totalPackagingMaterialValidator = new TotalPackagingMaterialValidator(_issueCountService);
 
             var singlePackagingMaterialTask = singlePackagingMaterialValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
             var totalPackagingMaterialValidatorTask = totalPackagingMaterialValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);

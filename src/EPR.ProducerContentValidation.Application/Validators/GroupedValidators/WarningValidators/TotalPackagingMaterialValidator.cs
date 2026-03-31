@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.Constants;
+﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
@@ -23,8 +22,8 @@ public class TotalPackagingMaterialValidator : AbstractGroupedValidator
         PackagingType.SmallOrganisationPackagingAll
     };
 
-    public TotalPackagingMaterialValidator(IMapper mapper, IIssueCountService issueCountService)
-        : base(mapper, issueCountService)
+    public TotalPackagingMaterialValidator(IIssueCountService issueCountService)
+        : base(issueCountService)
     {
         _issueCountService = issueCountService;
     }

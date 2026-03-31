@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.Clients;
+﻿using EPR.ProducerContentValidation.Application.Clients;
 using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Extensions;
+using EPR.ProducerContentValidation.Application.Mapping;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 using EPR.ProducerContentValidation.Application.Options;
@@ -21,7 +21,6 @@ public class ValidationService : IValidationService
 {
     private readonly ILogger<ValidationService> _logger;
     private readonly ICompositeValidator _compositeValidator;
-    private readonly IMapper _mapper;
     private readonly IIssueCountService _issueCountService;
     private readonly StorageAccountOptions _storageAccountOptions;
     private readonly ISubsidiaryDetailsRequestBuilder _subsidiaryDetailsRequestBuilder;
@@ -33,7 +32,6 @@ public class ValidationService : IValidationService
     public ValidationService(
         ILogger<ValidationService> logger,
         ICompositeValidator compositeValidator,
-        IMapper mapper,
         IIssueCountService issueCountService,
         IOptions<StorageAccountOptions> storageAccountOptions,
         IFeatureManager featureManager,
@@ -44,7 +42,6 @@ public class ValidationService : IValidationService
     {
         _logger = logger;
         _compositeValidator = compositeValidator;
-        _mapper = mapper;
         _issueCountService = issueCountService;
         _storageAccountOptions = storageAccountOptions.Value;
         _featureManager = featureManager;
@@ -64,7 +61,7 @@ public class ValidationService : IValidationService
         var remainingErrorCapacity = await _issueCountService.GetRemainingIssueCapacityAsync(errorStoreKey);
         var remainingWarningCapacity = await _issueCountService.GetRemainingIssueCapacityAsync(warningStoreKey);
 
-        var producerValidationOutRequest = _mapper.Map<SubmissionEventRequest>(producer) with
+        var producerValidationOutRequest = producer.ToSubmissionEventRequest() with
         {
             BlobContainerName = _storageAccountOptions.PomContainer
         };

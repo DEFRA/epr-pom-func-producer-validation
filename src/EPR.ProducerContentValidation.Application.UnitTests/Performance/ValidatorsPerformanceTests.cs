@@ -4,7 +4,6 @@ using EPR.ProducerContentValidation.Application.Clients;
 using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
-using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.ReferenceData;
 using EPR.ProducerContentValidation.Application.Services;
 using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
@@ -12,7 +11,6 @@ using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Subsidiary;
 using EPR.ProducerContentValidation.Application.Validators;
 using EPR.ProducerContentValidation.Application.Validators.Factories;
-using EPR.ProducerContentValidation.TestSupport;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -46,15 +44,14 @@ public class ValidatorsPerformanceTests
         var producerRowValidatorFactory = new ProducerRowValidatorFactory(validationOptionsMock.Object, featureManagerMock.Object);
         var producerRowWarningValidatorFactory = new ProducerRowWarningValidatorFactory();
 
-        var systemUnderDuplicateValidatorTest = new DuplicateValidator(AutoMapperHelpers.GetMapper<ProducerProfile>(), errorCountServiceMock.Object);
-        var systemUnderGroupValidatorTest = new GroupedValidator(AutoMapperHelpers.GetMapper<ProducerProfile>(), errorCountServiceMock.Object);
+        var systemUnderDuplicateValidatorTest = new DuplicateValidator(errorCountServiceMock.Object);
+        var systemUnderGroupValidatorTest = new GroupedValidator(errorCountServiceMock.Object);
 
         var compositeValidatorUnderTest = new CompositeValidator(
             validationOptionsMock.Object,
             submissionConfigOptions.Object,
             featureManagerMock.Object,
             errorCountServiceMock.Object,
-            AutoMapperHelpers.GetMapper<ProducerProfile>(),
             producerRowValidatorFactory,
             producerRowWarningValidatorFactory,
             systemUnderGroupValidatorTest,
@@ -62,7 +59,6 @@ public class ValidatorsPerformanceTests
         _validationServiceUnderTest = new ValidationService(
             loggerMock.Object,
             compositeValidatorUnderTest,
-            AutoMapperHelpers.GetMapper<ProducerProfile>(),
             errorCountServiceMock.Object,
             Microsoft.Extensions.Options.Options.Create(new StorageAccountOptions { PomContainer = "ContainerName" }),
             featureManagerMock.Object,

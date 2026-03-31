@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.Constants;
+﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
@@ -10,8 +9,8 @@ namespace EPR.ProducerContentValidation.Application.Validators.GroupedValidators
     {
         private readonly IIssueCountService _issueCountService;
 
-        public ConsistentOrganisationSizeGroupedValidator(IMapper mapper, IIssueCountService issueCountService)
-            : base(mapper, issueCountService)
+        public ConsistentOrganisationSizeGroupedValidator(IIssueCountService issueCountService)
+            : base(issueCountService)
         {
             _issueCountService = issueCountService;
         }

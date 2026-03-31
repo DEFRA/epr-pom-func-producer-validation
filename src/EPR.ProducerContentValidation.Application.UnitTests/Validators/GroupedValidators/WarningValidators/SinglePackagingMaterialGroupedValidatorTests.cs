@@ -1,10 +1,8 @@
 ﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
-using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Validators.GroupedValidators.WarningValidators;
-using EPR.ProducerContentValidation.TestSupport;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -22,7 +20,7 @@ public class SinglePackagingMaterialGroupedValidatorTests
     public SinglePackagingMaterialGroupedValidatorTests()
     {
         _errorCountServiceMock = new Mock<IIssueCountService>();
-        _systemUnderTest = new SinglePackagingMaterialGroupedValidator(AutoMapperHelpers.GetMapper<ProducerProfile>(), _errorCountServiceMock.Object);
+        _systemUnderTest = new SinglePackagingMaterialGroupedValidator(_errorCountServiceMock.Object);
     }
 
     [TestInitialize]

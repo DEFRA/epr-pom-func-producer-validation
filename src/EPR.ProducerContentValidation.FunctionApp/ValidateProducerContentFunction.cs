@@ -1,8 +1,8 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.Constants;
+﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SplitFunction;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Exceptions;
+using EPR.ProducerContentValidation.Application.Mapping;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
@@ -18,20 +18,17 @@ public class ValidateProducerContentFunction
     private readonly ISubmissionApiClient _submissionApiClient;
     private readonly ValidationOptions _validationOptions;
     private readonly StorageAccountOptions _storageAccountOptions;
-    private readonly IMapper _mapper;
     private readonly ILogger<ValidateProducerContentFunction> _logger;
 
     public ValidateProducerContentFunction(
         IValidationService validationService,
         ISubmissionApiClient submissionApiClient,
-        IMapper mapper,
         IOptions<ValidationOptions> validationOptions,
         IOptions<StorageAccountOptions> storageAccountOptions,
         ILogger<ValidateProducerContentFunction> logger)
     {
         _validationService = validationService;
         _submissionApiClient = submissionApiClient;
-        _mapper = mapper;
         _storageAccountOptions = storageAccountOptions.Value;
         _validationOptions = validationOptions.Value;
         _logger = logger;
@@ -71,7 +68,7 @@ public class ValidateProducerContentFunction
 
         try
         {
-            var producer = _mapper.Map<Producer>(producerValidationRequest);
+            var producer = producerValidationRequest.ToProducer();
 
             producerValidationResult = await _validationService.ValidateAsync(producer);
         }

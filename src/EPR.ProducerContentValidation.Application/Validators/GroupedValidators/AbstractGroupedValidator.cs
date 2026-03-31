@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
+﻿using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
+using EPR.ProducerContentValidation.Application.Mapping;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Validators.GroupedValidators.Interfaces;
@@ -8,12 +8,10 @@ namespace EPR.ProducerContentValidation.Application.Validators.GroupedValidators
 
 public abstract class AbstractGroupedValidator : IAbstractGroupedValidator
 {
-    private readonly IMapper _mapper;
     private readonly IIssueCountService _issueCountService;
 
-    protected AbstractGroupedValidator(IMapper mapper, IIssueCountService issueCountService)
+    protected AbstractGroupedValidator(IIssueCountService issueCountService)
     {
-        _mapper = mapper;
         _issueCountService = issueCountService;
     }
 
@@ -25,7 +23,7 @@ public abstract class AbstractGroupedValidator : IAbstractGroupedValidator
 
         if (errorRow == null)
         {
-            var firstErrorRow = _mapper.Map<ProducerValidationEventIssueRequest>(row) with
+            var firstErrorRow = row.ToValidationIssueRequest() with
             {
                 ErrorCodes = new List<string> { errorCode },
                 BlobName = blobName

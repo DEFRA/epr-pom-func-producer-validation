@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.Clients;
+﻿using EPR.ProducerContentValidation.Application.Clients;
 using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Models.Subsidiary;
 using EPR.ProducerContentValidation.Application.Options;
-using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.Services;
 using EPR.ProducerContentValidation.Application.Services.Helpers.Interfaces;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
@@ -31,7 +29,6 @@ public class ValidationServiceTests
 
     private readonly Guid _submissionId = Guid.NewGuid();
 
-    private IMapper _mapper;
     private Mock<ICompositeValidator> _compositeValidatorMock;
     private Mock<IIssueCountService> _issueCountServiceMock;
     private Mock<ILogger<ValidationService>> _loggerMock;
@@ -48,7 +45,6 @@ public class ValidationServiceTests
         _compositeValidatorMock = new Mock<ICompositeValidator>();
         _loggerMock = new Mock<ILogger<ValidationService>>();
         _issueCountServiceMock = new Mock<IIssueCountService>();
-        _mapper = AutoMapperHelpers.GetMapper<ProducerProfile>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _requestValidatorMock = new Mock<IRequestValidator>();
         _subsidiaryDetailsRequestBuilderMock = new Mock<ISubsidiaryDetailsRequestBuilder>();
@@ -653,7 +649,6 @@ public class ValidationServiceTests
         new(
             _loggerMock.Object,
             _compositeValidatorMock.Object,
-            _mapper,
             _issueCountServiceMock.Object,
             Microsoft.Extensions.Options.Options.Create(new StorageAccountOptions { PomContainer = ContainerName }),
             _featureManagerMock.Object,

@@ -1,4 +1,4 @@
-namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
+﻿namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
 
 using System.Collections.Immutable;
 using Constants;

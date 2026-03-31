@@ -5,7 +5,6 @@ using Application.Exceptions;
 using Application.Models;
 using Application.Options;
 using Application.Services.Interfaces;
-using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,7 +18,6 @@ public class ValidateProducerContentFunctionTests
     private readonly Mock<IValidationService> _validationServiceMock = new();
     private readonly Mock<ISubmissionApiClient> _submissionApiClientMock = new();
     private readonly Mock<ILogger<ValidateProducerContentFunction>> _loggerMock = new();
-    private readonly Mock<IMapper> _mapperMock = new();
     private readonly Mock<IOptions<ValidationOptions>> _validationOptionsMock = new();
     private readonly Mock<IOptions<StorageAccountOptions>> _storageAccountOptionsMock = new();
 
@@ -36,7 +34,6 @@ public class ValidateProducerContentFunctionTests
         _systemUnderTest = new ValidateProducerContentFunction(
             _validationServiceMock.Object,
             _submissionApiClientMock.Object,
-            _mapperMock.Object,
             _validationOptionsMock.Object,
             _storageAccountOptionsMock.Object,
             _loggerMock.Object);
