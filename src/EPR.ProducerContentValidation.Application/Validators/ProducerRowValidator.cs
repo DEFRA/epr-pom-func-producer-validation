@@ -29,6 +29,7 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new HouseholdDrinksContainerQuantityUnitsValidator());
         Include(new OnlineMarketplaceHouseholdWastePackagingClassValidator());  // large producer only
         Include(new HouseholdDrinksContainerMaterialTypeValidator());           // large producer only
+        Include(new ClosedLoopRecyclingMaterialTypeValidator());                // large producer only
         Include(new OnlineMarketplaceNonHouseholdPackagingClassValidator());    // large producer only
         Include(new NonOnlineMarketplaceNonHouseholdPackagingClassValidator());   // large producer only
         Include(new SelfManagedOrganisationWastePackagingClassValidator());     // large producer only
