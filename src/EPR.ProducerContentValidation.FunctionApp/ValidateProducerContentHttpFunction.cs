@@ -4,6 +4,7 @@ using System.Text.Json;
 using EPR.ProducerContentValidation.Application.DTOs.SplitFunction;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Exceptions;
+using EPR.ProducerContentValidation.Application.Mapping;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
@@ -22,13 +23,11 @@ public class ValidateProducerContentHttpFunction
     private readonly ValidationOptions _validationOptions;
     private readonly StorageAccountOptions _storageAccountOptions;
     private readonly HttpEndpointOptions _httpEndpointOptions;
-    private readonly AutoMapper.IMapper _mapper;
     private readonly ILogger<ValidateProducerContentHttpFunction> _logger;
 
     public ValidateProducerContentHttpFunction(
         IValidationService validationService,
         ISubmissionApiClient submissionApiClient,
-        AutoMapper.IMapper mapper,
         IOptions<ValidationOptions> validationOptions,
         IOptions<StorageAccountOptions> storageAccountOptions,
         IOptions<HttpEndpointOptions> httpEndpointOptions,
@@ -36,7 +35,6 @@ public class ValidateProducerContentHttpFunction
     {
         _validationService = validationService;
         _submissionApiClient = submissionApiClient;
-        _mapper = mapper;
         _storageAccountOptions = storageAccountOptions.Value;
         _validationOptions = validationOptions.Value;
         _httpEndpointOptions = httpEndpointOptions.Value;
@@ -121,7 +119,7 @@ public class ValidateProducerContentHttpFunction
 
         try
         {
-            var producer = _mapper.Map<Producer>(producerValidationRequest);
+            var producer = producerValidationRequest.ToProducer();
 
             producerValidationResult = await _validationService.ValidateAsync(producer);
         }

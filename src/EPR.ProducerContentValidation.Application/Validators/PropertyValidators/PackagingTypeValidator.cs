@@ -30,7 +30,8 @@ public class PackagingTypeValidator : AbstractValidator<ProducerRow>
         PackagingType.PublicBin,
         PackagingType.HouseholdDrinksContainers,
         PackagingType.ReusablePackaging,
-        PackagingType.NonHouseholdDrinksContainers
+        PackagingType.NonHouseholdDrinksContainers,
+        PackagingType.ClosedLoopRecycling
     }.ToImmutableList();
 
     public PackagingTypeValidator()

@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.Constants;
+﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
-using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Validators;
 using EPR.ProducerContentValidation.Application.Validators.Factories;
@@ -30,7 +28,6 @@ public class CompositeValidatorTests
     private readonly string _errorStoreKey = StoreKey.FetchStoreKey(BlobName, IssueType.Error);
     private readonly string _warningStoreKey = StoreKey.FetchStoreKey(BlobName, IssueType.Warning);
 
-    private readonly IMapper _mapper;
     private readonly Mock<IIssueCountService> _issueCountServiceMock;
     private readonly Mock<IDuplicateValidator> _duplicateValidatorMock;
     private readonly Mock<IGroupedValidator> _groupedValidatorMock;
@@ -48,7 +45,6 @@ public class CompositeValidatorTests
     public CompositeValidatorTests()
     {
         _options = new ValidationOptions { Disabled = false };
-        _mapper = AutoMapperHelpers.GetMapper<ProducerProfile>();
         _issueCountServiceMock = new Mock<IIssueCountService>();
         _duplicateValidatorMock = new Mock<IDuplicateValidator>();
         _groupedValidatorMock = new Mock<IGroupedValidator>();
@@ -93,7 +89,6 @@ public class CompositeValidatorTests
             Microsoft.Extensions.Options.Options.Create(submissionPeriodOptions),
             _featureManagerMock.Object,
             _issueCountServiceMock.Object,
-            _mapper,
             _producerRowValidatorFactoryMock.Object,
             _producerRowWarningValidatorFactoryMock.Object,
             _groupedValidatorMock.Object,
@@ -413,7 +408,6 @@ public class CompositeValidatorTests
 
         var producerRows = new List<ProducerRow> { producerRowOne };
 
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSmallProducerPackagingTypeEnhancedValidation)).ReturnsAsync(false);
         var submissionPeriodOptions = new List<SubmissionPeriodOption>();
         var producerRowValidatorFactory = new ProducerRowValidatorFactory(Microsoft.Extensions.Options.Options.Create(_options), _featureManagerMock.Object);
         var producerRowWarningValidatorFactory = new ProducerRowWarningValidatorFactory();
@@ -423,7 +417,6 @@ public class CompositeValidatorTests
             Microsoft.Extensions.Options.Options.Create(submissionPeriodOptions),
             _featureManagerMock.Object,
             _issueCountServiceMock.Object,
-            _mapper,
             producerRowValidatorFactory,
             producerRowWarningValidatorFactory,
             _groupedValidatorMock.Object,
@@ -517,7 +510,6 @@ public class CompositeValidatorTests
             submissionPeriodOptions.Object,
             _featureManagerMock.Object,
             _issueCountServiceMock.Object,
-            _mapper,
             _producerRowValidatorFactoryMock.Object,
             _producerRowWarningValidatorFactoryMock.Object,
             _groupedValidatorMock.Object,

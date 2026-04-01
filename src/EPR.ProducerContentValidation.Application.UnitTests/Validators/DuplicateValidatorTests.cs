@@ -1,11 +1,10 @@
 ﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
+using EPR.ProducerContentValidation.Application.Mapping;
 using EPR.ProducerContentValidation.Application.Models;
-using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.UnitTests.Validators.PropertyValidators;
 using EPR.ProducerContentValidation.Application.Validators;
-using EPR.ProducerContentValidation.TestSupport;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -23,7 +22,7 @@ public class DuplicateValidatorTests
     {
         _errorCountServiceMock = new Mock<IIssueCountService>();
         _errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(10);
-        _systemUnderTest = new DuplicateValidator(AutoMapperHelpers.GetMapper<ProducerProfile>(), _errorCountServiceMock.Object);
+        _systemUnderTest = new DuplicateValidator(_errorCountServiceMock.Object);
     }
 
     [TestMethod]
@@ -59,13 +58,12 @@ public class DuplicateValidatorTests
     public async Task ValidateAndAddErrors_AddsOnlyExistingErrorCodes_EvenIfRowsAreDuplicated(string errorCode)
     {
         // Arrange
-        var mapper = AutoMapperHelpers.GetMapper<ProducerProfile>();
         var producer = BuildProducer();
         producer.Rows.Add(BuildProducerRow());
         producer.Rows.Add(BuildProducerRow());
         var errors = producer
             .Rows
-            .Select(x => mapper.Map<ProducerValidationEventIssueRequest>(x) with
+            .Select(x => x.ToValidationIssueRequest() with
             {
                 ErrorCodes = new List<string> { errorCode }
             }).ToList();
@@ -324,13 +322,12 @@ public class DuplicateValidatorTests
     public async Task ValidateAndAddError_ReturnsDistinctRowsWithExcludedRows_WhenRowsAreExcludedDueToSkipCodes()
     {
         // Arrange
-        var mapper = AutoMapperHelpers.GetMapper<ProducerProfile>();
         var producer = BuildProducer();
         producer.Rows.Add(BuildProducerRow());
         producer.Rows.Add(BuildProducerRow());
         var errors = producer
             .Rows
-            .Select(x => mapper.Map<ProducerValidationEventIssueRequest>(x) with
+            .Select(x => x.ToValidationIssueRequest() with
             {
                 ErrorCodes = new List<string> { ErrorCode.MaterialTypeInvalidErrorCode }
             })

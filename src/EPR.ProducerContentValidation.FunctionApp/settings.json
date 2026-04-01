@@ -15,7 +15,6 @@
     "Validation:IsLatest": true,
     "HttpEndpoint:Enabled": false,
     "FeatureManagement:EnableSubsidiaryValidationPom": false,
-    "FeatureManagement:EnableSmallProducerPackagingTypeEnhancedValidation": false,
     "FeatureManagement:EnableLargeProducerRecyclabilityRatingValidation": false
   }
 }

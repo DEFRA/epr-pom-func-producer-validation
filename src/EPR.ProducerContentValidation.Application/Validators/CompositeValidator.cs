@@ -1,6 +1,6 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.Constants;
+﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
+using EPR.ProducerContentValidation.Application.Mapping;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
@@ -20,7 +20,6 @@ public class CompositeValidator : ICompositeValidator
     private readonly IDuplicateValidator _duplicateValidator;
     private readonly IOptions<List<SubmissionPeriodOption>> submissionOptions;
     private readonly IIssueCountService _issueCountService;
-    private readonly IMapper _mapper;
     private readonly ValidationOptions _validationOptions;
     private readonly IFeatureManager _featureManager;
 
@@ -29,7 +28,6 @@ public class CompositeValidator : ICompositeValidator
         IOptions<List<SubmissionPeriodOption>> submissionOptions,
         IFeatureManager featureManager,
         IIssueCountService issueCountService,
-        IMapper mapper,
         IProducerRowValidatorFactory producerRowValidatorFactory,
         IProducerRowWarningValidatorFactory producerRowWarningValidatorFactory,
         IGroupedValidator groupedValidator,
@@ -37,7 +35,6 @@ public class CompositeValidator : ICompositeValidator
     {
         this.submissionOptions = submissionOptions;
         _issueCountService = issueCountService;
-        _mapper = mapper;
         _validationOptions = validationOptions.Value;
         _featureManager = featureManager;
         _producerRowValidator = producerRowValidatorFactory.GetInstance();
@@ -109,7 +106,7 @@ public class CompositeValidator : ICompositeValidator
 
         await _issueCountService.IncrementIssueCountAsync(storeKey, issueCodes.Count);
 
-        issues.Add(_mapper.Map<ProducerValidationEventIssueRequest>(row) with
+        issues.Add(row.ToValidationIssueRequest() with
         {
             ErrorCodes = issueCodes,
             BlobName = blobName

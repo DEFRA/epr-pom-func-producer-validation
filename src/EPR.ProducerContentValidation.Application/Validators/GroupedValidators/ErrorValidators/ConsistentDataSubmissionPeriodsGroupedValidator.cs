@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.Constants;
+﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
@@ -10,8 +9,8 @@ public class ConsistentDataSubmissionPeriodsGroupedValidator : AbstractGroupedVa
 {
     private readonly IIssueCountService _issueCountService;
 
-    public ConsistentDataSubmissionPeriodsGroupedValidator(IMapper mapper, IIssueCountService issueCountService)
-        : base(mapper, issueCountService)
+    public ConsistentDataSubmissionPeriodsGroupedValidator(IIssueCountService issueCountService)
+        : base(issueCountService)
     {
         _issueCountService = issueCountService;
     }

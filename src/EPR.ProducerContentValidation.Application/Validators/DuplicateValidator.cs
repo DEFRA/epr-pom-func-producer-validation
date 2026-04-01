@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using EPR.ProducerContentValidation.Application.Constants;
+﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.EqualityComparers;
+using EPR.ProducerContentValidation.Application.Mapping;
 using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Validators.Interfaces;
@@ -10,7 +10,6 @@ namespace EPR.ProducerContentValidation.Application.Validators;
 
 public class DuplicateValidator : IDuplicateValidator
 {
-    private readonly IMapper _mapper;
     private readonly IIssueCountService _issueCountService;
 
     private readonly List<string> _skipRuleErrorCodes = new()
@@ -29,9 +28,8 @@ public class DuplicateValidator : IDuplicateValidator
         ErrorCode.SubsidiaryIdInvalidErrorCode,
     };
 
-    public DuplicateValidator(IMapper mapper, IIssueCountService issueCountService)
+    public DuplicateValidator(IIssueCountService issueCountService)
     {
-        _mapper = mapper;
         _issueCountService = issueCountService;
     }
 
@@ -69,7 +67,7 @@ public class DuplicateValidator : IDuplicateValidator
         var onlyWithDuplicateErrorRows = duplicateRows
             .Where(d => !errorRowsNumber.Contains(d.RowNumber))
             .Take(remainingErrorCountToProcess)
-            .Select(x => _mapper.Map<ProducerValidationEventIssueRequest>(x) with
+            .Select(x => x.ToValidationIssueRequest() with
             {
                 ErrorCodes = new List<string> { ErrorCode.DuplicateEntryErrorCode },
                 BlobName = blobName

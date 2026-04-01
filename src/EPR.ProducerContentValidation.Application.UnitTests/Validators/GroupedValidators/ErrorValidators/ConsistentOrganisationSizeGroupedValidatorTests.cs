@@ -1,10 +1,9 @@
 ﻿using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
+using EPR.ProducerContentValidation.Application.Mapping;
 using EPR.ProducerContentValidation.Application.Models;
-using EPR.ProducerContentValidation.Application.Profiles;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using EPR.ProducerContentValidation.Application.Validators.GroupedValidators.ErrorValidators;
-using EPR.ProducerContentValidation.TestSupport;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -22,7 +21,7 @@ public class ConsistentOrganisationSizeGroupedValidatorTests
     public ConsistentOrganisationSizeGroupedValidatorTests()
     {
         _errorCountServiceMock = new Mock<IIssueCountService>();
-        _systemUnderTest = new ConsistentOrganisationSizeGroupedValidator(AutoMapperHelpers.GetMapper<ProducerProfile>(), _errorCountServiceMock.Object);
+        _systemUnderTest = new ConsistentOrganisationSizeGroupedValidator(_errorCountServiceMock.Object);
     }
 
     [TestInitialize]
@@ -149,14 +148,13 @@ public class ConsistentOrganisationSizeGroupedValidatorTests
       string errorCode)
     {
         // Arrange
-        var mapper = AutoMapperHelpers.GetMapper<ProducerProfile>();
         var producer = BuildProducer();
         producer.Rows.Add(BuildProducerRow(producerSize: "L"));
         producer.Rows.Add(BuildProducerRow(producerSize: "S"));
 
         var errors = producer
             .Rows
-            .Select(x => mapper.Map<ProducerValidationEventIssueRequest>(x) with
+            .Select(x => x.ToValidationIssueRequest() with
             {
                 ErrorCodes = new List<string> { errorCode }
             }).ToList();

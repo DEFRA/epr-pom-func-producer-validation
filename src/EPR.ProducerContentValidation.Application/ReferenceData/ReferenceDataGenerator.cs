@@ -31,7 +31,8 @@ public static class ReferenceDataGenerator
         PackagingType.PublicBin,
         PackagingType.HouseholdDrinksContainers,
         PackagingType.ReusablePackaging,
-        PackagingType.NonHouseholdDrinksContainers
+        PackagingType.NonHouseholdDrinksContainers,
+        PackagingType.ClosedLoopRecycling
     }.ToImmutableList();
 
     public static readonly ImmutableList<string> PackagingCategories = new List<string>()

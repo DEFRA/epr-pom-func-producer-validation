@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using EPR.ProducerContentValidation.Application.Config;
 using EPR.ProducerContentValidation.Application.Handlers;
 using EPR.ProducerContentValidation.Application.Models;
@@ -93,7 +92,6 @@ public static class ConfigureServices
     }
 
     private static IServiceCollection RegisterBaseServices(this IServiceCollection services) => services
-        .AddAutoMapper(Assembly.GetExecutingAssembly())
         .RegisterValidators();
 
     private static IServiceCollection RegisterValidators(this IServiceCollection services)
