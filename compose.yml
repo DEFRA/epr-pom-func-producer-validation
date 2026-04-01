@@ -1,0 +1,35 @@
+services:
+  redis:
+    image: redis/redis-stack:latest
+    container_name: epr-producer-validation-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  functionapp:
+    platform: linux/amd64
+    build:
+      context: ./src
+      dockerfile: EPR.ProducerContentValidation.FunctionApp/Dockerfile
+    container_name: epr-producer-validation-functionapp
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "7071:80"
+    environment:
+      FUNCTIONS_WORKER_RUNTIME: dotnet-isolated
+      SubmissionApi__BaseUrl: "http://localhost:1234/"
+      CompanyDetailsApi__BaseUrl: "http://localhost:7076/"
+      CompanyDetailsApi__Timeout: "10"
+      Redis__ConnectionString: redis:6379
+      HttpEndpoint__Enabled: "true"
+      Validation__Disabled: "false"
+      Validation__MaxIssuesToProcess: "1000"
+      FeatureManagement__EnableLargeProducerEnhancedRecyclabilityRatingValidation: "true"
+      FeatureManagement__EnableLargeProducerRecyclabilityRatingValidation: "true"
+      FeatureManagement__EnableSubsidiaryValidationPom: "true"
