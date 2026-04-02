@@ -30,6 +30,7 @@ public class LargeProducerPackagingTypeValidatorTests : LargeProducerPackagingTy
     [DataRow(PackagingType.NonHousehold)]
     [DataRow(PackagingType.HouseholdDrinksContainers)]
     [DataRow(PackagingType.PublicBin)]
+    [DataRow(PackagingType.ClosedLoopRecycling)]
     public void LargeProducerPackagingTypeValidator_DoesNotContainErrorForPackagingType_WhenPackagingTypeIs(string packagingType)
     {
         // Arrange

@@ -24,7 +24,8 @@ public class LargeProducerPackagingTypeValidator : AbstractValidator<ProducerRow
         PackagingType.Household,
         PackagingType.NonHousehold,
         PackagingType.HouseholdDrinksContainers,
-        PackagingType.PublicBin
+        PackagingType.PublicBin,
+        PackagingType.ClosedLoopRecycling
     }.ToImmutableList();
 
     public LargeProducerPackagingTypeValidator()
