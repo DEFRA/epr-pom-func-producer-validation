@@ -3,7 +3,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace EPR.ProducerContentValidation.ApiTests;
+namespace EPR.ProducerContentValidation.IntegrationTests;
 
 /// <summary>
 /// API tests for duplicate entry (40), data submission period consistency (50),

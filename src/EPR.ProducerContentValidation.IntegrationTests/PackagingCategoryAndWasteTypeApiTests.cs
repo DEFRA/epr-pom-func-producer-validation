@@ -3,7 +3,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace EPR.ProducerContentValidation.ApiTests;
+namespace EPR.ProducerContentValidation.IntegrationTests;
 
 /// <summary>
 /// API tests for waste type / packaging type and packaging category validators:

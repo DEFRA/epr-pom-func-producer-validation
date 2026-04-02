@@ -5,7 +5,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace EPR.ProducerContentValidation.ApiTests;
+namespace EPR.ProducerContentValidation.IntegrationTests;
 
 /// <summary>
 /// API tests for validation warnings (59, 60, 61, 62, 63, 64) and edge cases

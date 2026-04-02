@@ -27,14 +27,14 @@ The integration test project lives under **`src/`**. To run **only** the integra
 **From the repository root** (recommended):
 
 ```bash
-dotnet test src/EPR.ProducerContentValidation.ApiTests/EPR.ProducerContentValidation.IntegrationTests.csproj --filter "Category=IntegrationTest"
+dotnet test src/EPR.ProducerContentValidation.IntegrationTests/EPR.ProducerContentValidation.IntegrationTests.csproj --filter "Category=IntegrationTest"
 ```
 
 **From the `src` directory**:
 
 ```bash
 cd src
-dotnet test EPR.ProducerContentValidation.ApiTests/EPR.ProducerContentValidation.IntegrationTests.csproj --filter "Category=IntegrationTest"
+dotnet test EPR.ProducerContentValidation.IntegrationTests/EPR.ProducerContentValidation.IntegrationTests.csproj --filter "Category=IntegrationTest"
 ```
 
 **Via the solution** (builds and runs all projects; only tests matching the filter run; other test projects still build and report “no match”):
@@ -47,7 +47,7 @@ Override the base URL if the function runs on a different host/port:
 
 ```bash
 # From repo root
-VALIDATE_PRODUCER_CONTENT_BASE_URL=http://localhost:7071 dotnet test src/EPR.ProducerContentValidation.ApiTests/EPR.ProducerContentValidation.IntegrationTests.csproj --filter "Category=IntegrationTest"
+VALIDATE_PRODUCER_CONTENT_BASE_URL=http://localhost:7071 dotnet test src/EPR.ProducerContentValidation.IntegrationTests/EPR.ProducerContentValidation.IntegrationTests.csproj --filter "Category=IntegrationTest"
 ```
 
 ## Debugging failed tests (expected vs actual)
@@ -71,7 +71,7 @@ To see the exact JSON request body used in each test so you can copy it into Pos
 Example:
 
 ```bash
-OUTPUT_POSTMAN_PAYLOADS=1 dotnet test src/EPR.ProducerContentValidation.ApiTests/EPR.ProducerContentValidation.IntegrationTests.csproj --filter "Category=IntegrationTest&FullyQualifiedName~Invalid_producer_id_returns_error_01"
+OUTPUT_POSTMAN_PAYLOADS=1 dotnet test src/EPR.ProducerContentValidation.IntegrationTests/EPR.ProducerContentValidation.IntegrationTests.csproj --filter "Category=IntegrationTest&FullyQualifiedName~Invalid_producer_id_returns_error_01"
 ```
 
 In Visual Studio or VS Code Test Explorer, run a test with the variable set and use the test’s **Output** link to view the payload.

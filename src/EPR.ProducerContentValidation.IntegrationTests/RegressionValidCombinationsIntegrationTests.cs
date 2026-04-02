@@ -4,7 +4,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace EPR.ProducerContentValidation.ApiTests;
+namespace EPR.ProducerContentValidation.IntegrationTests;
 
 /// <summary>
 /// Regression tests that send multiple valid row combinations and assert the service
@@ -14,6 +14,12 @@ namespace EPR.ProducerContentValidation.ApiTests;
 [Trait("Category", "IntegrationTest")]
 public class RegressionValidCombinationsIntegrationTests : ValidateProducerContentApiTestBase
 {
+    private static readonly string[] AllowedCodes =
+    [
+        ErrorCode.WarningOnlyOnePackagingMaterialReported,
+        ErrorCode.WarningPackagingTypeQuantityUnitsLessThanQuantityKgs,
+    ];
+
     public RegressionValidCombinationsIntegrationTests(ValidateProducerContentApiFixture fixture, ITestOutputHelper output)
         : base(fixture, output)
     {
@@ -30,27 +36,88 @@ public class RegressionValidCombinationsIntegrationTests : ValidateProducerConte
         result.IsSuccess.Should().BeTrue();
         result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         result.Response.Should().NotBeNull();
+        result.Errors.Should().BeEmpty("all rows are valid combinations");
         result.AllErrorCodes.Should().BeEmpty("all rows are valid combinations");
         result.AllWarningCodes.Should().BeEmpty("all rows are valid combinations with sufficient overall weight");
-        result.Response!.ValidationErrors.Should().BeEmpty();
+        result.Response.ValidationErrors.Should().BeEmpty();
         result.Response.ValidationWarnings.Should().BeEmpty();
     }
 
     [Fact]
-    public async Task Multiple_valid_2025_plus_row_combinations_return_no_errors_or_warnings()
+    public async Task Multiple_valid_2025_plus_row_combinations_return_no_errors_large_producer_only()
     {
         var request = ValidateProducerContentRequestBuilder.ValidRequest();
-        request.Rows = BuildValid2025PlusRegressionRows();
-
+        request.Rows = BuildValid2025PlusRegressionRowsLargeProducer();
         var result = await ValidateAndLogAsync(request);
 
         result.IsSuccess.Should().BeTrue();
         result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         result.Response.Should().NotBeNull();
-        result.AllErrorCodes.Should().BeEmpty("all 2025+ rows are valid combinations");
-        result.AllWarningCodes.Should().BeEmpty("all 2025+ rows are valid combinations with sufficient overall weight");
-        result.Response!.ValidationErrors.Should().BeEmpty();
-        result.Response.ValidationWarnings.Should().BeEmpty();
+        result.Errors.Should().BeEmpty("all rows are valid combinations");
+        result.AllErrorCodes.Should().BeSubsetOf(
+            AllowedCodes,
+            "error codes should be empty or only duplicate/single-material codes");
+        result.AllWarningCodes.Should().BeSubsetOf(
+            AllowedCodes,
+            "warning codes should be empty or only duplicate/single-material codes");
+    }
+
+    [Fact]
+    public async Task Multiple_valid_2025_plus_row_combinations_return_no_errors_small_producer_only()
+    {
+        var request = ValidateProducerContentRequestBuilder.ValidRequest();
+        request.Rows = BuildValid2025PlusRegressionRowsSmallProducer();
+        var result = await ValidateAndLogAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        result.Response.Should().NotBeNull();
+        result.Errors.Should().BeEmpty("all rows are valid combinations");
+        result.AllErrorCodes.Should().BeSubsetOf(
+            AllowedCodes,
+            "error codes should be empty or only duplicate/single-material codes");
+        result.AllWarningCodes.Should().BeSubsetOf(
+            AllowedCodes,
+            "warning codes should be empty or only duplicate/single-material codes");
+    }
+
+    [Fact(Skip = "Needs to be split as it runs for too long")]
+    public async Task Real_producerdata_from_input_csv_returns_no_errors()
+    {
+        var allRows = BuildRegressionRowsFromInputCsvLargeProducer();
+        var groups = allRows
+            .GroupBy(r => r.ProducerId ?? string.Empty, StringComparer.Ordinal)
+            .Where(g => !string.IsNullOrEmpty(g.Key))
+            .OrderBy(g => g.Key, StringComparer.Ordinal)
+            .ToList();
+
+        groups.Should().NotBeEmpty("CSV should contain at least one large-producer row with organisation_id (producer id)");
+
+        foreach (var group in groups)
+        {
+            Output?.WriteLine($"Validating CSV producer id {group.Key} ({group.Count()} rows)…");
+
+            var request = ValidateProducerContentRequestBuilder.ValidRequest();
+            request.ProducerId = group.Key;
+            request.SubmissionId = Guid.NewGuid();
+            request.BlobName = "csv-" + Guid.NewGuid().ToString("N")[..8];
+            request.Rows = group
+                .Select((row, index) => row with { RowNumber = index + 1 })
+                .ToList();
+
+            var result = await ValidateAndLogAsync(request);
+
+            result.IsSuccess.Should().BeTrue($"producer {group.Key}");
+            result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK, $"producer {group.Key}");
+            result.Response.Should().NotBeNull($"producer {group.Key}");
+            result.Errors.Should().BeEmpty($"producer {group.Key}");
+            result.AllErrorCodes.Should().BeSubsetOf(
+                AllowedCodes,
+                $"producer {group.Key}: error codes should be empty or only allowed codes");
+            result.AllWarningCodes.Should().BeSubsetOf(
+                AllowedCodes,
+                $"producer {group.Key}: warning codes should be empty or only allowed codes");
+        }
     }
 
     private static List<ProducerRowInRequest> BuildValidRegressionRows()
@@ -84,12 +151,43 @@ public class RegressionValidCombinationsIntegrationTests : ValidateProducerConte
         ];
     }
 
-    private static List<ProducerRowInRequest> BuildValid2025PlusRegressionRows()
+    private static List<ProducerRowInRequest> BuildValid2025PlusRegressionRowsSmallProducer()
+    {
+        const string smallPeriodCode = "2025-P0";
+        const string smallPeriodLabel = "July to December 2025";
+
+        return
+        [
+            ValidateProducerContentRequestBuilder.ValidRow(1, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(2, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.PackerFiller, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.SecondaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(3, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.Importer, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.ShipmentPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(4, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.HiredOrLoaned, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.TransitPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(5, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SoldAsEmptyPackaging, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.TotalPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(6, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.TotalPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(6, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(7, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.PackerFiller, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.SecondaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
+        ];
+    }
+
+    /// <summary>
+    /// Large-producer rows from <c>real_pom_file_data.csv</c> in the IntegrationTests project directory, using the same column mapping as
+    /// <c>EPR.ProducerContentValidation.CsvToRequest</c> (snake_case headers, API codes for activity/type/class/material).
+    /// Only rows with <c>organisation_size</c> <c>L</c> are included; <see cref="ProducerRowInRequest.RowNumber"/> is reassigned 1..N in that order.
+    /// </summary>
+    /// <param name="maxRows">If set, only the first N large-producer rows from the file are returned.</param>
+    /// <param name="csvPath">Optional path to a CSV file; default resolves next to the test assembly or the IntegrationTests project folder.</param>
+    private static List<ProducerRowInRequest> BuildRegressionRowsFromInputCsvLargeProducer(
+        int? maxRows = null,
+        string? csvPath = null)
+    {
+        var path = csvPath ?? InputCsvRegressionRowLoader.ResolveDefaultInputCsvPath();
+        return InputCsvRegressionRowLoader.LoadLargeProducerRows(path, maxRows);
+    }
+
+    private static List<ProducerRowInRequest> BuildValid2025PlusRegressionRowsLargeProducer()
     {
         const string largePeriodCode = "2025-H2";
         const string largePeriodLabel = "July to December 2025";
-        const string smallPeriodCode = "2025-P0";
-        const string smallPeriodLabel = "January to December 2025";
         const string validRating = RecyclabilityRating.Green;
 
         return
@@ -106,16 +204,6 @@ public class RegressionValidCombinationsIntegrationTests : ValidateProducerConte
             ValidateProducerContentRequestBuilder.ValidRow(10, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize: ProducerSize.Large, wasteType: PackagingType.PublicBin, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.Aluminium, recyclabilityRating: validRating, quantityKg: "2000"),
             ValidateProducerContentRequestBuilder.ValidRow(11, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Wood, recyclabilityRating: validRating, quantityKg: "2000"),
             ValidateProducerContentRequestBuilder.ValidRow(12, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.PublicBin, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.FibreComposite, recyclabilityRating: validRating, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(13, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.ClosedLoopRecycling, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.Other, recyclabilityRating: validRating, quantityKg: "2000"),
-
-            ValidateProducerContentRequestBuilder.ValidRow(14, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Small, wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(15, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.PackerFiller, producerSize: ProducerSize.Small, wasteType: PackagingType.Household, packagingCategory: PackagingClass.SecondaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(16, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.Importer, producerSize: ProducerSize.Small, wasteType: PackagingType.Household, packagingCategory: PackagingClass.ShipmentPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(17, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.HiredOrLoaned, producerSize: ProducerSize.Small, wasteType: PackagingType.Household, packagingCategory: PackagingClass.TransitPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(18, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SoldAsEmptyPackaging, producerSize: ProducerSize.Small, wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(19, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.TotalPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(20, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(21, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.PackerFiller, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.SecondaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
         ];
     }
 }

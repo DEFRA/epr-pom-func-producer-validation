@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace EPR.ProducerContentValidation.ApiTests;
+namespace EPR.ProducerContentValidation.IntegrationTests;
 
 /// <summary>
 /// Collection definition so that <see cref="ValidateProducerContentApiFixture"/> is shared across all API test classes

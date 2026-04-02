@@ -196,7 +196,7 @@ N/A
 
 ### Integration tests
 
-See `src/EPR.ProducerContentValidation.ApiTests/README.md` for setup and run instructions for the `EPR.ProducerContentValidation.IntegrationTests` project, including CI filter usage with `--filter "Category=IntegrationTest"`.
+See `src/EPR.ProducerContentValidation.IntegrationTests/README.md` for setup and run instructions for the `EPR.ProducerContentValidation.IntegrationTests` project, including CI filter usage with `--filter "Category=IntegrationTest"`.
 
 ## How To Debug
 

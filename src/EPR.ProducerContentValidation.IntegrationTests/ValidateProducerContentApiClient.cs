@@ -4,7 +4,7 @@ using System.Text.Json;
 using EPR.ProducerContentValidation.Application.DTOs.SplitFunction;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 
-namespace EPR.ProducerContentValidation.ApiTests;
+namespace EPR.ProducerContentValidation.IntegrationTests;
 
 /// <summary>
 /// HTTP client for the validate-producer-content API. Used by API tests to POST requests
@@ -92,6 +92,12 @@ public sealed class ValidateProducerContentResult
 
     public static ValidateProducerContentResult Failure(HttpStatusCode statusCode, string? errorBody) =>
         new(false, statusCode, null, errorBody);
+
+    /// <summary>
+    /// All error  from ValidationErrors across all rows (flattened).
+    /// </summary>
+    public IReadOnlyList<string> Errors =>
+        Response?.Errors ?? new List<string>();
 
     /// <summary>
     /// All error codes from ValidationErrors across all rows (flattened).

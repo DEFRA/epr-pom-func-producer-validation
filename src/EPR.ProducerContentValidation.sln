@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPR.ProducerContentValidation.UnitTest", "EPR.ProducerContentValidation.UnitTest\EPR.ProducerContentValidation.UnitTest.csproj", "{C22C5FE6-1839-4026-B7F3-ECD78154445E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPR.ProducerContentValidation.IntegrationTests", "EPR.ProducerContentValidation.ApiTests\EPR.ProducerContentValidation.IntegrationTests.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPR.ProducerContentValidation.IntegrationTests", "EPR.ProducerContentValidation.IntegrationTests\EPR.ProducerContentValidation.IntegrationTests.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

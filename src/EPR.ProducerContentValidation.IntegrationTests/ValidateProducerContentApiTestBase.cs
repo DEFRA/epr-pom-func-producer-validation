@@ -3,7 +3,7 @@ using EPR.ProducerContentValidation.Application.DTOs.SplitFunction;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace EPR.ProducerContentValidation.ApiTests;
+namespace EPR.ProducerContentValidation.IntegrationTests;
 
 /// <summary>
 /// Base for API tests that require the validate-producer-content endpoint to return 200.
@@ -68,6 +68,7 @@ public abstract class ValidateProducerContentApiTestBase
         Output.WriteLine("=== API result (actual – use when debugging failures) ===");
         Output.WriteLine("StatusCode: " + result.StatusCode);
         Output.WriteLine("IsSuccess: " + result.IsSuccess);
+        Output.WriteLine("Errors (actual): [" + string.Join(", ", result.Errors) + "]");
         Output.WriteLine("Error codes (actual): [" + string.Join(", ", result.AllErrorCodes) + "]");
         Output.WriteLine("Warning codes (actual): [" + string.Join(", ", result.AllWarningCodes) + "]");
         if (!result.IsSuccess && !string.IsNullOrEmpty(result.ErrorBody))

@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 
-namespace EPR.ProducerContentValidation.ApiTests;
+namespace EPR.ProducerContentValidation.IntegrationTests;
 
 /// <summary>
 /// Shared fixture for API tests. Provides an <see cref="ValidateProducerContentApiClient"/> configured
