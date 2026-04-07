@@ -81,10 +81,10 @@ public class RegressionValidCombinationsIntegrationTests : ValidateProducerConte
             "warning codes should be empty or only duplicate/single-material codes");
     }
 
-    [Fact(Skip = "Needs to be split as it runs for too long")]
+    [Fact]
     public async Task Real_producerdata_from_input_csv_returns_no_errors()
     {
-        var allRows = BuildRegressionRowsFromInputCsvLargeProducer();
+        var allRows = BuildRegressionRowsFromInputCsvLargeProducer(100);
         var groups = allRows
             .GroupBy(r => r.ProducerId ?? string.Empty, StringComparer.Ordinal)
             .Where(g => !string.IsNullOrEmpty(g.Key))
@@ -164,8 +164,8 @@ public class RegressionValidCombinationsIntegrationTests : ValidateProducerConte
             ValidateProducerContentRequestBuilder.ValidRow(4, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.HiredOrLoaned, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.TransitPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
             ValidateProducerContentRequestBuilder.ValidRow(5, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SoldAsEmptyPackaging, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.TotalPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
             ValidateProducerContentRequestBuilder.ValidRow(6, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.TotalPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(6, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(7, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.PackerFiller, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.SecondaryPackaging, materialType: MaterialType.Plastic, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(7, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Steel, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(8, dataSubmissionPeriod: smallPeriodCode, submissionPeriod: smallPeriodLabel, producerType: ProducerType.PackerFiller, producerSize: ProducerSize.Small, wasteType: PackagingType.SmallOrganisationPackagingAll, packagingCategory: PackagingClass.SecondaryPackaging, materialType: MaterialType.Glass, materialSubType: null, recyclabilityRating: null, quantityKg: "2000"),
         ];
     }
 
@@ -204,6 +204,7 @@ public class RegressionValidCombinationsIntegrationTests : ValidateProducerConte
             ValidateProducerContentRequestBuilder.ValidRow(10, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize: ProducerSize.Large, wasteType: PackagingType.PublicBin, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.Aluminium, recyclabilityRating: validRating, quantityKg: "2000"),
             ValidateProducerContentRequestBuilder.ValidRow(11, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Wood, recyclabilityRating: validRating, quantityKg: "2000"),
             ValidateProducerContentRequestBuilder.ValidRow(12, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.PublicBin, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.FibreComposite, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(13, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.ClosedLoopRecycling, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, recyclabilityRating: null, quantityKg: "2000"),
         ];
     }
 }
