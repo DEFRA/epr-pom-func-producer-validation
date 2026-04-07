@@ -49,6 +49,7 @@ public class WarningsAndEdgeCasesApiTests : ValidateProducerContentApiTestBase
     public async Task Valid_request_returns_200_and_result_structure()
     {
         var request = ValidateProducerContentRequestBuilder.ValidRequest();
+        request.Rows[0] = ValidateProducerContentRequestBuilder.ValidRow(quantityKg: "25000");
 
         var result = await ValidateAndLogAsync(request);
 
