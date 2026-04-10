@@ -8,7 +8,7 @@ namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidator
 
 public class ClosedLoopRecyclingSubmissionPeriodValidator : AbstractValidator<ProducerRow>
 {
-    private const string FirstValidSubmissionPeriod = "2026-P2";
+    private const string FirstValidSubmissionPeriod = "2026-P1";
 
     private readonly ImmutableList<string> _skipRuleErrorCodes = new List<string>()
     {

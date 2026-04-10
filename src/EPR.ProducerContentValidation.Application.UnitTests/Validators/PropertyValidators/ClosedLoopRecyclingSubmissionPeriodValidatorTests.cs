@@ -93,9 +93,8 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
     [DataRow("2023-P1")]
     [DataRow("2025-P1")]
     [DataRow("2025-P2")]
-    [DataRow("2026-P1")]
     [TestMethod]
-    public void ClosedLoopRecyclingSubmissionPeriodValidator_ContainsError913_WhenSubmissionPeriodIsBefore_2026P2(string dataSubmissionPeriod)
+    public void ClosedLoopRecyclingSubmissionPeriodValidator_ContainsError913_WhenSubmissionPeriodIsBefore_2026P1(string dataSubmissionPeriod)
     {
         // Arrange
         var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, dataSubmissionPeriod);
@@ -109,12 +108,13 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
             .WithErrorCode(ErrorCode.ClosedLoopRecyclingSubmissionPeriodInvalidErrorCode);
     }
 
+    [DataRow("2026-P1")]
     [DataRow("2026-P2")]
     [DataRow("2027-P1")]
     [DataRow("2027-P2")]
     [DataRow("2037-P2")]
     [TestMethod]
-    public void ClosedLoopRecyclingSubmissionPeriodValidator_DoesNotContainError_WhenSubmissionPeriodIs_2026P2_OrLater(string dataSubmissionPeriod)
+    public void ClosedLoopRecyclingSubmissionPeriodValidator_DoesNotContainError_WhenSubmissionPeriodIs_2026P1_OrLater(string dataSubmissionPeriod)
     {
         // Arrange
         var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, dataSubmissionPeriod);
