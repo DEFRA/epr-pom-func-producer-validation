@@ -138,7 +138,25 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
         result.ShouldNotHaveValidationErrorFor(x => x.DataSubmissionPeriod);
     }
 
-    private static ProducerRow BuildProducerRow(string packagingType, string dataSubmissionPeriod)
+    [DataRow(null)]
+    [DataRow("202")]
+    [DataRow("ABCD")]
+    [TestMethod]
+    public void ClosedLoopRecyclingSubmissionPeriodValidator_ContainsError913_WhenSubmissionPeriodIsUnparseable(string? dataSubmissionPeriod)
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, dataSubmissionPeriod);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(producerRow);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.DataSubmissionPeriod)
+            .WithErrorCode(ErrorCode.ClosedLoopRecyclingSubmissionPeriodInvalidErrorCode);
+    }
+
+    private static ProducerRow BuildProducerRow(string packagingType, string? dataSubmissionPeriod)
     {
         return new ProducerRow(null, dataSubmissionPeriod, "123456", 0, null, ProducerSize.Large, packagingType, null, null, null, null, null, "1", "1", null, null);
     }
