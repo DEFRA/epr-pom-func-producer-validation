@@ -27,7 +27,7 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
         // Arrange
         var validationResult = new ValidationResult();
         validationResult.Errors.Add(new ValidationFailure { ErrorCode = errorCode });
-        var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, "2025-P1");
+        var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, "2025-H1");
         var context = new ValidationContext<ProducerRow>(producerRow);
 
         // Act
@@ -49,7 +49,7 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
     {
         // Arrange
         var validationResult = new ValidationResult();
-        var producerRow = BuildProducerRow(packagingType, "2025-P1");
+        var producerRow = BuildProducerRow(packagingType, "2025-H1");
         var context = new ValidationContext<ProducerRow>(producerRow);
 
         // Act
@@ -64,7 +64,7 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
     {
         // Arrange
         var validationResult = new ValidationResult();
-        var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, "2025-P1");
+        var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, "2025-H1");
         var context = new ValidationContext<ProducerRow>(producerRow);
 
         // Act
@@ -80,7 +80,7 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
         // Arrange
         var validationResult = new ValidationResult();
         validationResult.Errors.Add(new ValidationFailure { ErrorCode = ErrorCode.ClosedLoopRecyclingMaterialTypeInvalidErrorCode });
-        var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, "2025-P1");
+        var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, "2025-H1");
         var context = new ValidationContext<ProducerRow>(producerRow);
 
         // Act
@@ -90,11 +90,11 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
         result.Should().BeTrue();
     }
 
-    [DataRow("2023-P1")]
-    [DataRow("2025-P1")]
-    [DataRow("2025-P2")]
+    [DataRow("2024-P1")]
+    [DataRow("2025-H1")]
+    [DataRow("2025-H2")]
     [TestMethod]
-    public void ClosedLoopRecyclingSubmissionPeriodValidator_ContainsError913_WhenSubmissionPeriodIsBefore_2026P1(string dataSubmissionPeriod)
+    public void ClosedLoopRecyclingSubmissionPeriodValidator_ContainsError913_WhenSubmissionPeriodYearIsBefore2026(string dataSubmissionPeriod)
     {
         // Arrange
         var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, dataSubmissionPeriod);
@@ -108,13 +108,12 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
             .WithErrorCode(ErrorCode.ClosedLoopRecyclingSubmissionPeriodInvalidErrorCode);
     }
 
-    [DataRow("2026-P1")]
-    [DataRow("2026-P2")]
-    [DataRow("2027-P1")]
-    [DataRow("2027-P2")]
-    [DataRow("2037-P2")]
+    [DataRow("2026-H1")]
+    [DataRow("2026-H2")]
+    [DataRow("2027-H1")]
+    [DataRow("2027-H2")]
     [TestMethod]
-    public void ClosedLoopRecyclingSubmissionPeriodValidator_DoesNotContainError_WhenSubmissionPeriodIs_2026P1_OrLater(string dataSubmissionPeriod)
+    public void ClosedLoopRecyclingSubmissionPeriodValidator_DoesNotContainError_WhenSubmissionPeriodYearIs2026OrLater(string dataSubmissionPeriod)
     {
         // Arrange
         var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, dataSubmissionPeriod);
@@ -130,7 +129,7 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
     public void ClosedLoopRecyclingSubmissionPeriodValidator_DoesNotContainError_WhenPackagingTypeIsNot_CLR()
     {
         // Arrange
-        var producerRow = BuildProducerRow(PackagingType.Household, "2025-P1");
+        var producerRow = BuildProducerRow(PackagingType.Household, "2025-H1");
 
         // Act
         var result = _systemUnderTest.TestValidate(producerRow);

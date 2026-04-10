@@ -8,8 +8,6 @@ namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidator
 
 public class ClosedLoopRecyclingSubmissionPeriodValidator : AbstractValidator<ProducerRow>
 {
-    private const string FirstValidSubmissionPeriod = "2026-P1";
-
     private readonly ImmutableList<string> _skipRuleErrorCodes = new List<string>()
     {
         ErrorCode.PackagingTypeInvalidErrorCode,
@@ -19,7 +17,7 @@ public class ClosedLoopRecyclingSubmissionPeriodValidator : AbstractValidator<Pr
     public ClosedLoopRecyclingSubmissionPeriodValidator()
     {
         RuleFor(x => x.DataSubmissionPeriod)
-            .Must(period => string.Compare(period, FirstValidSubmissionPeriod, StringComparison.OrdinalIgnoreCase) >= 0)
+            .Must(IsYearValidForClosedLoopRecycling)
             .WithErrorCode(ErrorCode.ClosedLoopRecyclingSubmissionPeriodInvalidErrorCode);
     }
 
@@ -29,4 +27,9 @@ public class ClosedLoopRecyclingSubmissionPeriodValidator : AbstractValidator<Pr
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
                && PackagingType.ClosedLoopRecycling.Equals(producerRow.WasteType);
     }
+
+    private static bool IsYearValidForClosedLoopRecycling(string? period) =>
+        period is { Length: >= 4 }
+        && int.TryParse(period.AsSpan(0, 4), out var year)
+        && year >= 2026;
 }
