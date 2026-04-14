@@ -21,6 +21,7 @@ public class ClosedLoopRecyclingPackagingActivityValidatorTests : ClosedLoopRecy
 
     [DataRow(ErrorCode.PackagingTypeInvalidErrorCode)]
     [DataRow(ErrorCode.ClosedLoopRecyclingPackagingTypeInvalidForSmallProducerErrorCode)]
+    [DataRow(ErrorCode.ProducerTypeInvalidErrorCode)]
     [TestMethod]
     public void PreValidate_ReturnsFalse_WhenErrorCodeIsPresent(string errorCode)
     {

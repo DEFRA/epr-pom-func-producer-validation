@@ -11,7 +11,8 @@ public class ClosedLoopRecyclingPackagingActivityValidator : AbstractValidator<P
     private readonly ImmutableList<string> _skipRuleErrorCodes = new List<string>()
     {
         ErrorCode.PackagingTypeInvalidErrorCode,
-        ErrorCode.ClosedLoopRecyclingPackagingTypeInvalidForSmallProducerErrorCode
+        ErrorCode.ClosedLoopRecyclingPackagingTypeInvalidForSmallProducerErrorCode,
+        ErrorCode.ProducerTypeInvalidErrorCode
     }.ToImmutableList();
 
     public ClosedLoopRecyclingPackagingActivityValidator()
