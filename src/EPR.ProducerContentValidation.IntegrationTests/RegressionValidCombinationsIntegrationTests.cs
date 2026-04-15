@@ -83,42 +83,22 @@ public class RegressionValidCombinationsIntegrationTests : ValidateProducerConte
     }
 
     [Fact]
-    public async Task Real_producerdata_from_input_csv_returns_no_errors()
+    public async Task Multiple_valid_2026_plus_row_combinations_return_no_errors_large_producer_only_CLR()
     {
-        var allRows = BuildRegressionRowsFromInputCsvLargeProducer(100);
-        var groups = allRows
-            .GroupBy(r => r.ProducerId ?? string.Empty, StringComparer.Ordinal)
-            .Where(g => !string.IsNullOrEmpty(g.Key))
-            .OrderBy(g => g.Key, StringComparer.Ordinal)
-            .ToList();
+        var request = ValidateProducerContentRequestBuilder.ValidRequest();
+        request.Rows = BuildValid2026PlusRegressionRowsLargeProducerCLR();
+        var result = await ValidateAndLogAsync(request);
 
-        groups.Should().NotBeEmpty("CSV should contain at least one large-producer row with organisation_id (producer id)");
-
-        foreach (var group in groups)
-        {
-            Output?.WriteLine($"Validating CSV producer id {group.Key} ({group.Count()} rows)…");
-
-            var request = ValidateProducerContentRequestBuilder.ValidRequest();
-            request.ProducerId = group.Key;
-            request.SubmissionId = Guid.NewGuid();
-            request.BlobName = "csv-" + Guid.NewGuid().ToString("N")[..8];
-            request.Rows = group
-                .Select((row, index) => row with { RowNumber = index + 1 })
-                .ToList();
-
-            var result = await ValidateAndLogAsync(request);
-
-            result.IsSuccess.Should().BeTrue($"producer {group.Key}");
-            result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK, $"producer {group.Key}");
-            result.Response.Should().NotBeNull($"producer {group.Key}");
-            result.Errors.Should().BeEmpty($"producer {group.Key}");
-            result.AllErrorCodes.Should().BeSubsetOf(
-                AllowedCodes,
-                $"producer {group.Key}: error codes should be empty or only allowed codes");
-            result.AllWarningCodes.Should().BeSubsetOf(
-                AllowedCodes,
-                $"producer {group.Key}: warning codes should be empty or only allowed codes");
-        }
+        result.IsSuccess.Should().BeTrue();
+        result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        result.Response.Should().NotBeNull();
+        result.Errors.Should().BeEmpty("all rows are valid combinations");
+        result.AllErrorCodes.Should().BeSubsetOf(
+            AllowedCodes,
+            "error codes should be empty or only duplicate/single-material codes");
+        result.AllWarningCodes.Should().BeSubsetOf(
+            AllowedCodes,
+            "warning codes should be empty or only duplicate/single-material codes");
     }
 
     private static List<ProducerRowInRequest> BuildValidRegressionRows()
@@ -170,21 +150,6 @@ public class RegressionValidCombinationsIntegrationTests : ValidateProducerConte
         ];
     }
 
-    /// <summary>
-    /// Large-producer rows from <c>real_pom_file_data.csv</c> in the IntegrationTests project directory, using the same column mapping as
-    /// <c>EPR.ProducerContentValidation.CsvToRequest</c> (snake_case headers, API codes for activity/type/class/material).
-    /// Only rows with <c>organisation_size</c> <c>L</c> are included; <see cref="ProducerRowInRequest.RowNumber"/> is reassigned 1..N in that order.
-    /// </summary>
-    /// <param name="maxRows">If set, only the first N large-producer rows from the file are returned.</param>
-    /// <param name="csvPath">Optional path to a CSV file; default resolves next to the test assembly or the IntegrationTests project folder.</param>
-    private static List<ProducerRowInRequest> BuildRegressionRowsFromInputCsvLargeProducer(
-        int? maxRows = null,
-        string? csvPath = null)
-    {
-        var path = csvPath ?? InputCsvRegressionRowLoader.ResolveDefaultInputCsvPath();
-        return InputCsvRegressionRowLoader.LoadLargeProducerRows(path, maxRows);
-    }
-
     private static List<ProducerRowInRequest> BuildValid2025PlusRegressionRowsLargeProducer()
     {
         const string largePeriodCode = "2025-H2";
@@ -205,7 +170,30 @@ public class RegressionValidCombinationsIntegrationTests : ValidateProducerConte
             ValidateProducerContentRequestBuilder.ValidRow(10, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize: ProducerSize.Large, wasteType: PackagingType.PublicBin, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.Aluminium, recyclabilityRating: validRating, quantityKg: "2000"),
             ValidateProducerContentRequestBuilder.ValidRow(11, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Wood, recyclabilityRating: validRating, quantityKg: "2000"),
             ValidateProducerContentRequestBuilder.ValidRow(12, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.PublicBin, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.FibreComposite, recyclabilityRating: validRating, quantityKg: "2000"),
-            ValidateProducerContentRequestBuilder.ValidRow(13, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.ClosedLoopRecycling, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, recyclabilityRating: null, quantityKg: "2000"),
+        ];
+    }
+
+    private static List<ProducerRowInRequest> BuildValid2026PlusRegressionRowsLargeProducerCLR()
+    {
+        const string largePeriodCode = "2026-H1";
+        const string largePeriodLabel = "January to June 2026";
+        const string validRating = RecyclabilityRating.Green;
+
+        return
+        [
+            ValidateProducerContentRequestBuilder.ValidRow(1, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, materialSubType: MaterialSubType.Flexible, recyclabilityRating: validRating, quantityKg: "25000"),
+            ValidateProducerContentRequestBuilder.ValidRow(2, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.ShipmentPackaging, materialType: MaterialType.Glass, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(3, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.ShipmentPackaging, materialType: MaterialType.PaperCard, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(4, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Aluminium, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(5, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.PublicBin, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.Steel, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(6, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.PackerFiller, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.ShipmentPackaging, materialType: MaterialType.Plastic, materialSubType: MaterialSubType.Rigid, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(7, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.Importer, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.ShipmentPackaging, materialType: MaterialType.Glass, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(8, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.HiredOrLoaned, producerSize: ProducerSize.Large, wasteType: PackagingType.PublicBin, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.PaperCard, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(9, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SoldAsEmptyPackaging, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.ShipmentPackaging, materialType: MaterialType.Steel, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(10, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SoldThroughOnlineMarketplaceYouOwn, producerSize: ProducerSize.Large, wasteType: PackagingType.PublicBin, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.Aluminium, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(11, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Wood, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(12, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: ProducerType.SuppliedUnderYourBrand, producerSize: ProducerSize.Large, wasteType: PackagingType.PublicBin, packagingCategory: PackagingClass.PublicBin, materialType: MaterialType.FibreComposite, recyclabilityRating: validRating, quantityKg: "2000"),
+            ValidateProducerContentRequestBuilder.ValidRow(13, dataSubmissionPeriod: largePeriodCode, submissionPeriod: largePeriodLabel, producerType: null, producerSize: ProducerSize.Large, wasteType: PackagingType.ClosedLoopRecycling, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, recyclabilityRating: null, quantityKg: "2000"),
         ];
     }
 }

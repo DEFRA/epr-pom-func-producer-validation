@@ -26,6 +26,15 @@ The integration test project lives under **`src/`**. To run **only** the integra
 
 **From the repository root** (recommended):
 
+
+First start the function app using docker in a separate terminal:
+
+```bash
+docker compose up --build
+```
+
+Then run the tests:
+
 ```bash
 dotnet test src/EPR.ProducerContentValidation.IntegrationTests/EPR.ProducerContentValidation.IntegrationTests.csproj --filter "Category=IntegrationTest"
 ```
