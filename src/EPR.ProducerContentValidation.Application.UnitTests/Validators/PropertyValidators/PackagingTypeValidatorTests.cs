@@ -61,6 +61,7 @@ public class PackagingTypeValidatorTests : PackagingTypeValidator
     [DataRow(PackagingType.HouseholdDrinksContainers)]
     [DataRow(PackagingType.NonHouseholdDrinksContainers)]
     [DataRow(PackagingType.ReusablePackaging)]
+    [DataRow(PackagingType.ClosedLoopRecycling)]
     public void PackagingTypeValidator_DoesNotContainErrorForPackagingType_WhenProducerIsNotNullAndPackagingTypeIs(string packagingType)
     {
         // Arrange
@@ -96,6 +97,7 @@ public class PackagingTypeValidatorTests : PackagingTypeValidator
     [TestMethod]
     [DataRow(PackagingType.SelfManagedConsumerWaste)]
     [DataRow(PackagingType.SelfManagedOrganisationWaste)]
+    [DataRow(PackagingType.ClosedLoopRecycling)]
     public void PackagingTypeValidator_ReturnsTrue_WhenProducerTypeContainsNullAndPackagingTypeisValid(string packagingType)
     {
         // Arrange

@@ -19,7 +19,8 @@ public class PackagingTypeValidator : AbstractValidator<ProducerRow>
     private readonly ImmutableList<string> _nullProducerTypePackagingCodes = new List<string>
     {
         PackagingType.SelfManagedConsumerWaste,
-        PackagingType.SelfManagedOrganisationWaste
+        PackagingType.SelfManagedOrganisationWaste,
+        PackagingType.ClosedLoopRecycling
     }.ToImmutableList();
 
     private readonly ImmutableList<string> _producerTypePackagingCodes = new List<string>
