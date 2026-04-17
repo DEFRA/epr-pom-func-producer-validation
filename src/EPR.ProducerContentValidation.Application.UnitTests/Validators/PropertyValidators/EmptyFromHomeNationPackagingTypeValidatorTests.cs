@@ -28,6 +28,7 @@ public class EmptyFromHomeNationPackagingTypeValidatorTests : EmptyFromHomeNatio
     [DataRow(PackagingType.SmallOrganisationPackagingAll, null)]
     [DataRow(PackagingType.PublicBin, null)]
     [DataRow(PackagingType.ReusablePackaging, null)]
+    [DataRow(PackagingType.ClosedLoopRecycling, null)]
     public void EmptyFromHomeNationPackagingTypeValidator_PassesValidation_WhenHomeNationIsNullAndPackagingTypeIs(string packagingType, string? fromHomeNation)
     {
         // Arrange

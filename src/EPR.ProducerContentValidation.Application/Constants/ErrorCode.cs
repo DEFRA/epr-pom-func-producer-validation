@@ -62,6 +62,7 @@ public static class ErrorCode
     public const string ClosedLoopRecyclingPackagingTypeInvalidForSmallProducerErrorCode = "911";
     public const string ClosedLoopRecyclingMaterialTypeInvalidErrorCode = "912";
     public const string ClosedLoopRecyclingSubmissionPeriodInvalidErrorCode = "913";
+    public const string ClosedLoopRecyclingFromHomeNationInvalidErrorCode = "916";
     public const string ClosedLoopRecyclingPackagingActivityInvalidErrorCode = "914";
     public const string ClosedLoopRecyclingPackagingClassInvalidErrorCode = "915";
 

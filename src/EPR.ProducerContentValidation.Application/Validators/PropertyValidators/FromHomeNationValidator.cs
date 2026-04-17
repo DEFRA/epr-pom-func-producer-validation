@@ -19,6 +19,7 @@ public class FromHomeNationValidator : AbstractValidator<ProducerRow>
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
     {
         var producerRow = context.InstanceToValidate;
-        return ProducerSize.Large.Equals(producerRow.ProducerSize);
+        return ProducerSize.Large.Equals(producerRow.ProducerSize)
+               && !PackagingType.ClosedLoopRecycling.Equals(producerRow.WasteType);
     }
 }

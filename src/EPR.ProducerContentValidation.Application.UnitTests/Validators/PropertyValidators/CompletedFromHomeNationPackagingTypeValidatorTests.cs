@@ -56,6 +56,8 @@ public class CompletedFromHomeNationPackagingTypeValidatorTests : CompletedFromH
     [DataRow(PackagingType.SmallOrganisationPackagingAll, null)]
     [DataRow(PackagingType.PublicBin, null)]
     [DataRow(PackagingType.ReusablePackaging, null)]
+    [DataRow(PackagingType.ClosedLoopRecycling, null)]
+    [DataRow(PackagingType.ClosedLoopRecycling, HomeNation.England)]
     public void CompletedFromHomeNationPackagingTypeValidator_PassesValidation_WhenHomeNationIsNullAndPackagingTypeIs(
         string packagingType,
         string? fromHomeNation)
@@ -146,6 +148,26 @@ public class CompletedFromHomeNationPackagingTypeValidatorTests : CompletedFromH
             ErrorCode = errorCode
         });
         var producerRow = BuildProducerRow(null, null);
+        var context = new ValidationContext<ProducerRow>(producerRow);
+
+        // Act
+        var result = PreValidate(context, validationResult);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [DataRow(HomeNation.England)]
+    [DataRow(HomeNation.Scotland)]
+    [DataRow(HomeNation.Wales)]
+    [DataRow(HomeNation.NorthernIreland)]
+    [TestMethod]
+    public void PreValidate_ReturnsFalse_WhenPackagingTypeIsCLRAndHomeNationIsPresent(string homeNation)
+    {
+        // Arrange
+        var validationResult = new ValidationResult();
+
+        var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, homeNation);
         var context = new ValidationContext<ProducerRow>(producerRow);
 
         // Act

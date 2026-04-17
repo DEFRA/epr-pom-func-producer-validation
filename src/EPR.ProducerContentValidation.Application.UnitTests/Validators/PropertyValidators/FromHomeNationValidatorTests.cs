@@ -50,8 +50,21 @@ public class FromHomeNationValidatorTests
             .WithErrorCode(ErrorCode.FromHomeNationInvalidErrorCode);
     }
 
-    private static ProducerRow BuildProducerRow(string fromHomeNation)
+    [TestMethod]
+    public void FromHomeNationValidator_DoesNotContainError_WhenPackagingTypeIsCLR()
     {
-        return new ProducerRow(null, null, null, 1, null, ProducerSize.Large, null, null, null, null, fromHomeNation, null, null, null, null, null);
+        // Arrange
+        var model = BuildProducerRow("XX", PackagingType.ClosedLoopRecycling);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(model);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(x => x.FromHomeNation);
+    }
+
+    private static ProducerRow BuildProducerRow(string fromHomeNation, string wasteType = null)
+    {
+        return new ProducerRow(null, null, null, 1, null, ProducerSize.Large, wasteType, null, null, null, fromHomeNation, null, null, null, null, null);
     }
 }
