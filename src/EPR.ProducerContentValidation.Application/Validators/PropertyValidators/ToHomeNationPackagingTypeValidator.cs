@@ -36,6 +36,7 @@ public class ToHomeNationPackagingTypeValidator : AbstractValidator<ProducerRow>
 
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
             && ProducerSize.Large.Equals(producerRow.ProducerSize)
-            && producerRow.ToHomeNation != null;
+            && producerRow.ToHomeNation != null
+            && !PackagingType.ClosedLoopRecycling.Equals(producerRow.WasteType);
     }
 }

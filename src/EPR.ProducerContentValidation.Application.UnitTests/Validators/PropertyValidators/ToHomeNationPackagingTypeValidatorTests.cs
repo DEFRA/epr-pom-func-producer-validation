@@ -22,6 +22,7 @@ public class ToHomeNationPackagingTypeValidatorTests : ToHomeNationPackagingType
     [TestMethod]
     [DataRow(PackagingType.SelfManagedConsumerWaste)]
     [DataRow(PackagingType.SelfManagedOrganisationWaste)]
+    [DataRow(PackagingType.ClosedLoopRecycling)]
     public void ToHomeNationPackagingTypeValidator_DoesNotContainErrorForPackagingType_WhenPackagingTypeIs(string packagingType)
     {
         // Arrange
@@ -116,6 +117,21 @@ public class ToHomeNationPackagingTypeValidatorTests : ToHomeNationPackagingType
         {
             ErrorCode = ErrorCode.FromHomeNationInvalidErrorCode
         });
+
+        // Act
+        var result = PreValidate(validationContext, validationResult);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void PreValidate_ReturnsFalse_WhenPackagingTypeIsCLR()
+    {
+        // Arrange
+        var producerRow = BuildProducerRow(HomeNation.England, null, PackagingType.ClosedLoopRecycling);
+        var validationContext = new ValidationContext<ProducerRow>(producerRow);
+        var validationResult = new ValidationResult();
 
         // Act
         var result = PreValidate(validationContext, validationResult);
