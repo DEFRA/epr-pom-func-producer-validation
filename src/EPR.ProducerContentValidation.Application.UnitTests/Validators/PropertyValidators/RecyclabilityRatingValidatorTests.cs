@@ -2,7 +2,9 @@
 
 using Application.Validators.PropertyValidators;
 using Constants;
+using FluentAssertions;
 using FluentValidation;
+using FluentValidation.Results;
 using FluentValidation.TestHelper;
 using Microsoft.FeatureManagement;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -382,6 +384,21 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
         var result = _systemUnderTest.TestValidate(context);
 
         result.ShouldNotHaveValidationErrorFor(x => x.RecyclabilityRating);
+    }
+
+    [TestMethod]
+    public void PreValidate_ReturnsFalse_WhenPackagingTypeIsCLR()
+    {
+        // Arrange
+        var validationResult = new ValidationResult();
+        var producerRow = BuildProducerRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.ClosedLoopRecycling, PackagingClass.PrimaryPackaging, MaterialType.Aluminium, string.Empty, RecyclabilityRating.Red);
+        var context = new ValidationContext<ProducerRow>(producerRow);
+
+        // Act
+        var result = PreValidate(context, validationResult);
+
+        // Assert
+        result.Should().BeFalse();
     }
 
     private static ProducerRow BuildProducerRow(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
