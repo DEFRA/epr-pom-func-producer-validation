@@ -66,6 +66,7 @@ public static class ErrorCode
     public const string ClosedLoopRecyclingPackagingActivityInvalidErrorCode = "914";
     public const string ClosedLoopRecyclingPackagingClassInvalidErrorCode = "915";
     public const string ClosedLoopRecyclingToHomeNationInvalidErrorCode = "917";
+    public const string ClosedLoopRecyclingRecyclabilityRatingInvalidErrorCode = "918";
 
     /*Modulation - Recyclability rating error codes*/
     public const string LargeProducerRecyclabilityRatingRequired = "100";

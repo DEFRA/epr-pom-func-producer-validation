@@ -35,6 +35,7 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new ClosedLoopRecyclingPackagingClassValidator());              // CLR only
         Include(new ClosedLoopRecyclingFromHomeNationValidator());              // CLR only
         Include(new ClosedLoopRecyclingToHomeNationValidator());                // CLR only
+        Include(new ClosedLoopRecyclingRecyclabilityRatingValidator());         // CLR only
         Include(new OnlineMarketplaceNonHouseholdPackagingClassValidator());    // large producer only
         Include(new NonOnlineMarketplaceNonHouseholdPackagingClassValidator());   // large producer only
         Include(new SelfManagedOrganisationWastePackagingClassValidator());     // large producer only
