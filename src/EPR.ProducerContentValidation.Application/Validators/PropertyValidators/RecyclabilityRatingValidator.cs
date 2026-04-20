@@ -5,6 +5,7 @@ using EPR.ProducerContentValidation.Application.ReferenceData;
 using EPR.ProducerContentValidation.Application.Validators.CustomValidators;
 using EPR.ProducerContentValidation.Application.Validators.HelperFunctions;
 using FluentValidation;
+using FluentValidation.Results;
 using Models;
 
 public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
@@ -61,6 +62,12 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
                 && ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
                 && !IsLargeProducerWithValidWasteAndMaterialType(row)
                 && !string.IsNullOrWhiteSpace(row.RecyclabilityRating));
+    }
+
+    protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
+    {
+        var producerRow = context.InstanceToValidate;
+        return !PackagingType.ClosedLoopRecycling.Equals(producerRow.WasteType);
     }
 
     private static bool IsLargeProducerRecyclabilityRatingApplicable(ProducerRow row)
