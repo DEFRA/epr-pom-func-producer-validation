@@ -3,6 +3,7 @@
 using System.Diagnostics.CodeAnalysis;
 using EPR.ProducerContentValidation.Application.Constants;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.FeatureManagement;
 using Models;
 using PropertyValidators;
@@ -29,7 +30,6 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new HouseholdDrinksContainerQuantityUnitsValidator());
         Include(new OnlineMarketplaceHouseholdWastePackagingClassValidator());  // large producer only
         Include(new HouseholdDrinksContainerMaterialTypeValidator());           // large producer only
-        Include(new SmallProducerPackagingTypeValidator());
         Include(new ClosedLoopRecyclingMaterialTypeValidator());                // large producer only
         Include(new ClosedLoopRecyclingSubmissionPeriodValidator());            // large producer only
         Include(new ClosedLoopRecyclingPackagingActivityValidator());           // CLR only
@@ -57,9 +57,28 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new SubsidiaryIdValidator());
         Include(new TransitionalPackagingUnitsValidator());
 
+        Include(new SmallProducerPackagingTypeValidator());
+
         if (featureManager.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation).Result)
         {
             Include(new RecyclabilityRatingValidator()); // large producer only
         }
+    }
+
+    protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)
+    {
+        var row = context.InstanceToValidate;
+
+        // Pre-compute cross-validator skip flags in RootContextData.
+        // FluentValidation's Include() gives each child validator a fresh ValidationResult,
+        // so skip codes checked via result.Errors in child PreValidate don't see errors from
+        // other included validators. RootContextData is shared across all included validators.
+        if (ProducerSize.Small.Equals(row.ProducerSize)
+            && PackagingType.ClosedLoopRecycling.Equals(row.WasteType))
+        {
+            context.RootContextData[ErrorCode.ClosedLoopRecyclingPackagingTypeInvalidForSmallProducerErrorCode] = true;
+        }
+
+        return true;
     }
 }

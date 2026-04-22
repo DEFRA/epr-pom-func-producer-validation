@@ -126,6 +126,22 @@ public class ClosedLoopRecyclingPackagingClassValidatorTests : ClosedLoopRecycli
         result.ShouldNotHaveValidationErrorFor(x => x.PackagingCategory);
     }
 
+    [TestMethod]
+    public void PreValidate_ReturnsFalse_WhenSkipCodeInRootContextData()
+    {
+        // Arrange
+        var validationResult = new ValidationResult();
+        var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, null);
+        var context = new ValidationContext<ProducerRow>(producerRow);
+        context.RootContextData[ErrorCode.ClosedLoopRecyclingPackagingTypeInvalidForSmallProducerErrorCode] = true;
+
+        // Act
+        var result = PreValidate(context, validationResult);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
     private static ProducerRow BuildProducerRow(string packagingType, string? packagingClass)
     {
         return new ProducerRow(null, "2026-H1", "123456", 0, null, ProducerSize.Large, packagingType, packagingClass, null, null, null, null, "1", "1", null, null);

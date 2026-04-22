@@ -156,6 +156,22 @@ public class ClosedLoopRecyclingSubmissionPeriodValidatorTests : ClosedLoopRecyc
             .WithErrorCode(ErrorCode.ClosedLoopRecyclingSubmissionPeriodInvalidErrorCode);
     }
 
+    [TestMethod]
+    public void PreValidate_ReturnsFalse_WhenSkipCodeInRootContextData()
+    {
+        // Arrange
+        var validationResult = new ValidationResult();
+        var producerRow = BuildProducerRow(PackagingType.ClosedLoopRecycling, "2026-H1");
+        var context = new ValidationContext<ProducerRow>(producerRow);
+        context.RootContextData[ErrorCode.ClosedLoopRecyclingPackagingTypeInvalidForSmallProducerErrorCode] = true;
+
+        // Act
+        var result = PreValidate(context, validationResult);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
     private static ProducerRow BuildProducerRow(string packagingType, string? dataSubmissionPeriod)
     {
         return new ProducerRow(null, dataSubmissionPeriod, "123456", 0, null, ProducerSize.Large, packagingType, null, null, null, null, null, "1", "1", null, null);
