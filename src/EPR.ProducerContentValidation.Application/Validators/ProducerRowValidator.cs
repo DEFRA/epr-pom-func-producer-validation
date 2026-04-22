@@ -29,6 +29,7 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new HouseholdDrinksContainerQuantityUnitsValidator());
         Include(new OnlineMarketplaceHouseholdWastePackagingClassValidator());  // large producer only
         Include(new HouseholdDrinksContainerMaterialTypeValidator());           // large producer only
+        Include(new SmallProducerPackagingTypeValidator());
         Include(new ClosedLoopRecyclingMaterialTypeValidator());                // large producer only
         Include(new ClosedLoopRecyclingSubmissionPeriodValidator());            // large producer only
         Include(new ClosedLoopRecyclingPackagingActivityValidator());           // CLR only
@@ -55,8 +56,6 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new DataSubmissionPeriodValidator());
         Include(new SubsidiaryIdValidator());
         Include(new TransitionalPackagingUnitsValidator());
-
-        Include(new SmallProducerPackagingTypeValidator());
 
         if (featureManager.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation).Result)
         {
