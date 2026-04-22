@@ -46,6 +46,28 @@ public class TotalPackagingMaterialValidatorTests
         warnings.Should().HaveCount(1).And.Subject.First().ErrorCodes.Should().HaveCount(1).And.Contain(ErrorCode.WarningPackagingMaterialWeightLessThanLimitKg);
     }
 
+    [DataTestMethod]
+    [DataRow(PackagingType.SelfManagedConsumerWaste)]
+    [DataRow(PackagingType.SelfManagedOrganisationWaste)]
+    [DataRow(PackagingType.SmallOrganisationPackagingAll)]
+    [DataRow(PackagingType.ClosedLoopRecycling)]
+    public async Task ValidateAndAddWarning_RejectsRow_WhenTotalWeightIsLessThan25000Kg_And_AdditionalRowsContainExcludedPackagingTypes_TakingTheTotalAbove_25000Kg(string excludedPackagingType)
+    {
+        // Arrange
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var warnings = new List<ProducerValidationEventIssueRequest>();
+        var producer = BuildProducer();
+
+        producer.Rows.Add(BuildProducerRow(quantityKg: "24000"));
+        producer.Rows.Add(BuildProducerRow(quantityKg: "10000", packagingType: excludedPackagingType));
+
+        // Act
+        await _systemUnderTest.ValidateAsync(producer.Rows, StoreKey, producer.BlobName, errors, warnings);
+
+        // Assert
+        warnings.Should().HaveCount(1).And.Subject.First().ErrorCodes.Should().HaveCount(1).And.Contain(ErrorCode.WarningPackagingMaterialWeightLessThanLimitKg);
+    }
+
     [TestMethod]
     public async Task ValidateAsync_AcceptsRow_IfQuantityWeightIsValid()
     {

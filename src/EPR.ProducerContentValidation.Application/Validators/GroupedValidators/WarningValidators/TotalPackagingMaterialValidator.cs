@@ -19,7 +19,8 @@ public class TotalPackagingMaterialValidator : AbstractGroupedValidator
     {
         PackagingType.SelfManagedConsumerWaste,
         PackagingType.SelfManagedOrganisationWaste,
-        PackagingType.SmallOrganisationPackagingAll
+        PackagingType.SmallOrganisationPackagingAll,
+        PackagingType.ClosedLoopRecycling
     };
 
     public TotalPackagingMaterialValidator(IIssueCountService issueCountService)
