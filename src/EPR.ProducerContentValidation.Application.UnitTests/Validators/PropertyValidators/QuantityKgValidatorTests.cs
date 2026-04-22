@@ -119,6 +119,43 @@ public class QuantityKgValidatorTests
             .WithErrorCode(ErrorCode.QuantityKgInvalidErrorCode);
     }
 
+    [TestMethod]
+    [DataRow("0", null)]
+    [DataRow("0", "")]
+    [DataRow("0", " ")]
+    [DataRow("100", null)]
+    [DataRow("9223372036854775807", null)]
+    public void QuantityKgValidator_Passes_WhenPackagingTypeIsCLR_AndQuantityUnitsIsEmpty_AndQuantityKgIs(string quantityKg, string quantityUnits)
+    {
+        // Arrange
+        var model = new ProducerRow(null, null, null, 1, null, "L", PackagingType.ClosedLoopRecycling, null, null, null, null, null, quantityKg, quantityUnits, null);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(model);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(x => x.QuantityKg);
+    }
+
+    [TestMethod]
+    [DataRow(null)]
+    [DataRow(" ")]
+    [DataRow("-1")]
+    [DataRow("xxx")]
+    public void QuantityKgValidator_Fails_WhenPackagingTypeIsCLR_AndQuantityUnitsIsEmpty_AndQuantityKgIs(string quantityKg)
+    {
+        // Arrange
+        var model = new ProducerRow(null, null, null, 1, null, "L", PackagingType.ClosedLoopRecycling, null, null, null, null, null, quantityKg, null, null);
+
+        // Act
+        var result = _systemUnderTest.TestValidate(model);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.QuantityKg)
+            .WithErrorCode(ErrorCode.QuantityKgInvalidErrorCode);
+    }
+
     private static ProducerRow BuildProducerRow(string quantityKg)
     {
         return new ProducerRow(null, null, null, 1, null, null, null, null, null, null, null, null, quantityKg, null, null, null);
