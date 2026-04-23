@@ -10,7 +10,7 @@ public class QuantityKgValidator : AbstractValidator<ProducerRow>
 {
     public QuantityKgValidator()
     {
-        When(row => HelperFunctions.MatchOtherZeroReturnsCondition(row) && string.IsNullOrWhiteSpace(row.QuantityUnits), () =>
+        When(row => (HelperFunctions.MatchOtherZeroReturnsCondition(row) || PackagingType.ClosedLoopRecycling.Equals(row.WasteType)) && string.IsNullOrWhiteSpace(row.QuantityUnits), () =>
         {
             RuleFor(x => x.QuantityKg)
             .IsLongGreaterThanOrEqualTo(0)

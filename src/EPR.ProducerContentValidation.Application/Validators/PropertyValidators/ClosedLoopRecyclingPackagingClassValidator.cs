@@ -32,6 +32,7 @@ public class ClosedLoopRecyclingPackagingClassValidator : AbstractValidator<Prod
     {
         var producerRow = context.InstanceToValidate;
         return !result.Errors.Exists(x => _skipRuleErrorCodes.Contains(x.ErrorCode))
+               && !_skipRuleErrorCodes.Exists(code => context.RootContextData.ContainsKey(code))
                && PackagingType.ClosedLoopRecycling.Equals(producerRow.WasteType);
     }
 }
