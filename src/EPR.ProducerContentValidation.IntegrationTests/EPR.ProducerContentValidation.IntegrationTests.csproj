@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <NoWarn>$(NoWarn);SA1412;SA1516;SA1201;SA1204;SA1402;SA1122</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="6.12.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.6.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EPR.ProducerContentValidation.Application\EPR.ProducerContentValidation.Application.csproj" />
+    <ProjectReference Include="..\EPR.ProducerContentValidation.TestSupport\EPR.ProducerContentValidation.TestSupport.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="real_pom_file_data.csv">
+      <!-- Always: avoid stale bin output when the source file was edited but incremental copy skipped. -->
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- Copy again immediately before tests so the file matches the project folder even if bin was out of date. -->
+  <Target Name="CopyRealPomFileDataBeforeTest" BeforeTargets="VSTest">
+    <Copy SourceFiles="$([System.IO.Path]::Combine($(MSBuildThisFileDirectory), 'real_pom_file_data.csv'))"
+          DestinationFolder="$(TargetDir)"
+          SkipUnchangedFiles="false" />
+  </Target>
+
+</Project>

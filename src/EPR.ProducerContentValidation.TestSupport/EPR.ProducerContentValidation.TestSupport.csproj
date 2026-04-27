@@ -1,6 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
+    <PackageReference Include="Moq" Version="4.20.70" />
     <ProjectReference Include="..\EPR.ProducerContentValidation.Application\EPR.ProducerContentValidation.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="submission-periods.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <PropertyGroup>

@@ -33,7 +33,25 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="..\EPR.ProducerContentValidation.IntegrationTests\real_pom_file_data.csv" Link="real_pom_file_data.csv">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Include="csv_bulk_regression_valid_rows.csv">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\EPR.ProducerContentValidation.TestSupport\submission-periods.json" Link="submission-periods.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
       <Compile Remove="Validators\MaterialTypeValidatorTests.cs" />
     </ItemGroup>
+
+    <Target Name="CopyRealPomFileDataBeforeTest" BeforeTargets="VSTest">
+        <Copy SourceFiles="$([System.IO.Path]::Combine($(MSBuildThisFileDirectory), '..', 'EPR.ProducerContentValidation.IntegrationTests', 'real_pom_file_data.csv'))"
+              DestinationFolder="$(TargetDir)"
+              SkipUnchangedFiles="false" />
+    </Target>
 
 </Project>
