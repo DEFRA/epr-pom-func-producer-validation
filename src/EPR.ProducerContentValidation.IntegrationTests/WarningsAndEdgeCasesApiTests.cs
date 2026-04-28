@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using EPR.ProducerContentValidation.Application.Constants;
 using EPR.ProducerContentValidation.Application.DTOs.SplitFunction;
 using FluentAssertions;
@@ -15,6 +16,9 @@ namespace EPR.ProducerContentValidation.IntegrationTests;
 [Trait("Category", "IntegrationTest")]
 public class WarningsAndEdgeCasesApiTests : ValidateProducerContentApiTestBase
 {
+    private static readonly JsonSerializerOptions SerializerOptions =
+        new() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase };
+
     public WarningsAndEdgeCasesApiTests(ValidateProducerContentApiFixture fixture, ITestOutputHelper output)
         : base(fixture, output)
     {
@@ -154,7 +158,7 @@ public class WarningsAndEdgeCasesApiTests : ValidateProducerContentApiTestBase
                 ProducerId = request.ProducerId,
                 Rows = request.Rows,
             },
-            new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase });
+            SerializerOptions);
 
         var response = await Fixture.Client.PostRawAsync(json);
 
