@@ -109,3 +109,4 @@ extends:
       targetEnvironment: 'development'
     ${{ else }}:
       targetEnvironment: '$(env)'
+    envToDeploy: ${{ parameters.envToDeploy }}
