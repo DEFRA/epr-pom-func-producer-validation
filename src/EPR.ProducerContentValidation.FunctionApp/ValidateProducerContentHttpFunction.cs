@@ -5,7 +5,6 @@ using EPR.ProducerContentValidation.Application.DTOs.SplitFunction;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Exceptions;
 using EPR.ProducerContentValidation.Application.Mapping;
-using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using Microsoft.Azure.Functions.Worker;
@@ -18,6 +17,12 @@ namespace EPR.ProducerContentValidation.FunctionApp;
 [ExcludeFromCodeCoverage]
 public class ValidateProducerContentHttpFunction
 {
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = true
+    };
+
     private readonly IValidationService _validationService;
     private readonly ISubmissionApiClient _submissionApiClient;
     private readonly ValidationOptions _validationOptions;
@@ -58,17 +63,14 @@ public class ValidateProducerContentHttpFunction
         }
 
         _logger.LogInformation("Entering HTTP function");
-        _logger.LogWarning("Validation.Disabled: {0}", _validationOptions.Disabled);
+        _logger.LogWarning("Validation.Disabled: {Disabled}", _validationOptions.Disabled);
 
         try
         {
             using var reader = new StreamReader(req.Body);
             var requestBody = await reader.ReadToEndAsync();
 
-            var producerValidationRequest = JsonSerializer.Deserialize<ProducerValidationInRequest>(requestBody, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var producerValidationRequest = JsonSerializer.Deserialize<ProducerValidationInRequest>(requestBody, SerializerOptions);
 
             if (producerValidationRequest == null)
             {
@@ -88,14 +90,11 @@ public class ValidateProducerContentHttpFunction
             var validationResult = await PerformValidation(producerValidationRequest, skipApiCall);
 
             response.StatusCode = HttpStatusCode.OK;
-            await response.WriteStringAsync(JsonSerializer.Serialize(validationResult, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            }));
+            await response.WriteStringAsync(JsonSerializer.Serialize(validationResult, SerializerOptions));
         }
         catch (Exception e)
         {
-            _logger.LogError(e, e.Message);
+            _logger.LogError(e, "Error occurred during validation of producer content: {message}", e.Message);
             response.StatusCode = HttpStatusCode.InternalServerError;
             await response.WriteStringAsync(JsonSerializer.Serialize(new { error = e.Message }));
         }
@@ -125,7 +124,7 @@ public class ValidateProducerContentHttpFunction
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Uncaught exception");
+            _logger.LogError(exception, "Error calling validation: {message}", exception.Message);
 
             producerValidationResult.Errors.Add(Application.Constants.ErrorCode.UncaughtExceptionErrorCode);
         }
@@ -142,7 +141,7 @@ public class ValidateProducerContentHttpFunction
             }
             catch (SubmissionApiClientException exception)
             {
-                _logger.LogError(exception, exception.Message);
+                _logger.LogError(exception, "Error calling submission API: {message}", exception.Message);
             }
         }
         else

@@ -85,7 +85,12 @@ public class ValidateProducerContentFunctionTests
         await _systemUnderTest.RunAsync(request);
 
         // Assert
-        _loggerMock.VerifyLog(logger => logger.LogError(exceptionErrorMessage), Times.Once);
+        _loggerMock.VerifyLog(
+            logger => logger.LogError(
+                It.IsAny<SubmissionApiClientException>(),
+                "Error occurred while calling submission API: {message}",
+                exceptionErrorMessage),
+            Times.Once);
     }
 
     [TestMethod]
@@ -104,7 +109,12 @@ public class ValidateProducerContentFunctionTests
         await _systemUnderTest.RunAsync(request);
 
         // Assert
-        _loggerMock.VerifyLog(logger => logger.LogError(exceptionErrorMessage), Times.Once);
+        _loggerMock.VerifyLog(
+            logger => logger.LogError(
+                It.IsAny<Exception>(),
+                "Error occurred during validation of producer content: {message}",
+                exceptionErrorMessage),
+            Times.Once);
     }
 
     [TestMethod]

@@ -1,6 +1,5 @@
 using System.Text.Json;
 using EPR.ProducerContentValidation.Application.DTOs.SplitFunction;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace EPR.ProducerContentValidation.IntegrationTests;

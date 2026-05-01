@@ -3,7 +3,6 @@ using EPR.ProducerContentValidation.Application.DTOs.SplitFunction;
 using EPR.ProducerContentValidation.Application.DTOs.SubmissionApi;
 using EPR.ProducerContentValidation.Application.Exceptions;
 using EPR.ProducerContentValidation.Application.Mapping;
-using EPR.ProducerContentValidation.Application.Models;
 using EPR.ProducerContentValidation.Application.Options;
 using EPR.ProducerContentValidation.Application.Services.Interfaces;
 using Microsoft.Azure.Functions.Worker;
@@ -40,7 +39,7 @@ public class ValidateProducerContentFunction
         ProducerValidationInRequest producerValidationRequest)
     {
         _logger.LogInformation("Entering function");
-        _logger.LogWarning("Validation.Disabled: {0}", _validationOptions.Disabled);
+        _logger.LogWarning("Validation.Disabled: {Disabled}", _validationOptions.Disabled);
 
         try
         {
@@ -48,7 +47,7 @@ public class ValidateProducerContentFunction
         }
         catch (Exception e)
         {
-            _logger.LogError(e, e.Message);
+            _logger.LogError(e, "Error occurred during validation of producer content: {message}", e.Message);
         }
         finally
         {
@@ -89,7 +88,7 @@ public class ValidateProducerContentFunction
         }
         catch (SubmissionApiClientException exception)
         {
-            _logger.LogError(exception, exception.Message);
+            _logger.LogError(exception, "Error occurred while calling submission API: {message}", exception.Message);
         }
     }
 }
