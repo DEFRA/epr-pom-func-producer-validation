@@ -17,6 +17,11 @@ public abstract class AbstractGroupedValidator : IAbstractGroupedValidator
 
     public abstract Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows = null, List<ProducerValidationEventIssueRequest>? warningRows = null);
 
+    protected static decimal ParseWeight(string quantityKg)
+    {
+        return decimal.TryParse(quantityKg, out var kg) ? kg : 0;
+    }
+
     protected async Task FindAndAddErrorAsync(ProducerRow row, string storeKey, ICollection<ProducerValidationEventIssueRequest> issueRows, string errorCode, string blobName)
     {
         var errorRow = issueRows.FirstOrDefault(x => x.RowNumber == row.RowNumber);

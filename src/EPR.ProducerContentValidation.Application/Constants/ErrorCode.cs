@@ -90,6 +90,7 @@ public static class ErrorCode
     public const string SubsidiaryIdDoesNotExist = "70";
     public const string SubsidiaryIdIsAssignedToADifferentOrganisation = "71";
     public const string SubsidiaryDoesNotBelongToAnyOrganisation = "72";
+    public const string WarningClosedLoopPackagingWeightGreaterThanWeightOfThatPackagingMaterialOverall = "74";
 
     /* Issue codes 80 through 89 should be reserved for Issues from the Check Splitter API */
     public const string UncaughtExceptionErrorCode = "99";
