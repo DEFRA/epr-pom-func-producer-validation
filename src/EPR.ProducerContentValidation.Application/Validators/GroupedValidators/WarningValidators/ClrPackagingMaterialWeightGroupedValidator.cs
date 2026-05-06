@@ -29,7 +29,7 @@ public class ClrPackagingMaterialWeightGroupedValidator(IIssueCountService issue
             return;
         }
 
-        // distinct list of packaging materials that include a CLR entry, by producer
+        // distinct list of packaging materials that include a CLR entry
         var materialRows = producerRows.Where(row => row.WasteType == PackagingType.ClosedLoopRecycling)
             .Select(row => row.MaterialType).Distinct().ToList();
 
