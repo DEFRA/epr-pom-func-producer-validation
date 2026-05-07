@@ -30,6 +30,44 @@ public class SinglePackagingMaterialGroupedValidatorTests
     }
 
     [TestMethod]
+    public async Task EnsureCheckIsSkipped_WhenAHigherPriorityErrorCode_IsEncountered()
+    {
+        // Arrange
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var preExistingError = new ProducerValidationEventIssueRequest(
+            SubsidiaryId: "S123",
+            DataSubmissionPeriod: "2024-Q1",
+            RowNumber: 1,
+            ProducerId: "P456",
+            ProducerType: "Large",
+            ProducerSize: "Large",
+            WasteType: "Plastic",
+            PackagingCategory: "Containers",
+            MaterialType: "Polyethylene",
+            MaterialSubType: "High-Density",
+            FromHomeNation: "UK",
+            ToHomeNation: "Germany",
+            QuantityKg: "100",
+            QuantityUnits: "200",
+            TransitionalPackagingUnits: "50",
+            RecyclabilityRating: "A",
+            BlobName: "ExampleBlobName",
+            ErrorCodes: new List<string> { ErrorCode.MaterialTypeInvalidErrorCode });
+        errors.Add(preExistingError);
+        var warnings = new List<ProducerValidationEventIssueRequest>();
+        var producer = BuildProducer();
+        producer.Rows.Add(BuildProducerRow(subsidiaryId: "1", materialType: MaterialType.Aluminium));
+        producer.Rows.Add(BuildProducerRow(subsidiaryId: "1", materialType: MaterialType.Aluminium));
+
+        // Act
+        await _systemUnderTest.ValidateAsync(producer.Rows, StoreKey, producer.BlobName, errors, warnings);
+
+        // Assert
+        errors.Should().HaveCount(1).And.Subject.First().ErrorCodes.Should().HaveCount(1).And.Contain(ErrorCode.MaterialTypeInvalidErrorCode);
+        warnings.Should().HaveCount(0);
+    }
+
+    [TestMethod]
     public async Task ValidateAsync_RejectsRow_IfAllMaterialTypesForASubsidiaryGroupAreTheSameAndMaterialTypeIsNotOther()
     {
         // Arrange
