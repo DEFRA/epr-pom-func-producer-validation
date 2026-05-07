@@ -55,11 +55,7 @@ public class ClrPackagingMaterialWeightGroupedValidator(IIssueCountService issue
             }
 
             // add an error if validation check failed
-            var representativeRow = filteredClrRows.FirstOrDefault();
-            if (representativeRow == null)
-            {
-                continue;
-            }
+            var representativeRow = filteredClrRows.First();
 
             await FindAndAddErrorAsync(representativeRow, storeKey, warningRows, ErrorCode.WarningClosedLoopPackagingWeightGreaterThanWeightOfThatPackagingMaterialOverall, blobName);
         }

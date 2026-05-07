@@ -30,6 +30,68 @@ public class ClrPackagingMaterialWeightGroupedValidatorTests
     }
 
     [TestMethod]
+    public async Task EnsureCheckIsSkipped_WhenAHigherPriorityErrorCode_IsEncountered()
+    {
+        // Arrange
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var preExistingError = new ProducerValidationEventIssueRequest(
+            SubsidiaryId: "S123",
+            DataSubmissionPeriod: "2024-Q1",
+            RowNumber: 1,
+            ProducerId: "P456",
+            ProducerType: "Large",
+            ProducerSize: "Large",
+            WasteType: "Plastic",
+            PackagingCategory: "Containers",
+            MaterialType: "Polyethylene",
+            MaterialSubType: "High-Density",
+            FromHomeNation: "UK",
+            ToHomeNation: "Germany",
+            QuantityKg: "100",
+            QuantityUnits: "200",
+            TransitionalPackagingUnits: "50",
+            RecyclabilityRating: "A",
+            BlobName: "ExampleBlobName",
+            ErrorCodes: new List<string> { ErrorCode.PackagingTypeInvalidErrorCode });
+        errors.Add(preExistingError);
+        var warnings = new List<ProducerValidationEventIssueRequest>();
+        var producerId = Guid.NewGuid().ToString();
+        var producer = BuildProducer(producerId);
+
+        producer.Rows.Add(BuildProducerRow(producerId: producerId, packagingType: PackagingType.Household, materialType: MaterialType.Plastic, quantityKg: "10000"));
+        producer.Rows.Add(BuildProducerRow(producerId: producerId, packagingType: PackagingType.ClosedLoopRecycling, materialType: MaterialType.Plastic, quantityKg: "25000"));
+
+        // Act
+        await _systemUnderTest.ValidateAsync(producer.Rows, StoreKey, producer.BlobName, errors, warnings);
+
+        // Assert
+        errors.Should().HaveCount(1).And.Subject.First().ErrorCodes.Should().HaveCount(1).And.Contain(ErrorCode.PackagingTypeInvalidErrorCode);
+        warnings.Should().HaveCount(0);
+    }
+
+    [TestMethod]
+    public async Task EnsureCheckIsSkipped_WhenRemainingIssueCapacity_Exceeded()
+    {
+        // Arrange
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var warnings = new List<ProducerValidationEventIssueRequest>();
+        var producerId = Guid.NewGuid().ToString();
+        var producer = BuildProducer(producerId);
+
+        producer.Rows.Add(BuildProducerRow(producerId: producerId, packagingType: PackagingType.Household, materialType: MaterialType.Plastic, quantityKg: "10000"));
+        producer.Rows.Add(BuildProducerRow(producerId: producerId, packagingType: PackagingType.ClosedLoopRecycling, materialType: MaterialType.Plastic, quantityKg: "25000"));
+
+        _errorCountServiceMock.Setup(x => x.GetRemainingIssueCapacityAsync(It.IsAny<string>())).ReturnsAsync(0);
+
+        // Act
+        await _systemUnderTest.ValidateAsync(producer.Rows, StoreKey, producer.BlobName, errors, warnings);
+
+        // Assert
+        errors.Should().HaveCount(0);
+        warnings.Should().HaveCount(0);
+    }
+
+    [TestMethod]
     public async Task ValidateAndAddWarning_ForDirectProducer_RejectsRow_WhenTotalClrWeightIsGreaterThanSameOverallMaterialTypeWeight()
     {
         // Arrange
