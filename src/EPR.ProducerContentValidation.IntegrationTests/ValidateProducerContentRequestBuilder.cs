@@ -7,12 +7,13 @@ namespace EPR.ProducerContentValidation.IntegrationTests;
 /// Builds valid and invalid request payloads for the validate-producer-content API.
 /// Use <see cref="ValidRequest"/> as a base and override specific fields to trigger error codes.
 /// </summary>
-public static class ValidateProducerContentRequestBuilder
+public class ValidateProducerContentRequestBuilder
 {
     /// <summary>
     /// One row that is valid for most rules (large producer, household packaging, 2026 period).
     /// Submission period must match the function app's configured SubmissionPeriods (e.g. "January to June 2026" / "2026-P1").
     /// </summary>
+    /// <returns>A producer request example.</returns>
     public static ProducerValidationInRequest ValidRequest()
     {
         return new ProducerValidationInRequest

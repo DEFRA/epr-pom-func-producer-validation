@@ -9,7 +9,7 @@ namespace EPR.ProducerContentValidation.IntegrationTests;
 /// </summary>
 public class ValidateProducerContentApiFixture
 {
-    public const string DefaultBaseUrl = "http://localhost:7071";
+    private const string DefaultBaseUrl = "http://localhost:7071";
 
     public ValidateProducerContentApiFixture()
     {
@@ -17,9 +17,13 @@ public class ValidateProducerContentApiFixture
         var httpClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         Client = new ValidateProducerContentApiClient(httpClient, BaseUrl);
+
+        RequestBuilder = new ValidateProducerContentRequestBuilder();
     }
 
     public string BaseUrl { get; }
 
     public ValidateProducerContentApiClient Client { get; }
+
+    public ValidateProducerContentRequestBuilder RequestBuilder { get; }
 }
