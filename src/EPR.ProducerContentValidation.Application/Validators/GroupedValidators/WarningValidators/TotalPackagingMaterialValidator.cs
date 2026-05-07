@@ -32,7 +32,7 @@ public class TotalPackagingMaterialValidator : AbstractGroupedValidator
     public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows = null, List<ProducerValidationEventIssueRequest>? warningRows = null)
     {
         var remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
-        if (BreakingErrorAlreadyRaised(producerRows, _skipRuleErrorCodes, errorRows) | remainingWarningCountToProcess == 0)
+        if (BreakingErrorAlreadyRaised(producerRows, _skipRuleErrorCodes, errorRows) || remainingWarningCountToProcess == 0)
         {
             return;
         }
