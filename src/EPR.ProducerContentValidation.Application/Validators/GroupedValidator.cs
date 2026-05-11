@@ -56,14 +56,17 @@ public class GroupedValidator : IGroupedValidator
             // Warning Validators
             var singlePackagingMaterialValidator = new SinglePackagingMaterialGroupedValidator(_issueCountService);
             var totalPackagingMaterialValidator = new TotalPackagingMaterialValidator(_issueCountService);
+            var clrPackagingMaterialWeightValidator = new ClrPackagingMaterialWeightGroupedValidator(_issueCountService);
 
             var singlePackagingMaterialTask = singlePackagingMaterialValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
             var totalPackagingMaterialValidatorTask = totalPackagingMaterialValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
+            var clrPackagingMaterialWeightTask = clrPackagingMaterialWeightValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
 
             groupedValidatorTasks.AddRange(new List<Task>
             {
                 singlePackagingMaterialTask,
-                totalPackagingMaterialValidatorTask
+                totalPackagingMaterialValidatorTask,
+                clrPackagingMaterialWeightTask
             });
         }
 

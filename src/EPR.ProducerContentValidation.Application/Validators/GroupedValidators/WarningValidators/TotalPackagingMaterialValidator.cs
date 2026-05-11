@@ -31,14 +31,8 @@ public class TotalPackagingMaterialValidator : AbstractGroupedValidator
 
     public override async Task ValidateAsync(List<ProducerRow> producerRows, string storeKey, string blobName, List<ProducerValidationEventIssueRequest> errorRows = null, List<ProducerValidationEventIssueRequest>? warningRows = null)
     {
-        var associatedErrorRows = errorRows
-            .Where(x => producerRows.Exists(y => y.RowNumber == x.RowNumber))
-            .ToList();
-        var shouldSkip = associatedErrorRows
-            .Exists(x => x.ErrorCodes.Exists(y => _skipRuleErrorCodes.Contains(y)));
         var remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
-
-        if (shouldSkip || remainingWarningCountToProcess == 0)
+        if (BreakingErrorAlreadyRaised(producerRows, _skipRuleErrorCodes, errorRows) || remainingWarningCountToProcess == 0)
         {
             return;
         }
@@ -60,10 +54,5 @@ public class TotalPackagingMaterialValidator : AbstractGroupedValidator
         }
 
         await FindAndAddErrorAsync(representativeRow, storeKey, warningRows, ErrorCode.WarningPackagingMaterialWeightLessThanLimitKg, blobName);
-    }
-
-    private static decimal ParseWeight(string quantityKg)
-    {
-        return decimal.TryParse(quantityKg, out var kg) ? kg : 0;
     }
 }
