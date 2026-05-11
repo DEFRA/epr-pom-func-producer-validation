@@ -190,4 +190,74 @@ public class WarningsAndEdgeCasesApiTests : ValidateProducerContentApiTestBase
         result.IsSuccess.Should().BeTrue();
         result.Response.Should().NotBeNull();
     }
+
+    [Fact]
+    public async Task When_CLR_Packaging_Weight_Is_Less_Than_The_Total_Weight_Of_The_Material_Type_No_Warning_74_Returned()
+    {
+        var request = ValidateProducerContentRequestBuilder.ValidRequest();
+        request.Rows =
+        [
+            ValidateProducerContentRequestBuilder.ValidRow(producerId: "167459", wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, quantityKg: "25006"),
+            ValidateProducerContentRequestBuilder.ValidRow(producerId: "167459", wasteType: PackagingType.ClosedLoopRecycling, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, quantityKg: "10000")
+        ];
+
+        var result = await ValidateAndLogAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        var hasWeightWarning = result.HasWarningCode(ErrorCode.WarningClosedLoopPackagingWeightGreaterThanWeightOfThatPackagingMaterialOverall);
+        hasWeightWarning.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task When_CLR_Packaging_Weight_Is_Equal_To_The_Total_Weight_Of_The_Material_Type_No_Warning_74_Returned()
+    {
+        var request = ValidateProducerContentRequestBuilder.ValidRequest();
+        request.Rows =
+        [
+            ValidateProducerContentRequestBuilder.ValidRow(producerId: "167459", wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, quantityKg: "25006"),
+            ValidateProducerContentRequestBuilder.ValidRow(producerId: "167459", wasteType: PackagingType.ClosedLoopRecycling, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, quantityKg: "25006")
+        ];
+
+        var result = await ValidateAndLogAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        var hasWeightWarning = result.HasWarningCode(ErrorCode.WarningClosedLoopPackagingWeightGreaterThanWeightOfThatPackagingMaterialOverall);
+        hasWeightWarning.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task When_CLR_Packaging_Weight_Is_Greater_Than_The_Total_Weight_Of_The_Material_Type_Then_Warning_74_Is_Returned()
+    {
+        var request = ValidateProducerContentRequestBuilder.ValidRequest();
+        request.Rows =
+        [
+            ValidateProducerContentRequestBuilder.ValidRow(producerId: "167459", wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, quantityKg: "1000"),
+            ValidateProducerContentRequestBuilder.ValidRow(producerId: "167459", wasteType: PackagingType.ClosedLoopRecycling, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, quantityKg: "11000")
+        ];
+
+        var result = await ValidateAndLogAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        var hasWeightWarning = result.HasWarningCode(ErrorCode.WarningClosedLoopPackagingWeightGreaterThanWeightOfThatPackagingMaterialOverall);
+        hasWeightWarning.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task When_Multiple_CLR_Packaging_Weights_Are_Greater_Than_The_Total_Weight_Of_Different_Material_Types_Then_Multiple_Warning_74s_Are_Returned()
+    {
+        var request = ValidateProducerContentRequestBuilder.ValidRequest();
+        request.Rows =
+        [
+            ValidateProducerContentRequestBuilder.ValidRow(producerId: "167459", wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, quantityKg: "25006"),
+            ValidateProducerContentRequestBuilder.ValidRow(producerId: "167459", wasteType: PackagingType.Household, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Glass, quantityKg: "25006"),
+            ValidateProducerContentRequestBuilder.ValidRow(producerId: "167459", wasteType: PackagingType.ClosedLoopRecycling, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Plastic, quantityKg: "60000"),
+            ValidateProducerContentRequestBuilder.ValidRow(producerId: "167459", wasteType: PackagingType.ClosedLoopRecycling, packagingCategory: PackagingClass.PrimaryPackaging, materialType: MaterialType.Glass, quantityKg: "60000")
+        ];
+
+        var result = await ValidateAndLogAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        var weightWarnings = result.AllWarningCodes.Count(code => code == ErrorCode.WarningClosedLoopPackagingWeightGreaterThanWeightOfThatPackagingMaterialOverall);
+        weightWarnings.Should().Be(2);
+    }
 }
