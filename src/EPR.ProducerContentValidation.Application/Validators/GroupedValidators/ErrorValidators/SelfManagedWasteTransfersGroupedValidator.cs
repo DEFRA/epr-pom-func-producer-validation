@@ -55,9 +55,4 @@ public class SelfManagedWasteTransfersGroupedValidator : AbstractGroupedValidato
             remainingErrorCount = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
         }
     }
-
-    private static decimal ParseWeight(string quantityKg)
-    {
-        return decimal.TryParse(quantityKg, out var kg) ? kg : 0;
-    }
 }
