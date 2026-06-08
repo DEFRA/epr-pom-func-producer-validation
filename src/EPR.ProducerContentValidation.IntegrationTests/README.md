@@ -13,11 +13,6 @@ Integration tests for the **validate-producer-content** HTTP endpoint. They send
 2. **Submission period configuration**  
    Some tests expect valid data submission periods (e.g. `2026-P1`, `January to June 2026`). Ensure the function app’s `SubmissionPeriods` configuration includes the periods used in the tests, or those tests may report different errors (e.g. 44).
 
-3. **Feature flags (for full coverage)**  
-   Tests assume the following feature flags are **enabled** in the function app (`local.settings.json` or `settings.json`):
-   - `FeatureManagement:EnableLargeProducerRecyclabilityRatingValidation` = `true` — recyclability tests (102, 106, 108, 109)
-   - `FeatureManagement:EnableLargeProducerEnhancedRecyclabilityRatingValidation` = `true` — enhanced recyclability (108, 109)
-   
    With these set, all feature-flagged API tests will pass.
 
 ## Running the integration tests

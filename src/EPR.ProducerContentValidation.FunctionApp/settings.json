@@ -14,7 +14,6 @@
     "Redis:ConnectionString": "https://localhost:1234",
     "Validation:IsLatest": true,
     "HttpEndpoint:Enabled": false,
-    "FeatureManagement:EnableSubsidiaryValidationPom": false,
-    "FeatureManagement:EnableLargeProducerRecyclabilityRatingValidation": false
+    "FeatureManagement:EnableSubsidiaryValidationPom": false
   }
 }

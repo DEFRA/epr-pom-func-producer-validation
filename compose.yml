@@ -30,6 +30,4 @@ services:
       HttpEndpoint__Enabled: "true"
       Validation__Disabled: "false"
       Validation__MaxIssuesToProcess: "1000"
-      FeatureManagement__EnableLargeProducerEnhancedRecyclabilityRatingValidation: "true"
-      FeatureManagement__EnableLargeProducerRecyclabilityRatingValidation: "true"
       FeatureManagement__EnableSubsidiaryValidationPom: "true"
