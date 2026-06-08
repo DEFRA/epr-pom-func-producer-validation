@@ -9,7 +9,7 @@ namespace EPR.ProducerContentValidation.IntegrationTests;
 /// API tests for recyclability rating (100-109) and material/subtype validators (45, 47, 51, etc.).
 /// Recyclability and small-producer-enhanced tests assume feature flags are enabled in the function app:
 /// - EnableLargeProducerRecyclabilityRatingValidation (for 100, 102, 104, 106, 108, 109)
-/// - EnableLargeProducerEnhancedRecyclabilityRatingValidation (for 108, 109)
+/// - EnableLargeProducerEnhancedRecyclabilityRatingValidation (for 108, 109).
 /// </summary>
 [Collection("ValidateProducerContentApi")]
 [Trait("Category", "IntegrationTest")]
@@ -134,7 +134,7 @@ public class RecyclabilityAndMaterialSubTypeApiTests : ValidateProducerContentAp
     }
 
     [Fact]
-    public async Task Large_producer_invalid_recyclability_value_returns_error_104_or_108()
+    public async Task Large_producer_invalid_recyclability_value_returns_error_108()
     {
         var request = ValidateProducerContentRequestBuilder.ValidRequest();
         request.Rows[0] = ValidateProducerContentRequestBuilder.ValidRow(
@@ -145,10 +145,8 @@ public class RecyclabilityAndMaterialSubTypeApiTests : ValidateProducerContentAp
         var result = await ValidateAndLogAsync(request);
 
         result.IsSuccess.Should().BeTrue();
-        (result.HasErrorCode(ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)
-            || result.HasErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode))
-            .Should().BeTrue(
-                "Requires EnableLargeProducerRecyclabilityRatingValidation = true. Invalid rating gives 104 (default) or 108 (enhanced).");
+        result.HasErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode).Should().BeTrue(
+                "Requires EnableLargeProducerRecyclabilityRatingValidation = true. Invalid rating gives 108 (enhanced).");
     }
 
     [Fact]

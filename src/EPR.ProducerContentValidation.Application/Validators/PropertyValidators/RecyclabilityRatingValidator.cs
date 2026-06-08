@@ -1,12 +1,12 @@
 ﻿namespace EPR.ProducerContentValidation.Application.Validators.PropertyValidators;
 
 using Constants;
-using EPR.ProducerContentValidation.Application.ReferenceData;
-using EPR.ProducerContentValidation.Application.Validators.CustomValidators;
-using EPR.ProducerContentValidation.Application.Validators.HelperFunctions;
+using CustomValidators;
 using FluentValidation;
 using FluentValidation.Results;
+using HelperFunctions;
 using Models;
+using ReferenceData;
 
 public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
 {
@@ -16,50 +16,39 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
         RuleFor(x => x.RecyclabilityRating)
             .IsInAllowedValues(ReferenceDataGenerator.RecyclabilityRatings)
             .WithErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)
-            .When((row, ctx) =>
-                HelperFunctions.IsFeatureFlagOn(ctx, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
-                && !string.IsNullOrEmpty(row.RecyclabilityRating)
-                && IsLargeProducerRecyclabilityRatingApplicable(row));
-
-        // Invalid if provided rating is not in allowed values — default version
-        RuleFor(x => x.RecyclabilityRating)
-            .IsInAllowedValues(ReferenceDataGenerator.RecyclabilityRatings)
-            .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)
-            .When((row, ctx) =>
-                !HelperFunctions.IsFeatureFlagOn(ctx, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
-                && !string.IsNullOrEmpty(row.RecyclabilityRating)
+            .When((row, _) =>
+                !string.IsNullOrEmpty(row.RecyclabilityRating)
                 && IsLargeProducerRecyclabilityRatingApplicable(row));
 
         // Disallow rating before 2025
         RuleFor(x => x.RecyclabilityRating)
             .Empty()
             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingNotRequired)
-            .When(x => IsLargeProducerRecyclabilityRatingNotRequiredBefore2025(x));
+            .When(IsLargeProducerRecyclabilityRatingNotRequiredBefore2025);
+
+        // Require rating from 2025-H2 onwards for applicable combinations (2025-H1 remains optional)
+        RuleFor(x => x.RecyclabilityRating)
+            .NotEmpty()
+            .WithErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)
+            .When((row, _) =>
+                string.IsNullOrEmpty(row.RecyclabilityRating)
+                && !Is2025H1(row.DataSubmissionPeriod)
+                && IsLargeProducerRecyclabilityRatingApplicable(row));
 
         // Disallow rating for small producers for any submission year
         RuleFor(x => x.RecyclabilityRating)
             .Empty()
             .WithErrorCode(ErrorCode.SmallProducerRecyclabilityRatingNotRequired)
-               .When((row, ctx) =>
+               .When((row, _) =>
                         ProducerSize.Small.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-                        && (!string.IsNullOrWhiteSpace(row.RecyclabilityRating)));
-
-        // Rating is required only if feature flag is OFF
-        RuleFor(x => x.RecyclabilityRating)
-            .NotEmpty()
-            .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingRequired)
-            .When((row, ctx) =>
-                !HelperFunctions.IsFeatureFlagOn(ctx, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
-                && string.IsNullOrEmpty(row.RecyclabilityRating)
-                && IsLargeProducerRecyclabilityRatingApplicable(row));
+                        && !string.IsNullOrWhiteSpace(row.RecyclabilityRating));
 
         // Disallow rating for invalid packaging types (e.g., CW, OW, HDC with non-glass)
         RuleFor(x => x.RecyclabilityRating)
             .Empty()
             .WithErrorCode(ErrorCode.LargeProducerInvalidForWasteAndMaterialType)
-            .When((row, ctx) =>
-                HelperFunctions.IsFeatureFlagOn(ctx, FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)
-                && ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+            .When((row, _) =>
+                ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
                 && !IsLargeProducerWithValidWasteAndMaterialType(row)
                 && !string.IsNullOrWhiteSpace(row.RecyclabilityRating));
     }
@@ -70,8 +59,26 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
         return !PackagingType.ClosedLoopRecycling.Equals(producerRow.WasteType);
     }
 
+    private static bool Is2025H1(string? dataSubmissionPeriod)
+    {
+        return "2025-H1".Equals(dataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static bool IsLargeProducerRecyclabilityRatingApplicable(ProducerRow row)
     {
+        if (!ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+            || HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025))
+        {
+            return false;
+        }
+
+        // HDC + Glass is rated regardless of subtype or packaging category
+        if (PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
+            && MaterialType.Glass.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
         return HelperFunctions.ShouldApply2025HouseholdRulesForLargeProducerFor2025AndBeyond(
             row.ProducerSize, row.WasteType, row.PackagingCategory, row.DataSubmissionPeriod)
             && (
@@ -104,11 +111,11 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
         var packagingType = row.WasteType;
         var materialType = row.MaterialType;
 
-        bool isHdcGlass =
+        var isHdcGlass =
             PackagingType.HouseholdDrinksContainers.Equals(packagingType, StringComparison.OrdinalIgnoreCase)
             && MaterialType.Glass.Equals(materialType, StringComparison.OrdinalIgnoreCase);
 
-        bool isHhOrPb =
+        var isHhOrPb =
             PackagingType.Household.Equals(packagingType, StringComparison.OrdinalIgnoreCase) ||
             PackagingType.PublicBin.Equals(packagingType, StringComparison.OrdinalIgnoreCase);
 

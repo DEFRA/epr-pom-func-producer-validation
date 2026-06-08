@@ -82,8 +82,6 @@ public class CompositeValidatorTests
         _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ProducerRow>(), default))
             .ReturnsAsync(_validationResultMock.Object);
 
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation)).ReturnsAsync(true);
-
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
             Microsoft.Extensions.Options.Options.Create(submissionPeriodOptions),
