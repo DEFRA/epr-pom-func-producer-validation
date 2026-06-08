@@ -58,7 +58,6 @@ public static class InProcessValidationHarness
         var compositeValidator = new CompositeValidator(
             validationOptionsMock.Object,
             submissionPeriodOptions,
-            featureManagerMock.Object,
             issueCountServiceMock.Object,
             producerRowValidatorFactory,
             producerRowWarningValidatorFactory,
