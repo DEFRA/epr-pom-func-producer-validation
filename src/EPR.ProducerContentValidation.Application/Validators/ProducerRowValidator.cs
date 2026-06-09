@@ -58,11 +58,7 @@ public class ProducerRowValidator : AbstractValidator<ProducerRow>
         Include(new TransitionalPackagingUnitsValidator());
 
         Include(new SmallProducerPackagingTypeValidator());
-
-        if (featureManager.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation).Result)
-        {
-            Include(new RecyclabilityRatingValidator()); // large producer only
-        }
+        Include(new RecyclabilityRatingValidator()); // large producer only
     }
 
     protected override bool PreValidate(ValidationContext<ProducerRow> context, ValidationResult result)

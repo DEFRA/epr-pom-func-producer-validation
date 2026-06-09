@@ -6,21 +6,17 @@ using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using FluentValidation.TestHelper;
-using Microsoft.FeatureManagement;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
-using Moq;
 
 [TestClass]
 public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
 {
     private readonly RecyclabilityRatingValidator _systemUnderTest;
-    private Mock<IFeatureManager> _featureManagerMock;
 
     public RecyclabilityRatingValidatorTests()
     {
         _systemUnderTest = new RecyclabilityRatingValidator();
-        _featureManagerMock = new Mock<IFeatureManager>();
     }
 
     [TestMethod]
@@ -69,7 +65,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
         // Act
-        var result = _systemUnderTest.TestValidate(CreateContextWithFeatureFlag(producerRow));
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(producerRow));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
@@ -77,14 +73,12 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow(true, DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Aluminium, MaterialSubType.Flexible)]
-    [DataRow(false, DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Aluminium, MaterialSubType.Flexible)]
-    [DataRow(true, DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
-    [DataRow(false, DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
-    [DataRow(true, DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.PaperCard, "")]
-    [DataRow(false, DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.PaperCard, "")]
-    public void LargeProducerRecyclabilityRatingValidator_Missing_Recyclability_Code_Validation_Varies_BasedOn_FeatureFlag(
-        bool isFeatureFlagEnabled,
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Aluminium, MaterialSubType.Flexible)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Plastic, MaterialSubType.Rigid)]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.PaperCard, "")]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.PublicBin, PackagingClass.PrimaryPackaging, MaterialType.Wood, "")]
+    [DataRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.HouseholdDrinksContainers, PackagingClass.PrimaryPackaging, MaterialType.Glass, "")]
+    public void LargeProducerRecyclabilityRatingValidator_Missing_Recyclability_Code_Validation(
         string dataSubmissionPeriod,
         string producerType,
         string producerSize,
@@ -95,21 +89,12 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     {
         // Arrange
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, null);
-        var context = CreateContextWithFeatureFlag(producerRow, isFeatureFlagEnabled);
 
         // Act
-        var result = _systemUnderTest.TestValidate(context);
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(producerRow));
 
         // Assert
-        if (isFeatureFlagEnabled)
-        {
-            result.ShouldNotHaveValidationErrorFor(x => x.RecyclabilityRating);
-        }
-        else
-        {
-            result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
-                 .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingRequired);
-        }
+        result.ShouldNotHaveValidationErrorFor(x => x.RecyclabilityRating);
     }
 
     [TestMethod]
@@ -123,7 +108,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, recyclabilityRating);
 
         // Act
-        var result = _systemUnderTest.TestValidate(CreateContextWithFeatureFlag(producerRow));
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(producerRow));
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
@@ -169,29 +154,25 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow(true, "Z")]
-    [DataRow(false, "INVALID")]
-    public void InvalidRecyclabilityRating_ShouldRaiseError_WhenPresent(bool isFlagOn, string rating)
+    public void InvalidRecyclabilityRating_ShouldRaiseError_WhenPresent()
     {
+        const string rating = "Z";
         var row = BuildProducerRow(DataSubmissionPeriodTestData.Year2025H1, ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.PaperCard, string.Empty, rating);
-        var context = CreateContextWithFeatureFlag(row, isFlagOn);
 
-        var result = _systemUnderTest.TestValidate(context);
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(row));
 
-        var expectedErrorCode = isFlagOn ? ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode : ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode;
+        const string expectedErrorCode = ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode;
 
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
               .WithErrorCode(expectedErrorCode);
     }
 
     [TestMethod]
-    [DataRow(true)]
-    [DataRow(false)]
-    public void RecyclabilityRating_NotRequiredBefore2025_ShouldRaiseError_WhenProvided(bool isFlagOn)
+    public void RecyclabilityRating_NotRequiredBefore2025_ShouldRaiseError_WhenProvided()
     {
-        // TO DO not requried to test for AC9
+        // TO DO not required to test for AC9
         var row = BuildProducerRow("2024-P1", ProducerType.SuppliedUnderYourBrand, ProducerSize.Large, PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Aluminium, string.Empty, RecyclabilityRating.Green);
-        var context = CreateContextWithFeatureFlag(row, isFlagOn);
+        var context = new ValidationContext<ProducerRow>(row);
 
         var result = _systemUnderTest.TestValidate(context);
 
@@ -200,12 +181,10 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow(true, "2025-H1", "L", PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Glass, "", "Invalid", ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)]
-    [DataRow(true, "2025-H2", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Aluminium, "", "123", ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)]
-    [DataRow(false, "2025-H1", "L", PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Glass, "", "Invalid", ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)]
-    [DataRow(false, "2025-H2", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Aluminium, "", "123", ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)]
-    public void Should_Fail_When_InvalidRecyclabilityCode_WithCorrectErrorCodeBasedOnFlag(
-        bool featureFlagOn,
+    [DataRow("2025-H1", "L", PackagingType.Household, PackagingClass.PrimaryPackaging, MaterialType.Glass, "", "Invalid", ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)]
+    [DataRow("2025-H2", "L", PackagingType.PublicBin, PackagingClass.PublicBin, MaterialType.Aluminium, "", "123", ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)]
+    [DataRow("2025-H2", "L", PackagingType.HouseholdDrinksContainers, "", MaterialType.Glass, "", "Fake", ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)]
+    public void Should_Fail_When_InvalidRecyclabilityCode_WithCorrectErrorCode(
         string period,
         string orgSize,
         string pkgType,
@@ -217,7 +196,6 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, rating);
         var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = featureFlagOn;
 
         var validator = new RecyclabilityRatingValidator();
         var result = validator.TestValidate(context);
@@ -227,10 +205,8 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow(true, "2025-H2", "L", PackagingType.HouseholdDrinksContainers, "", MaterialType.Glass, "", "Fake", ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)]
-    [DataRow(false, "2025-H2", "L", PackagingType.HouseholdDrinksContainers, "", MaterialType.Glass, "", "Fake", ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)]
-    public void Should_Not_Fail_When_InvalidRecyclabilityCode_WithCorrectErrorCodeBasedOnFlag(
-      bool featureFlagOn,
+    [DataRow("2025-H2", "L", PackagingType.HouseholdDrinksContainers, "", MaterialType.Glass, "", "A", ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode)]
+    public void Should_Not_Fail_When_InvalidRecyclabilityCode_WithCorrectErrorCode(
       string period,
       string orgSize,
       string pkgType,
@@ -242,7 +218,6 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, rating);
         var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = featureFlagOn;
 
         var validator = new RecyclabilityRatingValidator();
         var result = validator.TestValidate(context);
@@ -257,7 +232,6 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, null);
         var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = true;
 
         var validator = new MaterialSubMaterialCombinationValidator();
         var result = validator.TestValidate(context);
@@ -274,7 +248,6 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, rating);
         var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = true;
 
         var validator = new RecyclabilityRatingValidator();
         var result = validator.TestValidate(context);
@@ -293,7 +266,6 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, rating);
         var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = true;
 
         var validator = new RecyclabilityRatingValidator();
         var result = validator.TestValidate(context);
@@ -309,7 +281,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Plastic, ErrorCode.LargeProducerInvalidForWasteAndMaterialType, DataSubmissionPeriodTestData.Year2025H1)]
     [DataRow(ProducerSize.Large, PackagingType.SmallOrganisationPackagingAll, MaterialType.Steel)]
     [DataRow(ProducerSize.Small, PackagingType.PublicBin, MaterialType.Glass, ErrorCode.SmallProducerRecyclabilityRatingNotRequired)]
-    public void Should_Fail_When_RecyclabilityRating_Provided_For_InvalidWasteAndMaterialType_WhenFlagEnabled(
+    public void Should_Fail_When_RecyclabilityRating_Provided_For_InvalidWasteAndMaterialType(
         string producerSize,
         string packagingType,
         string materialType,
@@ -326,9 +298,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
             materialSubType: MaterialSubType.Rigid,
             recyclabilityRating: RecyclabilityRating.Red);
 
-        var context = CreateContextWithFeatureFlag(row, isEnabled: true);
-
-        var result = _systemUnderTest.TestValidate(context);
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(row));
 
         Assert.AreEqual(1, result.Errors.Count);
 
@@ -337,9 +307,10 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, DataSubmissionPeriodTestData.Year2024P2)]
-    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, DataSubmissionPeriodTestData.Year2023P3)]
-    public void Should_Not_Fail_When_RecyclabilityRating_Provided_For_InvalidWasteAndMaterialType_For_OtherThan_2025_WhenFlagEnabled(string producerSize, string packagingType, string materialType, string submissionPeriod)
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, DataSubmissionPeriodTestData.Year2025P0, " A")]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, DataSubmissionPeriodTestData.Year2025P0, "A ")]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, DataSubmissionPeriodTestData.Year2025P0, "A_M")]
+    public void Should_Fail_When_InvalidRecyclabilityRating_Provided_After_2024(string producerSize, string packagingType, string materialType, string submissionPeriod, string recyclabilityRating)
     {
         var row = BuildProducerRow(
             dataSubmissionPeriod: submissionPeriod,
@@ -348,17 +319,15 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
             packagingType: packagingType,
             packagingClass: PackagingClass.PrimaryPackaging,
             materialType: materialType,
-            materialSubType: MaterialSubType.Rigid,
-            recyclabilityRating: RecyclabilityRating.Red);
+            materialSubType: string.Empty,
+            recyclabilityRating: recyclabilityRating);
 
-        var context = CreateContextWithFeatureFlag(row, isEnabled: true);
-
-        var result = _systemUnderTest.TestValidate(context);
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(row));
 
         Assert.AreEqual(1, result.Errors.Count);
 
         result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
-             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingNotRequired);
+             .WithErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode);
     }
 
     [TestMethod]
@@ -367,7 +336,7 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.Aluminium)]
     [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.Glass)]
     [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass)]
-    public void Should_Pass_When_RecyclabilityRating_Provided_For_ValidWasteAndMaterialType_WhenFlagEnabled(string producerSize, string packagingType, string materialType)
+    public void Should_Pass_When_RecyclabilityRating_Provided_For_ValidWasteAndMaterialType(string producerSize, string packagingType, string materialType)
     {
         var row = BuildProducerRow(
             dataSubmissionPeriod: DataSubmissionPeriodTestData.Year2025H1,
@@ -379,11 +348,106 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
             materialSubType: MaterialSubType.Rigid,
             recyclabilityRating: RecyclabilityRating.Green);
 
-        var context = CreateContextWithFeatureFlag(row, isEnabled: true);
-
-        var result = _systemUnderTest.TestValidate(context);
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(row));
 
         result.ShouldNotHaveValidationErrorFor(x => x.RecyclabilityRating);
+    }
+
+    [TestMethod]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, "", DataSubmissionPeriodTestData.Year2025H1, "A")]
+    [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.PaperCard, "", DataSubmissionPeriodTestData.Year2025H1, "A")]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Rigid, DataSubmissionPeriodTestData.Year2025H1, "A")]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Flexible,  DataSubmissionPeriodTestData.Year2025H1, "A")]
+    public void Should_Pass_When_Valid_But_Optional_RecyclabilityRating_Provided_During_2025H1_Only(string producerSize, string packagingType, string materialType, string materialSubType, string submissionPeriod, string recyclabilityRating)
+    {
+        var row = BuildProducerRow(
+            dataSubmissionPeriod: submissionPeriod,
+            producerType: ProducerType.SuppliedUnderYourBrand,
+            producerSize: producerSize,
+            packagingType: packagingType,
+            packagingClass: PackagingClass.PrimaryPackaging,
+            materialType: materialType,
+            materialSubType: materialSubType,
+            recyclabilityRating: recyclabilityRating);
+
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(row));
+
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [TestMethod]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, "", DataSubmissionPeriodTestData.Year2025H1)]
+    [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.PaperCard, "", DataSubmissionPeriodTestData.Year2025H1)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Rigid, DataSubmissionPeriodTestData.Year2025H1)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Flexible,  DataSubmissionPeriodTestData.Year2025H1)]
+    public void Should_Pass_When_No_Rating_Supplied_For_Matching_MaterialTypes_During_2025H1_Only(string producerSize, string packagingType, string materialType, string materialSubType, string submissionPeriod)
+    {
+        var row = BuildProducerRow(
+            dataSubmissionPeriod: submissionPeriod,
+            producerType: ProducerType.SuppliedUnderYourBrand,
+            producerSize: producerSize,
+            packagingType: packagingType,
+            packagingClass: PackagingClass.PrimaryPackaging,
+            materialType: materialType,
+            materialSubType: materialSubType,
+            recyclabilityRating: string.Empty);
+
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(row));
+
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [TestMethod]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, "", DataSubmissionPeriodTestData.Year2025H2)]
+    [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.PaperCard, "", DataSubmissionPeriodTestData.Year2025H2)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Rigid, DataSubmissionPeriodTestData.Year2025H2)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Flexible,  DataSubmissionPeriodTestData.Year2025H2)]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, "", DataSubmissionPeriodTestData.Year2026H1)]
+    [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.PaperCard, "", DataSubmissionPeriodTestData.Year2026H1)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Rigid, DataSubmissionPeriodTestData.Year2026H1)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Flexible,  DataSubmissionPeriodTestData.Year2026H1)]
+    public void Should_Fail_When_No_Rating_Supplied_For_Matching_MaterialTypes_During_2025H2_And_Beyond(string producerSize, string packagingType, string materialType, string materialSubType, string submissionPeriod)
+    {
+        var row = BuildProducerRow(
+            dataSubmissionPeriod: submissionPeriod,
+            producerType: ProducerType.SuppliedUnderYourBrand,
+            producerSize: producerSize,
+            packagingType: packagingType,
+            packagingClass: PackagingClass.PrimaryPackaging,
+            materialType: materialType,
+            materialSubType: materialSubType,
+            recyclabilityRating: string.Empty);
+
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(row));
+
+        result.ShouldHaveValidationErrorFor(x => x.RecyclabilityRating)
+            .WithErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode);
+    }
+
+    [TestMethod]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, "", DataSubmissionPeriodTestData.Year2025H2)]
+    [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.PaperCard, "", DataSubmissionPeriodTestData.Year2025H2)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Rigid, DataSubmissionPeriodTestData.Year2025H2)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Flexible,  DataSubmissionPeriodTestData.Year2025H2)]
+    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, "", DataSubmissionPeriodTestData.Year2026H1)]
+    [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.PaperCard, "", DataSubmissionPeriodTestData.Year2026H1)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Rigid, DataSubmissionPeriodTestData.Year2026H1)]
+    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Flexible,  DataSubmissionPeriodTestData.Year2026H1)]
+    public void Should_Pass_When_A_Recyclability_Rating_Supplied_For_Matching_MaterialTypes_During_2025H2_And_Beyond(string producerSize, string packagingType, string materialType, string materialSubType, string submissionPeriod)
+    {
+        var row = BuildProducerRow(
+            dataSubmissionPeriod: submissionPeriod,
+            producerType: ProducerType.SuppliedUnderYourBrand,
+            producerSize: producerSize,
+            packagingType: packagingType,
+            packagingClass: PackagingClass.PrimaryPackaging,
+            materialType: materialType,
+            materialSubType: materialSubType,
+            recyclabilityRating: RecyclabilityRating.Green);
+
+        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(row));
+
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [TestMethod]
@@ -404,12 +468,5 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     private static ProducerRow BuildProducerRow(string dataSubmissionPeriod, string producerType, string producerSize, string packagingType, string packagingClass, string materialType, string materialSubType, string recyclabilityRating)
     {
         return new ProducerRow(null, dataSubmissionPeriod, null, 1, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, null, null, null, null, null, null, recyclabilityRating);
-    }
-
-    private static ValidationContext<ProducerRow> CreateContextWithFeatureFlag(ProducerRow row, bool isEnabled = true)
-    {
-        var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = isEnabled;
-        return context;
     }
 }

@@ -8,7 +8,6 @@ using EPR.ProducerContentValidation.Application.Validators.Factories.Interfaces;
 using EPR.ProducerContentValidation.Application.Validators.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.Options;
-using Microsoft.FeatureManagement;
 
 namespace EPR.ProducerContentValidation.Application.Validators;
 
@@ -18,25 +17,22 @@ public class CompositeValidator : ICompositeValidator
     private readonly IValidator<ProducerRow> _producerRowWarningValidator;
     private readonly IGroupedValidator _groupedValidator;
     private readonly IDuplicateValidator _duplicateValidator;
-    private readonly IOptions<List<SubmissionPeriodOption>> submissionOptions;
+    private readonly IOptions<List<SubmissionPeriodOption>> _submissionOptions;
     private readonly IIssueCountService _issueCountService;
     private readonly ValidationOptions _validationOptions;
-    private readonly IFeatureManager _featureManager;
 
     public CompositeValidator(
         IOptions<ValidationOptions> validationOptions,
         IOptions<List<SubmissionPeriodOption>> submissionOptions,
-        IFeatureManager featureManager,
         IIssueCountService issueCountService,
         IProducerRowValidatorFactory producerRowValidatorFactory,
         IProducerRowWarningValidatorFactory producerRowWarningValidatorFactory,
         IGroupedValidator groupedValidator,
         IDuplicateValidator duplicateValidator)
     {
-        this.submissionOptions = submissionOptions;
+        _submissionOptions = submissionOptions;
         _issueCountService = issueCountService;
         _validationOptions = validationOptions.Value;
-        _featureManager = featureManager;
         _producerRowValidator = producerRowValidatorFactory.GetInstance();
         _producerRowWarningValidator = producerRowWarningValidatorFactory.GetInstance();
         _groupedValidator = groupedValidator;
@@ -45,19 +41,13 @@ public class CompositeValidator : ICompositeValidator
 
     public async Task ValidateAndFetchForIssuesAsync(IEnumerable<ProducerRow> producerRows, List<ProducerValidationEventIssueRequest> errors, List<ProducerValidationEventIssueRequest> warnings, string blobName)
     {
-        var flag = await _featureManager.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation);
-        var enhancedProducerflag = await _featureManager.IsEnabledAsync(FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation);
         foreach (var row in producerRows)
         {
             var errorContext = new ValidationContext<ProducerRow>(row);
             var warningContext = new ValidationContext<ProducerRow>(row);
 
-            errorContext.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
-            errorContext.RootContextData.Add(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation, flag);
-            warningContext.RootContextData.Add(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation, flag);
-            errorContext.RootContextData.Add(FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation, enhancedProducerflag);
-            warningContext.RootContextData.Add(FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation, enhancedProducerflag);
-            warningContext.RootContextData.Add(SubmissionPeriodOption.Section, submissionOptions.Value);
+            errorContext.RootContextData.Add(SubmissionPeriodOption.Section, _submissionOptions.Value);
+            warningContext.RootContextData.Add(SubmissionPeriodOption.Section, _submissionOptions.Value);
 
             await ValidateIssue(row, errors, blobName, IssueType.Error, errorContext);
 

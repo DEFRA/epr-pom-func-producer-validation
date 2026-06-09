@@ -17,7 +17,7 @@ public class ClosedLoopRecyclingRecyclabilityRatingValidator : AbstractValidator
     public ClosedLoopRecyclingRecyclabilityRatingValidator()
     {
         RuleFor(x => x.RecyclabilityRating)
-            .Null()
+            .Empty() // SUB-271, altered this to "Empty" instead of "Null" as part of wider fix. An empty string should not trigger this rule.
             .WithErrorCode(ErrorCode.ClosedLoopRecyclingRecyclabilityRatingInvalidErrorCode);
     }
 

@@ -36,7 +36,7 @@ public class CompositeValidatorTests
     private readonly Mock<IValidator<ProducerRow>> _producerRowValidatorMock;
     private readonly Mock<ValidationFailure> _validationFailureMock;
     private readonly Mock<ValidationResult> _validationResultMock;
-    private Mock<IFeatureManager> _featureManagerMock;
+    private readonly Mock<IFeatureManager> _featureManagerMock;
 
     private ValidationOptions _options;
 
@@ -76,18 +76,15 @@ public class CompositeValidatorTests
         var validationFailuresList = new List<ValidationFailure> { _validationFailureMock.Object };
         _validationResultMock.Object.Errors = validationFailuresList;
 
-        _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<ProducerRow>>(), default))
+        _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<ProducerRow>>(), CancellationToken.None))
             .ReturnsAsync(_validationResultMock.Object);
 
         _producerRowValidatorMock.Setup(x => x.ValidateAsync(It.IsAny<ProducerRow>(), default))
             .ReturnsAsync(_validationResultMock.Object);
 
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation)).ReturnsAsync(true);
-
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
             Microsoft.Extensions.Options.Options.Create(submissionPeriodOptions),
-            _featureManagerMock.Object,
             _issueCountServiceMock.Object,
             _producerRowValidatorFactoryMock.Object,
             _producerRowWarningValidatorFactoryMock.Object,
@@ -415,7 +412,6 @@ public class CompositeValidatorTests
         var compositeValidator = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
             Microsoft.Extensions.Options.Options.Create(submissionPeriodOptions),
-            _featureManagerMock.Object,
             _issueCountServiceMock.Object,
             producerRowValidatorFactory,
             producerRowWarningValidatorFactory,
@@ -508,7 +504,6 @@ public class CompositeValidatorTests
         _serviceUnderTest = new CompositeValidator(
             Microsoft.Extensions.Options.Options.Create(_options),
             submissionPeriodOptions.Object,
-            _featureManagerMock.Object,
             _issueCountServiceMock.Object,
             _producerRowValidatorFactoryMock.Object,
             _producerRowWarningValidatorFactoryMock.Object,

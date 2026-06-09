@@ -7,9 +7,6 @@ namespace EPR.ProducerContentValidation.IntegrationTests;
 
 /// <summary>
 /// API tests for recyclability rating (100-109) and material/subtype validators (45, 47, 51, etc.).
-/// Recyclability and small-producer-enhanced tests assume feature flags are enabled in the function app:
-/// - EnableLargeProducerRecyclabilityRatingValidation (for 100, 102, 104, 106, 108, 109)
-/// - EnableLargeProducerEnhancedRecyclabilityRatingValidation (for 108, 109)
 /// </summary>
 [Collection("ValidateProducerContentApi")]
 [Trait("Category", "IntegrationTest")]
@@ -63,7 +60,7 @@ public class RecyclabilityAndMaterialSubTypeApiTests : ValidateProducerContentAp
 
         result.IsSuccess.Should().BeTrue();
         result.HasErrorCode(ErrorCode.SmallProducerRecyclabilityRatingNotRequired).Should().BeTrue(
-            "Requires EnableLargeProducerRecyclabilityRatingValidation = true. Small producers must not supply a recyclability rating.");
+            "Small producers must not supply a recyclability rating.");
     }
 
     [Fact]
@@ -114,7 +111,6 @@ public class RecyclabilityAndMaterialSubTypeApiTests : ValidateProducerContentAp
         result.HasErrorCode(ErrorCode.SmallProducerPlasticMaterialSubTypeNotRequired).Should().BeTrue();
     }
 
-    /* Recyclability: assume EnableLargeProducerRecyclabilityRatingValidation = true */
     [Fact]
     public async Task Large_producer_2024_with_recyclability_rating_returns_error_102()
     {
@@ -130,11 +126,11 @@ public class RecyclabilityAndMaterialSubTypeApiTests : ValidateProducerContentAp
 
         result.IsSuccess.Should().BeTrue();
         result.HasErrorCode(ErrorCode.LargeProducerRecyclabilityRatingNotRequired).Should().BeTrue(
-            "Requires EnableLargeProducerRecyclabilityRatingValidation = true. Rating not required before 2025.");
+            "Rating not required before 2025.");
     }
 
     [Fact]
-    public async Task Large_producer_invalid_recyclability_value_returns_error_104_or_108()
+    public async Task Large_producer_invalid_recyclability_value_returns_error_100()
     {
         var request = ValidateProducerContentRequestBuilder.ValidRequest();
         request.Rows[0] = ValidateProducerContentRequestBuilder.ValidRow(
@@ -145,10 +141,8 @@ public class RecyclabilityAndMaterialSubTypeApiTests : ValidateProducerContentAp
         var result = await ValidateAndLogAsync(request);
 
         result.IsSuccess.Should().BeTrue();
-        (result.HasErrorCode(ErrorCode.LargeProducerRecyclabilityRatingInvalidErrorCode)
-            || result.HasErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode))
-            .Should().BeTrue(
-                "Requires EnableLargeProducerRecyclabilityRatingValidation = true. Invalid rating gives 104 (default) or 108 (enhanced).");
+        result.HasErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode).Should().BeTrue(
+                "Invalid rating gives 100 (enhanced).");
     }
 
     [Fact]
@@ -166,7 +160,7 @@ public class RecyclabilityAndMaterialSubTypeApiTests : ValidateProducerContentAp
 
         result.IsSuccess.Should().BeTrue();
         result.HasErrorCode(ErrorCode.LargeProducerInvalidForWasteAndMaterialType).Should().BeTrue(
-            "Requires EnableLargeProducerRecyclabilityRatingValidation and EnableLargeProducerEnhancedRecyclabilityRatingValidation = true. CW/OW/HDC non-glass must not have rating.");
+            "CW/OW/HDC non-glass must not have rating.");
     }
 
     // Error 100 (LargeProducerRecyclabilityRatingRequired) only runs when EnableLargeProducerEnhancedRecyclabilityRatingValidation = false.

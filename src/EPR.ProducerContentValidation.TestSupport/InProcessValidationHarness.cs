@@ -48,9 +48,6 @@ public static class InProcessValidationHarness
         featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableSubsidiaryValidationPom)).ReturnsAsync(false);
 
         // Align with typical local Functions config: recyclability rules off unless explicitly enabled in host.
-        featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation)).ReturnsAsync(false);
-        featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation)).ReturnsAsync(false);
-
         var submissionPeriodOptions = Options.Create(LoadSubmissionPeriods());
 
         var producerRowValidatorFactory = new ProducerRowValidatorFactory(validationOptionsMock.Object, featureManagerMock.Object);
@@ -61,7 +58,6 @@ public static class InProcessValidationHarness
         var compositeValidator = new CompositeValidator(
             validationOptionsMock.Object,
             submissionPeriodOptions,
-            featureManagerMock.Object,
             issueCountServiceMock.Object,
             producerRowValidatorFactory,
             producerRowWarningValidatorFactory,

@@ -357,7 +357,6 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
         var producerRow = BuildProducerRow(dataSubmissionPeriod, producerType, producerSize, packagingType, packagingClass, materialType, materialSubType, null);
 
         var context = new ValidationContext<ProducerRow>(producerRow);
-        context.RootContextData[FeatureFlags.EnableLargeProducerRecyclabilityRatingValidation] = false;
 
         // Act
         var result = _systemUnderTest.TestValidate(context);
@@ -460,7 +459,6 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, null);
         var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = true;
 
         var validator = new MaterialSubMaterialCombinationValidator();
         var result = validator.TestValidate(context);
@@ -475,7 +473,6 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, null);
         var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = true;
 
         var validator = new MaterialSubMaterialCombinationValidator();
         var result = validator.TestValidate(context);
@@ -493,7 +490,6 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, null);
         var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = true;
 
         var validator = new MaterialSubMaterialCombinationValidator();
         var result = validator.TestValidate(context);
@@ -509,14 +505,12 @@ public class MaterialSubMaterialCombinationValidatorTests : MaterialSubMaterialC
     [DataRow("2025-H2", "L", PackagingType.SelfManagedConsumerWaste, PackagingClass.PublicBin, MaterialType.Plastic, "Random", ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
     [DataRow("2025-H1", "L", PackagingType.ReusablePackaging, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.HDPE, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
     [DataRow("2025-H2", "L", PackagingType.HouseholdDrinksContainers, PackagingClass.PublicBin, MaterialType.Plastic, MaterialSubType.Rigid, ErrorCode.PackagingMaterialSubtypeNotNeededForPackagingMaterial)]
-    public void Should_Fail_When_Packingtype_Is_Nonhousehold_And_MaterialSubtype_isnotempty(string period, string orgSize, string pkgType, string pkgClass, string material, string subType, string expectedError)
+    public void Should_Fail_When_Packingtype_Is_Nonhousehold_And_MaterialSubtype_IsNotEmpty(string period, string orgSize, string pkgType, string pkgClass, string material, string subType, string expectedError)
     {
         var row = new ProducerRow(null, period, null, 1, "SO", orgSize, pkgType, pkgClass, material, subType, null, null, null, null, null, null, null);
-        var context = new ValidationContext<ProducerRow>(row);
-        context.RootContextData[FeatureFlags.EnableLargeProducerEnhancedRecyclabilityRatingValidation] = true;
 
         var validator = new MaterialSubMaterialCombinationValidator();
-        var result = validator.TestValidate(context);
+        var result = validator.TestValidate(new ValidationContext<ProducerRow>(row));
 
         result.ShouldHaveValidationErrorFor(x => x.MaterialSubType)
               .WithErrorCode(expectedError);

@@ -31,10 +31,13 @@ public static class ConfigureServices
 
     private static void RegisterServices(this IServiceCollection services)
     {
-        var redisOptions = services.BuildServiceProvider().GetRequiredService<IOptions<RedisOptions>>().Value;
         services
             .AddScoped<ISubmissionApiClient, SubmissionApiClient>()
-            .AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisOptions.ConnectionString))
+            .AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var redisOptions = sp.GetRequiredService<IOptions<RedisOptions>>().Value;
+                return ConnectionMultiplexer.Connect(redisOptions.ConnectionString);
+            })
             .AddSingleton<IIssueCountService, IssueCountService>()
             .AddSingleton<IRequestValidator, RequestValidator>()
             .AddSingleton<ISubsidiaryMatcher, SubsidiaryMatcher>()
