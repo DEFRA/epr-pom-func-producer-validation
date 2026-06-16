@@ -35,7 +35,7 @@ public static class InputCsvRegressionRowLoader
 
     /// <summary>
     /// Resolves <c>real_pom_file_data.csv</c>: first next to the test assembly (build output), then the project directory
-    /// when resolving from typical <c>bin/.../net8.0</c> paths (three levels up).
+    /// when resolving from typical <c>bin/.../net10.0</c> paths (three levels up).
     /// </summary>
     public static string ResolveDefaultInputCsvPath()
     {

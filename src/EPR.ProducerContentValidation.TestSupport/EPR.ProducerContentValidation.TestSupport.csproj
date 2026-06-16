@@ -13,6 +13,6 @@
 
   <PropertyGroup>
     <SonarQubeExclude>true</SonarQubeExclude>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 </Project>

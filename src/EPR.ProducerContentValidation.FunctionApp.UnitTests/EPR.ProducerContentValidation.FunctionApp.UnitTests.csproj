@@ -2,7 +2,7 @@
     <PropertyGroup>
         <IsPackable>false</IsPackable>
         <SonarQubeTestProject>true</SonarQubeTestProject>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,7 +16,7 @@
         </PackageReference>
         <PackageReference Include="FluentAssertions" Version="6.12.0" />
         <PackageReference Include="ILogger.Moq" Version="1.1.10" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
         <PackageReference Include="Moq" Version="4.20.70" />
         <PackageReference Include="MSTest.TestAdapter" Version="3.5.2" />

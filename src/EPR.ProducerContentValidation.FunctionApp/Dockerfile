@@ -1,5 +1,5 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS installer-env
-# FROM defradigital/dotnetcore-development:dotnet8.0 AS installer-env
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS installer-env
+# FROM defradigital/dotnetcore-development:dotnet10.0 AS installer-env
 
 # Build requires 3.1 SDK
 #COPY --from=mcr.microsoft.com/dotnet/core/sdk:3.1 /usr/share/dotnet /usr/share/dotnet
@@ -12,7 +12,7 @@ COPY EPR.ProducerContentValidation.FunctionApp/. ./EPR.ProducerContentValidation
 
 RUN dotnet publish EPR.ProducerContentValidation.FunctionApp/*.csproj --output /home/site/wwwroot
 
-FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated8.0
+FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated10.0
 
 # Create a non-root user and set permissions
 RUN groupadd -r dotnet && \
