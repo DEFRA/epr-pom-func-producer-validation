@@ -1,6 +1,0 @@
-variables:
-  azureSubscription: 'AZD-RWD-DEV10'
-  docker.imageName: 'producervalidation'
-  acr.azureContainerRegistryName: 'devrwdinfac1401'
-  acr.repositoryName: 'producervalidationrepository'
-  serviceName: 'DEVRWDWEBFAA402'
