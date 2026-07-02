@@ -38,16 +38,19 @@ public class GroupedValidator : IGroupedValidator
             var submissionPeriodValidator = new ConsistentDataSubmissionPeriodsGroupedValidator(_issueCountService);
             var organisationSizeValidator = new ConsistentOrganisationSizeGroupedValidator(_issueCountService);
             var selfManagedWasteTransferValidator = new SelfManagedWasteTransfersGroupedValidator(_issueCountService);
+            var consistentRamRagSubmissionValidator = new ConsistentRecyclabilityRatingSubmissionGroupedValidator(_issueCountService);
 
             var submissionPeriodsTask = submissionPeriodValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
             var organisationSizeTask = organisationSizeValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
             var selfManagedWasteTransfersTask = selfManagedWasteTransferValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
+            var consistentRamRagSubmissionTask = consistentRamRagSubmissionValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
 
             groupedValidatorTasks.AddRange(new List<Task>
             {
                 submissionPeriodsTask,
                 selfManagedWasteTransfersTask,
-                organisationSizeTask
+                organisationSizeTask,
+                consistentRamRagSubmissionTask,
             });
         }
 
@@ -57,16 +60,19 @@ public class GroupedValidator : IGroupedValidator
             var singlePackagingMaterialValidator = new SinglePackagingMaterialGroupedValidator(_issueCountService);
             var totalPackagingMaterialValidator = new TotalPackagingMaterialValidator(_issueCountService);
             var clrPackagingMaterialWeightValidator = new ClrPackagingMaterialWeightGroupedValidator(_issueCountService);
+            var ramRagSubmissionMissingEntirelyValidator = new RecyclabilityRatingMissingEntirelyGroupedValidator(_issueCountService);
 
             var singlePackagingMaterialTask = singlePackagingMaterialValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
             var totalPackagingMaterialValidatorTask = totalPackagingMaterialValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
             var clrPackagingMaterialWeightTask = clrPackagingMaterialWeightValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
+            var ramRagSubmissionMissingEntirelyTask = ramRagSubmissionMissingEntirelyValidator.ValidateAsync(producerRows, warningStoreKey, blobName, errorRows, warningRows);
 
             groupedValidatorTasks.AddRange(new List<Task>
             {
                 singlePackagingMaterialTask,
                 totalPackagingMaterialValidatorTask,
-                clrPackagingMaterialWeightTask
+                clrPackagingMaterialWeightTask,
+                ramRagSubmissionMissingEntirelyTask,
             });
         }
 

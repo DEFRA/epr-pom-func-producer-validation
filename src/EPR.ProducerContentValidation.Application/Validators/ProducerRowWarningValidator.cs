@@ -13,5 +13,6 @@ public class ProducerRowWarningValidator : AbstractValidator<ProducerRow>
         Include(new QuantityKgValidator());
         Include(new DrinksContainerQuantityUnitWeightValidator());
         Include(new PackagingTypePackagingMaterialValidator());
+        Include(new RecyclabilityRatingUnlikelyCombinationsValidator());
     }
 }

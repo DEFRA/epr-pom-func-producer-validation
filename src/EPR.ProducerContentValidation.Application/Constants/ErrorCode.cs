@@ -69,7 +69,7 @@ public static class ErrorCode
     public const string ClosedLoopRecyclingRecyclabilityRatingInvalidErrorCode = "918";
 
     /*Modulation - Recyclability rating error codes*/
-    public const string LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode = "100";
+    public const string LargeProducerRecyclabilityRatingInvalidValue = "100";
     public const string LargeProducerPlasticMaterialSubTypeRequired = "101";
     public const string LargeProducerRecyclabilityRatingNotRequired = "102";
     public const string LargeProducerPlasticMaterialSubTypeInvalidErrorCode = "103";
@@ -77,6 +77,9 @@ public static class ErrorCode
     public const string SmallProducerRecyclabilityRatingNotRequired = "106";
     public const string SmallProducerOnlyPlasticMaterialTypeAllowed = "107";
     public const string LargeProducerInvalidForWasteAndMaterialType = "109";
+    public const string LargeProducerRecyclabilityPartiallySupplied = "110";
+    public const string LargeProducerRecyclabilityMissing = "111";
+    public const string LargeProducerRecyclabilityRatingPresentForUnlikelyCombinations = "112";
 
     /* Issue codes for warnings */
     public const string WarningPackagingMaterialWeightLessThan100 = "59";

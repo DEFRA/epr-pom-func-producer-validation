@@ -141,19 +141,37 @@ public class RecyclabilityAndMaterialSubTypeApiTests : ValidateProducerContentAp
         var result = await ValidateAndLogAsync(request);
 
         result.IsSuccess.Should().BeTrue();
-        result.HasErrorCode(ErrorCode.LargeProducerEnhancedRecyclabilityRatingValidationInvalidErrorCode).Should().BeTrue(
-                "Invalid rating gives 100 (enhanced).");
+        result.HasErrorCode(ErrorCode.LargeProducerRecyclabilityRatingInvalidValue).Should().BeTrue(
+                "Invalid rating gives 100.");
     }
 
     [Fact]
-    public async Task Large_producer_CW_waste_with_recyclability_returns_error_109()
+    public async Task Large_producer_HH_waste_with_edge_case_returns_warning_112() // unlikely combo
+    {
+        var request = ValidateProducerContentRequestBuilder.ValidRequest();
+        request.Rows[0] = ValidateProducerContentRequestBuilder.ValidRow(
+            wasteType: PackagingType.Household,
+            packagingCategory: PackagingClass.PrimaryPackaging,
+            materialType: MaterialType.Plastic,
+            materialSubType: MaterialSubType.Flexible,
+            recyclabilityRating: RecyclabilityRating.Green);
+
+        var result = await ValidateAndLogAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.HasWarningCode(ErrorCode.LargeProducerRecyclabilityRatingPresentForUnlikelyCombinations).Should().BeTrue(
+            "Criteria meets the 'unlikely combination' threshold.");
+    }
+
+    [Fact]
+    public async Task Large_producer_CW_waste_with_recyclability_returns_error_109() // not an unlikely combo, hence error 109
     {
         var request = ValidateProducerContentRequestBuilder.ValidRequest();
         request.Rows[0] = ValidateProducerContentRequestBuilder.ValidRow(
             wasteType: PackagingType.SelfManagedConsumerWaste,
             packagingCategory: PackagingClass.PrimaryPackaging,
             materialType: MaterialType.Plastic,
-            materialSubType: MaterialSubType.Flexible,
+            materialSubType: MaterialSubType.Rigid,
             recyclabilityRating: RecyclabilityRating.Green);
 
         var result = await ValidateAndLogAsync(request);
@@ -163,6 +181,48 @@ public class RecyclabilityAndMaterialSubTypeApiTests : ValidateProducerContentAp
             "CW/OW/HDC non-glass must not have rating.");
     }
 
-    // Error 100 (LargeProducerRecyclabilityRatingRequired) only runs when EnableLargeProducerEnhancedRecyclabilityRatingValidation = false.
-    // With both recyclability flags true (default in local.settings), rating is not required so 100 is not tested here.
+    [Fact]
+    public async Task Large_producer_IncompleteSubmission_returns_error_110() // partially supplied RAM-RAG data
+    {
+        var request = ValidateProducerContentRequestBuilder.ValidRequest();
+        request.Rows[0] = ValidateProducerContentRequestBuilder.ValidRow(
+            wasteType: PackagingType.HouseholdDrinksContainers,
+            packagingCategory: PackagingClass.PrimaryPackaging,
+            materialType: MaterialType.Glass,
+            recyclabilityRating: RecyclabilityRating.Green);
+        request.Rows.Add(ValidateProducerContentRequestBuilder.ValidRow());
+        request.Rows[1] = ValidateProducerContentRequestBuilder.ValidRow(
+            wasteType: PackagingType.Household,
+            packagingCategory: PackagingClass.PrimaryPackaging,
+            materialType: MaterialType.Plastic,
+            materialSubType: MaterialSubType.Flexible);
+
+        var result = await ValidateAndLogAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.HasErrorCode(ErrorCode.LargeProducerRecyclabilityPartiallySupplied).Should().BeTrue(
+            "Recyclability rating is not supplied for all rows.");
+    }
+
+    [Fact]
+    public async Task Large_producer_Missing_Recyclability_Data_For_All_Rows_returns_warning_111() // no RAM-RAG data present on matching data
+    {
+        var request = ValidateProducerContentRequestBuilder.ValidRequest();
+        request.Rows[0] = ValidateProducerContentRequestBuilder.ValidRow(
+            wasteType: PackagingType.HouseholdDrinksContainers,
+            packagingCategory: PackagingClass.PrimaryPackaging,
+            materialType: MaterialType.Glass);
+        request.Rows.Add(ValidateProducerContentRequestBuilder.ValidRow());
+        request.Rows[1] = ValidateProducerContentRequestBuilder.ValidRow(
+            wasteType: PackagingType.Household,
+            packagingCategory: PackagingClass.PrimaryPackaging,
+            materialType: MaterialType.Plastic,
+            materialSubType: MaterialSubType.Flexible);
+
+        var result = await ValidateAndLogAsync(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.HasWarningCode(ErrorCode.LargeProducerRecyclabilityMissing).Should().BeTrue(
+            "Recyclability rating is not supplied for any rows.");
+    }
 }
