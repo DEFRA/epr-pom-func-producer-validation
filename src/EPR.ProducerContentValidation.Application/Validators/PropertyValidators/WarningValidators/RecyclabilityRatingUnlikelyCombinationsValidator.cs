@@ -13,9 +13,9 @@ public class RecyclabilityRatingUnlikelyCombinationsValidator : AbstractValidato
         RuleFor(x => x.RecyclabilityRating)
             .Must(_ => false)
             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingPresentForUnlikelyCombinations)
-            .When(row => HasRating(row)
-                        && IsLargeProducerFrom2025(row)
-                        && IsWasteMaterialEligibleForRating(row)
+            .When(row => HelperFunctions.HasRecyclabilityRating(row)
+                        && HelperFunctions.IsLargeProducerFrom2025(row)
+                        && HelperFunctions.IsWasteMaterialEligibleForRecyclabilityRating(row)
                         && IsUnlikelyMaterialRatingCombo(row));
     }
 
@@ -23,13 +23,6 @@ public class RecyclabilityRatingUnlikelyCombinationsValidator : AbstractValidato
     {
         return !PackagingType.ClosedLoopRecycling.Equals(context.InstanceToValidate.WasteType);
     }
-
-    private static bool HasRating(ProducerRow row) =>
-        !string.IsNullOrWhiteSpace(row.RecyclabilityRating);
-
-    private static bool IsLargeProducerFrom2025(ProducerRow row) =>
-        ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-        && !HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
 
     private static bool IsMaterial(ProducerRow row, string material) =>
         material.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase);
@@ -39,14 +32,6 @@ public class RecyclabilityRatingUnlikelyCombinationsValidator : AbstractValidato
 
     private static bool IsRating(ProducerRow row, string rating) =>
         rating.Equals(row.RecyclabilityRating, StringComparison.OrdinalIgnoreCase);
-
-    private static bool IsWasteType(ProducerRow row, string wasteType) =>
-        wasteType.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase);
-
-    private static bool IsWasteMaterialEligibleForRating(ProducerRow row) =>
-        IsWasteType(row, PackagingType.Household)
-        || IsWasteType(row, PackagingType.PublicBin)
-        || (IsWasteType(row, PackagingType.HouseholdDrinksContainers) && IsMaterial(row, MaterialType.Glass));
 
     private static bool IsUnlikelyMaterialRatingCombo(ProducerRow row)
     {

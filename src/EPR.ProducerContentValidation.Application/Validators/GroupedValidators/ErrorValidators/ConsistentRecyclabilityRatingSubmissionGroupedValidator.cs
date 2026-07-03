@@ -23,13 +23,9 @@ public class ConsistentRecyclabilityRatingSubmissionGroupedValidator(IIssueCount
             return;
         }
 
-        var matchingRows = producerRows.Where((row, _) =>
-            row.ProducerSize == ProducerSize.Large
-            && !HelperFunctions.HelperFunctions.IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025)
-            && (
-                row.WasteType == PackagingType.Household
-                || row.WasteType == PackagingType.PublicBin
-                || row is { WasteType: PackagingType.HouseholdDrinksContainers, MaterialType: MaterialType.Glass })).ToList();
+        var matchingRows = producerRows.Where(row =>
+            HelperFunctions.HelperFunctions.IsLargeProducerFrom2025(row)
+            && HelperFunctions.HelperFunctions.IsWasteMaterialEligibleForRecyclabilityRating(row)).ToList();
 
         if (matchingRows.Count == 0)
         {
