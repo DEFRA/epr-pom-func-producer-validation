@@ -31,7 +31,7 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
             .IsInAllowedValues(ReferenceDataGenerator.RecyclabilityRatings)
             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingInvalidValue)
             .When(row => HelperFunctions.HasRecyclabilityRating(row)
-                        && HelperFunctions.IsLargeProducerFrom2025(row)
+                        && HelperFunctions.IsLargeProducerFrom2025AndBeyond(row)
                         && HelperFunctions.IsWasteMaterialEligibleForRecyclabilityRating(row));
 
         // Rule 4: Rating supplied on an ineligible waste/material combo
@@ -39,7 +39,7 @@ public class RecyclabilityRatingValidator : AbstractValidator<ProducerRow>
             .Must(_ => false)
             .WithErrorCode(ErrorCode.LargeProducerInvalidForWasteAndMaterialType)
             .When(row => HelperFunctions.HasRecyclabilityRating(row)
-                        && HelperFunctions.IsLargeProducerFrom2025(row)
+                        && HelperFunctions.IsLargeProducerFrom2025AndBeyond(row)
                         && !HelperFunctions.IsWasteMaterialEligibleForRecyclabilityRating(row));
     }
 

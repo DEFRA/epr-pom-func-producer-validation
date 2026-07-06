@@ -14,7 +14,7 @@ public class RecyclabilityRatingUnlikelyCombinationsValidator : AbstractValidato
             .Must(_ => false)
             .WithErrorCode(ErrorCode.LargeProducerRecyclabilityRatingPresentForUnlikelyCombinations)
             .When(row => HelperFunctions.HasRecyclabilityRating(row)
-                        && HelperFunctions.IsLargeProducerFrom2025(row)
+                        && HelperFunctions.IsLargeProducerFrom2025AndBeyond(row)
                         && HelperFunctions.IsWasteMaterialEligibleForRecyclabilityRating(row)
                         && IsUnlikelyMaterialRatingCombo(row));
     }

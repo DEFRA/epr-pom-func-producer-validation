@@ -33,14 +33,14 @@ public static class HelperFunctions
     public static bool HasRecyclabilityRating(ProducerRow row) =>
         !string.IsNullOrWhiteSpace(row.RecyclabilityRating);
 
-    public static bool IsLargeProducerFrom2025(ProducerRow row) =>
+    public static bool IsLargeProducerFrom2025AndBeyond(ProducerRow row) =>
         ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
         && !IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
 
-    public static bool IsLargeProducerFrom2025H2(ProducerRow row) =>
-        ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
-        && IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025)
-        && Is2025H2(row.DataSubmissionPeriod);
+    public static bool Is2025H1(string? dataSubmissionPeriod)
+    {
+        return "2025-H1".Equals(dataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
+    }
 
     public static bool IsWasteMaterialEligibleForRecyclabilityRating(ProducerRow row) =>
         PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
@@ -136,10 +136,5 @@ public static class HelperFunctions
              || wasteType.Equals(PackagingType.SelfManagedOrganisationWaste, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.ReusablePackaging, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.NonHouseholdDrinksContainers, StringComparison.OrdinalIgnoreCase));
-    }
-
-    private static bool Is2025H2(string? dataSubmissionPeriod)
-    {
-        return "2025-H2".Equals(dataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -54,6 +54,24 @@ public class ConsistentRecyclabilityRatingSubmissionGroupedValidatorTests
     }
 
     [TestMethod]
+    public async Task ValidateAsync_DoesNotAddError_When_EligibleLargeProducerRowsArePartiallySupplied_AndSubmissionPeriod_Is2025H1()
+    {
+        var errors = new List<ProducerValidationEventIssueRequest>();
+        var warnings = new List<ProducerValidationEventIssueRequest>();
+        var rows = new List<ProducerRow>
+        {
+            BuildProducerRow(submissionPeriod: "January to June 2025", dataSubmissionPeriod: DataSubmissionPeriodTestData.Year2025H1, packagingType: PackagingType.Household, materialType: MaterialType.Plastic, recyclabilityRating: string.Empty),
+            BuildProducerRow(submissionPeriod: "January to June 2025", dataSubmissionPeriod: DataSubmissionPeriodTestData.Year2025H1, packagingType: PackagingType.PublicBin, materialType: MaterialType.PaperCard, recyclabilityRating: RecyclabilityRating.Green)
+        };
+
+        await _systemUnderTest.ValidateAsync(rows, StoreKey, BlobName, errors, warnings);
+
+        errors.Should().BeEmpty();
+        warnings.Should().BeEmpty();
+        _issueCountServiceMock.Verify(x => x.IncrementIssueCountAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
+    }
+
+    [TestMethod]
     public async Task ValidateAsync_AddsError_When_HouseholdDrinksContainersGlassRowsArePartiallySupplied()
     {
         var errors = new List<ProducerValidationEventIssueRequest>();
@@ -150,13 +168,15 @@ public class ConsistentRecyclabilityRatingSubmissionGroupedValidatorTests
         string packagingType = PackagingType.Household,
         string materialType = MaterialType.Plastic,
         string materialSubType = MaterialSubType.Rigid,
-        string recyclabilityRating = "")
+        string recyclabilityRating = "",
+        string submissionPeriod = "July to December 2025",
+        string dataSubmissionPeriod = DataSubmissionPeriodTestData.Year2025H2)
     {
         return new ProducerRow(
             SubsidiaryId: "SubsidiaryId",
-            DataSubmissionPeriod: DataSubmissionPeriodTestData.Year2025H2,
+            DataSubmissionPeriod: dataSubmissionPeriod,
             ProducerId: null,
-            SubmissionPeriod: "July to December 2025",
+            SubmissionPeriod: submissionPeriod,
             RowNumber: _rowNumber++,
             ProducerType: ProducerType.SuppliedUnderYourBrand,
             ProducerSize: producerSize,

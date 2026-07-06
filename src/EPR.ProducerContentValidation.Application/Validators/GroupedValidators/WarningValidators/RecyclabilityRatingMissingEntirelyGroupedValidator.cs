@@ -25,7 +25,7 @@ public class RecyclabilityRatingMissingEntirelyGroupedValidator(IIssueCountServi
         }
 
         var matchingRows = producerRows.Where(row =>
-            HelperFunctions.HelperFunctions.IsLargeProducerFrom2025(row)
+            HelperFunctions.HelperFunctions.IsLargeProducerFrom2025AndBeyond(row)
             && HelperFunctions.HelperFunctions.IsWasteMaterialEligibleForRecyclabilityRating(row)).ToList();
 
         if (matchingRows.Count == 0)
