@@ -24,7 +24,7 @@ public class ConsistentRecyclabilityRatingSubmissionGroupedValidator(IIssueCount
         }
 
         var matchingRows = producerRows.Where(row =>
-            HelperFunctions.HelperFunctions.IsLargeProducerFrom2025(row)
+            HelperFunctions.HelperFunctions.IsLargeProducerFrom2025H2(row)
             && HelperFunctions.HelperFunctions.IsWasteMaterialEligibleForRecyclabilityRating(row)).ToList();
 
         if (matchingRows.Count == 0)

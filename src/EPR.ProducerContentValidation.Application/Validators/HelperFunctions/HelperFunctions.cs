@@ -37,6 +37,11 @@ public static class HelperFunctions
         ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
         && !IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
 
+    public static bool IsLargeProducerFrom2025H2(ProducerRow row) =>
+        ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+        && IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025)
+        && Is2025H2(row.DataSubmissionPeriod);
+
     public static bool IsWasteMaterialEligibleForRecyclabilityRating(ProducerRow row) =>
         PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
         || PackagingType.PublicBin.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
@@ -66,8 +71,7 @@ public static class HelperFunctions
     public static bool IsFeatureFlagOn(ValidationContext<ProducerRow> context, string featureFlag)
     {
         return context.RootContextData.TryGetValue(featureFlag, out var flagObj)
-            && flagObj is bool isEnabled
-            && isEnabled;
+               && flagObj is true;
     }
 
     public static int ExtractYearFromDataSubmissionPeriod(string? submissionPeriod)
@@ -132,5 +136,10 @@ public static class HelperFunctions
              || wasteType.Equals(PackagingType.SelfManagedOrganisationWaste, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.ReusablePackaging, StringComparison.OrdinalIgnoreCase)
              || wasteType.Equals(PackagingType.NonHouseholdDrinksContainers, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool Is2025H2(string? dataSubmissionPeriod)
+    {
+        return "2025-H2".Equals(dataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
     }
 }
