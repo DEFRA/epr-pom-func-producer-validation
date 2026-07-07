@@ -30,6 +30,24 @@ public static class HelperFunctions
             && value.Equals("0");
     }
 
+    public static bool HasRecyclabilityRating(ProducerRow row) =>
+        !string.IsNullOrWhiteSpace(row.RecyclabilityRating);
+
+    public static bool IsLargeProducerFrom2025AndBeyond(ProducerRow row) =>
+        ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
+        && !IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
+
+    public static bool Is2025H1(string? dataSubmissionPeriod)
+    {
+        return "2025-H1".Equals(dataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static bool IsWasteMaterialEligibleForRecyclabilityRating(ProducerRow row) =>
+        PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
+        || PackagingType.PublicBin.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
+        || (PackagingType.HouseholdDrinksContainers.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
+            && MaterialType.Glass.Equals(row.MaterialType, StringComparison.OrdinalIgnoreCase));
+
     public static bool IsSubmissionPeriodBeforeYear(string? dataSubmissionPeriod, int cutoffYear)
     {
         if (string.IsNullOrWhiteSpace(dataSubmissionPeriod))
@@ -53,8 +71,7 @@ public static class HelperFunctions
     public static bool IsFeatureFlagOn(ValidationContext<ProducerRow> context, string featureFlag)
     {
         return context.RootContextData.TryGetValue(featureFlag, out var flagObj)
-            && flagObj is bool isEnabled
-            && isEnabled;
+               && flagObj is true;
     }
 
     public static int ExtractYearFromDataSubmissionPeriod(string? submissionPeriod)

@@ -18,6 +18,8 @@ public class RegressionValidCombinationsIntegrationTests : ValidateProducerConte
     [
         ErrorCode.WarningOnlyOnePackagingMaterialReported,
         ErrorCode.WarningPackagingTypeQuantityUnitsLessThanQuantityKgs,
+        ErrorCode.LargeProducerRecyclabilityMissing,
+        ErrorCode.LargeProducerRecyclabilityRatingPresentForUnlikelyCombinations
     ];
 
     public RegressionValidCombinationsIntegrationTests(ValidateProducerContentApiFixture fixture, ITestOutputHelper output)

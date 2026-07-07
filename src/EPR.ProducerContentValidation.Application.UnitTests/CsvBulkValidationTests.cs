@@ -27,6 +27,7 @@ public class CsvBulkValidationTests
     [
         ErrorCode.WarningOnlyOnePackagingMaterialReported,
         ErrorCode.WarningPackagingTypeQuantityUnitsLessThanQuantityKgs,
+        ErrorCode.LargeProducerRecyclabilityMissing
     ];
 
     private static readonly HashSet<string> AllowedCodesSet = new(AllowedCodes, StringComparer.Ordinal);
