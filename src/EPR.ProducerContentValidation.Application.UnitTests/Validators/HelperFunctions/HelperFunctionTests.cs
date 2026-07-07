@@ -149,4 +149,180 @@ public class HelperFunctionTests
         var result = HelperFunctions.ShouldApply2025NonHouseholdRulesForLargeProducerFor2025AndBeyond(producerSize, wasteType, packagingCategory, submissionPeriod);
         result.Should().Be(expected);
     }
+
+    [TestMethod]
+    [DataRow("A", true)]
+    [DataRow("D", true)]
+    [DataRow(" ", false)]
+    [DataRow("", false)]
+    [DataRow(null, false)]
+    public void HasRecyclabilityRating_Should_Return_ExpectedResult(string? recyclabilityRating, bool expected)
+    {
+        // Arrange
+        var row = new ProducerRow(null, "2025-H1", "105761", 1, null, "L", "HH", "P1", "PL", null, "EN", null, "10", "1", "January to June 2025", null, recyclabilityRating);
+
+        // Act
+        var result = HelperFunctions.HasRecyclabilityRating(row);
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [TestMethod]
+    [DataRow("L", "2025-H1", true)]
+    [DataRow("L", "2025-H2", true)]
+    [DataRow("L", "2026-H1", true)]
+    [DataRow("l", "2025-H1", true)]
+    [DataRow("L", "2024-H2", false)]
+    [DataRow("L", "2023-P1", false)]
+    [DataRow("S", "2025-H1", false)]
+    [DataRow("s", "2025-H1", false)]
+    [DataRow(null, "2025-H1", false)]
+    [DataRow("L", null, true)]
+    [DataRow("L", "", true)]
+    public void IsLargeProducerFrom2025AndBeyond_Should_Return_ExpectedResult(string? producerSize, string? submissionPeriod, bool expected)
+    {
+        // Arrange
+        var row = new ProducerRow(null, submissionPeriod, "105761", 1, null, producerSize, "HH", "P1", "PL", null, "EN", null, "10", "1", "January to June 2025");
+
+        // Act
+        var result = HelperFunctions.IsLargeProducerFrom2025AndBeyond(row);
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [TestMethod]
+    [DataRow("2025-H1", true)]
+    [DataRow("2025-h1", true)]
+    [DataRow("2025-H2", false)]
+    [DataRow("2024-H1", false)]
+    [DataRow("2026-H1", false)]
+    [DataRow("", false)]
+    [DataRow(null, false)]
+    [DataRow(" 2025-H1", false)]
+    [DataRow("2025-H1 ", false)]
+    public void Is2025H1_Should_Return_ExpectedResult(string? dataSubmissionPeriod, bool expected)
+    {
+        // Act
+        var result = HelperFunctions.Is2025H1(dataSubmissionPeriod);
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [TestMethod]
+    [DataRow("HH", "PL", true)]
+    [DataRow("hh", "PL", true)]
+    [DataRow("PB", "PL", true)]
+    [DataRow("pb", "PL", true)]
+    [DataRow("HDC", "GL", true)]
+    [DataRow("hdc", "gl", true)]
+    [DataRow("HDC", "PL", false)]
+    [DataRow("HDC", "AL", false)]
+    [DataRow("HDC", null, false)]
+    [DataRow("NH", "PL", false)]
+    [DataRow("CW", "GL", false)]
+    [DataRow("OW", "PL", false)]
+    [DataRow("RU", "PL", false)]
+    [DataRow("NDC", "GL", false)]
+    [DataRow(null, "PL", false)]
+    [DataRow("", "PL", false)]
+    public void IsWasteMaterialEligibleForRecyclabilityRating_Should_Return_ExpectedResult(string? wasteType, string? materialType, bool expected)
+    {
+        // Arrange
+        var row = new ProducerRow(null, "2025-H1", "105761", 1, null, "L", wasteType, "P1", materialType, null, "EN", null, "10", "1", "January to June 2025");
+
+        // Act
+        var result = HelperFunctions.IsWasteMaterialEligibleForRecyclabilityRating(row);
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [TestMethod]
+    public void MatchOtherZeroReturnsCondition_Should_Fail_When_ProducerSize_IsNull()
+    {
+        // Arrange
+        var model = new ProducerRow(null, "2024-P0", "105761", 1, null, null, "OW", "O2", "OT", "Zero returns", "EN", null, "0", "0", "January to June 2024");
+
+        // Act
+        var result = HelperFunctions.MatchOtherZeroReturnsCondition(model);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void MatchOtherZeroReturnsCondition_Should_Fail_When_WasteType_IsNull()
+    {
+        // Arrange
+        var model = new ProducerRow(null, "2024-P0", "105761", 1, null, "L", null, "O2", "OT", "Zero returns", "EN", null, "0", "0", "January to June 2024");
+
+        // Act
+        var result = HelperFunctions.MatchOtherZeroReturnsCondition(model);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void MatchOtherZeroReturnsCondition_Should_Fail_When_PackagingCategory_IsNull()
+    {
+        // Arrange
+        var model = new ProducerRow(null, "2024-P0", "105761", 1, null, "L", "OW", null, "OT", "Zero returns", "EN", null, "0", "0", "January to June 2024");
+
+        // Act
+        var result = HelperFunctions.MatchOtherZeroReturnsCondition(model);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void MatchOtherZeroReturnsCondition_Should_Fail_When_MaterialType_IsNull()
+    {
+        // Arrange
+        var model = new ProducerRow(null, "2024-P0", "105761", 1, null, "L", "OW", "O2", null, "Zero returns", "EN", null, "0", "0", "January to June 2024");
+
+        // Act
+        var result = HelperFunctions.MatchOtherZeroReturnsCondition(model);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
+    [DataRow("")]
+    [DataRow("00")]
+    [DataRow("0.0")]
+    [DataRow("0 ")]
+    [DataRow(" 0")]
+    [DataRow("-0")]
+    [DataRow("1")]
+    public void HasZeroValue_Should_ReturnFalse_For_NonZeroOrMalformedValues(string value)
+    {
+        // Act
+        var result = HelperFunctions.HasZeroValue(value);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
+    [DataRow(null, 0)]
+    [DataRow("", 0)]
+    [DataRow("   ", 0)]
+    [DataRow("abcd-H1", 0)]
+    [DataRow("20xy-H1", 0)]
+    [DataRow("2025-H1", 2025)]
+    [DataRow("2030-H2", 2030)]
+    public void ExtractYearFromDataSubmissionPeriod_Should_Return_ExpectedYear(string? submissionPeriod, int expected)
+    {
+        // Act
+        var result = HelperFunctions.ExtractYearFromDataSubmissionPeriod(submissionPeriod);
+
+        // Assert
+        result.Should().Be(expected);
+    }
 }
