@@ -38,7 +38,7 @@ public class GroupedValidator : IGroupedValidator
             var submissionPeriodValidator = new ConsistentDataSubmissionPeriodsGroupedValidator(_issueCountService);
             var organisationSizeValidator = new ConsistentOrganisationSizeGroupedValidator(_issueCountService);
             var selfManagedWasteTransferValidator = new SelfManagedWasteTransfersGroupedValidator(_issueCountService);
-            var consistentRamRagSubmissionValidator = new ConsistentRecyclabilityRatingSubmissionGroupedValidator(_issueCountService);
+            var consistentRamRagSubmissionValidator = new PartialRecyclabilityRatingSubmissionGroupedValidator(_issueCountService);
 
             var submissionPeriodsTask = submissionPeriodValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);
             var organisationSizeTask = organisationSizeValidator.ValidateAsync(producerRows, errorStoreKey, blobName, errorRows);

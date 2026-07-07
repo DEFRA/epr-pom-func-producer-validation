@@ -11,19 +11,19 @@ using Moq;
 using PropertyValidators;
 
 [TestClass]
-public class ConsistentRecyclabilityRatingSubmissionGroupedValidatorTests
+public class PartialRecyclabilityRatingSubmissionGroupedValidatorTests
 {
     private const string StoreKey = "storeKey";
     private const string BlobName = "blobName";
 
     private readonly Mock<IIssueCountService> _issueCountServiceMock;
-    private readonly ConsistentRecyclabilityRatingSubmissionGroupedValidator _systemUnderTest;
+    private readonly PartialRecyclabilityRatingSubmissionGroupedValidator _systemUnderTest;
     private int _rowNumber = 1;
 
-    public ConsistentRecyclabilityRatingSubmissionGroupedValidatorTests()
+    public PartialRecyclabilityRatingSubmissionGroupedValidatorTests()
     {
         _issueCountServiceMock = new Mock<IIssueCountService>();
-        _systemUnderTest = new ConsistentRecyclabilityRatingSubmissionGroupedValidator(_issueCountServiceMock.Object);
+        _systemUnderTest = new PartialRecyclabilityRatingSubmissionGroupedValidator(_issueCountServiceMock.Object);
     }
 
     [TestInitialize]

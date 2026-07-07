@@ -5,7 +5,7 @@ using EPR.ProducerContentValidation.Application.Services.Interfaces;
 
 namespace EPR.ProducerContentValidation.Application.Validators.GroupedValidators.ErrorValidators;
 
-public class ConsistentRecyclabilityRatingSubmissionGroupedValidator(IIssueCountService issueCountService)
+public class PartialRecyclabilityRatingSubmissionGroupedValidator(IIssueCountService issueCountService)
     : AbstractGroupedValidator(issueCountService)
 {
     private readonly IIssueCountService _issueCountService = issueCountService;
