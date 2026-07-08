@@ -35,7 +35,11 @@ public class RecyclabilityRatingMissingEntirelyGroupedValidator(IIssueCountServi
 
         if (matchingRows.All(r => string.IsNullOrWhiteSpace(r.RecyclabilityRating)))
         {
-            await FindAndAddErrorAsync(matchingRows[0], storeKey, warningRows, ErrorCode.LargeProducerRecyclabilityMissing, blobName);
+            foreach (var matchingRow in matchingRows.TakeWhile(_ => remainingWarningCountToProcess > 0))
+            {
+                await FindAndAddErrorAsync(matchingRow, storeKey, warningRows, ErrorCode.LargeProducerRecyclabilityMissing, blobName);
+                remainingWarningCountToProcess = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
+            }
         }
     }
 }
