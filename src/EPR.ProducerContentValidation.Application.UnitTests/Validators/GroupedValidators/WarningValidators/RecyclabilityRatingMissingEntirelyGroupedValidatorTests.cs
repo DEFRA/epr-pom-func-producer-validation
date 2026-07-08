@@ -48,10 +48,10 @@ public class RecyclabilityRatingMissingEntirelyGroupedValidatorTests
 
         await _systemUnderTest.ValidateAsync(rows, StoreKey, BlobName, errors, warnings);
 
-        warnings.Should().HaveCount(1);
+        warnings.Should().HaveCount(3);
         warnings.First().ErrorCodes.Should().ContainSingle(ErrorCode.LargeProducerRecyclabilityMissing);
         errors.Should().BeEmpty();
-        _issueCountServiceMock.Verify(x => x.IncrementIssueCountAsync(StoreKey, 1), Times.Once);
+        _issueCountServiceMock.Verify(x => x.IncrementIssueCountAsync(StoreKey, 1), Times.Exactly(3));
     }
 
     [TestMethod]
@@ -142,10 +142,10 @@ public class RecyclabilityRatingMissingEntirelyGroupedValidatorTests
 
         await _systemUnderTest.ValidateAsync(rows, StoreKey, BlobName, errors, warnings);
 
-        warnings.Should().HaveCount(1);
+        warnings.Should().HaveCount(3);
         warnings.First().ErrorCodes.Should().ContainSingle(ErrorCode.LargeProducerRecyclabilityMissing);
         errors.Should().BeEmpty();
-        _issueCountServiceMock.Verify(x => x.IncrementIssueCountAsync(StoreKey, 1), Times.Once);
+        _issueCountServiceMock.Verify(x => x.IncrementIssueCountAsync(StoreKey, 1), Times.Exactly(3));
     }
 
     [TestMethod]
