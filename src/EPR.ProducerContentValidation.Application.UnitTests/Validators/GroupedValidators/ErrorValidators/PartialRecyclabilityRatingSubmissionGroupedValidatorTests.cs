@@ -42,15 +42,16 @@ public class PartialRecyclabilityRatingSubmissionGroupedValidatorTests
         var rows = new List<ProducerRow>
         {
             BuildProducerRow(packagingType: PackagingType.Household, materialType: MaterialType.Plastic, recyclabilityRating: string.Empty),
-            BuildProducerRow(packagingType: PackagingType.PublicBin, materialType: MaterialType.PaperCard, recyclabilityRating: RecyclabilityRating.Green)
+            BuildProducerRow(packagingType: PackagingType.PublicBin, materialType: MaterialType.PaperCard, recyclabilityRating: RecyclabilityRating.Green),
+            BuildProducerRow(packagingType: PackagingType.Household, materialType: MaterialType.Plastic, recyclabilityRating: string.Empty),
         };
 
         await _systemUnderTest.ValidateAsync(rows, StoreKey, BlobName, errors, warnings);
 
-        errors.Should().HaveCount(1);
+        errors.Should().HaveCount(2);
         errors.First().ErrorCodes.Should().ContainSingle(ErrorCode.LargeProducerRecyclabilityPartiallySupplied);
         warnings.Should().BeEmpty();
-        _issueCountServiceMock.Verify(x => x.IncrementIssueCountAsync(StoreKey, 1), Times.Once);
+        _issueCountServiceMock.Verify(x => x.IncrementIssueCountAsync(StoreKey, 1), Times.Exactly(2));
     }
 
     [TestMethod]
@@ -79,14 +80,16 @@ public class PartialRecyclabilityRatingSubmissionGroupedValidatorTests
         var rows = new List<ProducerRow>
         {
             BuildProducerRow(packagingType: PackagingType.HouseholdDrinksContainers, materialType: MaterialType.Glass, materialSubType: string.Empty, recyclabilityRating: string.Empty),
-            BuildProducerRow(packagingType: PackagingType.HouseholdDrinksContainers, materialType: MaterialType.Glass, materialSubType: string.Empty, recyclabilityRating: RecyclabilityRating.Amber)
+            BuildProducerRow(packagingType: PackagingType.HouseholdDrinksContainers, materialType: MaterialType.Glass, materialSubType: string.Empty, recyclabilityRating: RecyclabilityRating.Amber),
+            BuildProducerRow(packagingType: PackagingType.HouseholdDrinksContainers, materialType: MaterialType.Glass, materialSubType: string.Empty, recyclabilityRating: string.Empty),
         };
 
         await _systemUnderTest.ValidateAsync(rows, StoreKey, BlobName, errors, warnings);
 
-        errors.Should().HaveCount(1);
+        errors.Should().HaveCount(2);
         errors.First().ErrorCodes.Should().ContainSingle(ErrorCode.LargeProducerRecyclabilityPartiallySupplied);
         warnings.Should().BeEmpty();
+        _issueCountServiceMock.Verify(x => x.IncrementIssueCountAsync(StoreKey, 1), Times.Exactly(2));
     }
 
     [TestMethod]

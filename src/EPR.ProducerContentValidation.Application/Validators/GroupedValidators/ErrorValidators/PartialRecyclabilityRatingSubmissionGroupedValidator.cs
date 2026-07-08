@@ -33,12 +33,15 @@ public class PartialRecyclabilityRatingSubmissionGroupedValidator(IIssueCountSer
             return;
         }
 
-        var hasEmpty = matchingRows.Any(r => string.IsNullOrWhiteSpace(r.RecyclabilityRating));
-        var hasSupplied = matchingRows.Any(r => !string.IsNullOrWhiteSpace(r.RecyclabilityRating));
+        var emptyRows = matchingRows.Where(r => string.IsNullOrWhiteSpace(r.RecyclabilityRating)).ToList();
 
-        if (hasEmpty && hasSupplied)
+        if (emptyRows.Count > 0 && emptyRows.Count < matchingRows.Count)
         {
-            await FindAndAddErrorAsync(matchingRows[0], storeKey, errorRows, ErrorCode.LargeProducerRecyclabilityPartiallySupplied, blobName);
+            foreach (var emptyRow in emptyRows.TakeWhile(_ => remainingErrorCount > 0))
+            {
+                await FindAndAddErrorAsync(emptyRow, storeKey, errorRows, ErrorCode.LargeProducerRecyclabilityPartiallySupplied, blobName);
+                remainingErrorCount = await _issueCountService.GetRemainingIssueCapacityAsync(storeKey);
+            }
         }
     }
 }
