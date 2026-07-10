@@ -193,25 +193,6 @@ public class HelperFunctionTests
     }
 
     [TestMethod]
-    [DataRow("2025-H1", true)]
-    [DataRow("2025-h1", true)]
-    [DataRow("2025-H2", false)]
-    [DataRow("2024-H1", false)]
-    [DataRow("2026-H1", false)]
-    [DataRow("", false)]
-    [DataRow(null, false)]
-    [DataRow(" 2025-H1", false)]
-    [DataRow("2025-H1 ", false)]
-    public void Is2025H1_Should_Return_ExpectedResult(string? dataSubmissionPeriod, bool expected)
-    {
-        // Act
-        var result = HelperFunctions.Is2025H1(dataSubmissionPeriod);
-
-        // Assert
-        result.Should().Be(expected);
-    }
-
-    [TestMethod]
     [DataRow("HH", "PL", true)]
     [DataRow("hh", "PL", true)]
     [DataRow("PB", "PL", true)]

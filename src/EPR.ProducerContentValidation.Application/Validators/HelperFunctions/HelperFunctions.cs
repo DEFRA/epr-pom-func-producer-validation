@@ -37,11 +37,6 @@ public static class HelperFunctions
         ProducerSize.Large.Equals(row.ProducerSize, StringComparison.OrdinalIgnoreCase)
         && !IsSubmissionPeriodBeforeYear(row.DataSubmissionPeriod, 2025);
 
-    public static bool Is2025H1(string? dataSubmissionPeriod)
-    {
-        return "2025-H1".Equals(dataSubmissionPeriod, StringComparison.OrdinalIgnoreCase);
-    }
-
     public static bool IsWasteMaterialEligibleForRecyclabilityRating(ProducerRow row) =>
         PackagingType.Household.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
         || PackagingType.PublicBin.Equals(row.WasteType, StringComparison.OrdinalIgnoreCase)
