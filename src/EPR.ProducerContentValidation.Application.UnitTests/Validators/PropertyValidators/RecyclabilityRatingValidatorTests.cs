@@ -213,50 +213,6 @@ public class RecyclabilityRatingValidatorTests : RecyclabilityRatingValidator
     }
 
     [TestMethod]
-    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, "", DataSubmissionPeriodTestData.Year2025H1, "A")]
-    [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.PaperCard, "", DataSubmissionPeriodTestData.Year2025H1, "A")]
-    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Rigid, DataSubmissionPeriodTestData.Year2025H1, "A")]
-    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Flexible,  DataSubmissionPeriodTestData.Year2025H1, "A")]
-    public void Should_Pass_When_Valid_But_Optional_RecyclabilityRating_Provided_During_2025H1_Only(string producerSize, string packagingType, string materialType, string materialSubType, string submissionPeriod, string recyclabilityRating)
-    {
-        var row = BuildProducerRow(
-            dataSubmissionPeriod: submissionPeriod,
-            producerType: ProducerType.SuppliedUnderYourBrand,
-            producerSize: producerSize,
-            packagingType: packagingType,
-            packagingClass: PackagingClass.PrimaryPackaging,
-            materialType: materialType,
-            materialSubType: materialSubType,
-            recyclabilityRating: recyclabilityRating);
-
-        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(row));
-
-        result.ShouldNotHaveAnyValidationErrors();
-    }
-
-    [TestMethod]
-    [DataRow(ProducerSize.Large, PackagingType.HouseholdDrinksContainers, MaterialType.Glass, "", DataSubmissionPeriodTestData.Year2025H1)]
-    [DataRow(ProducerSize.Large, PackagingType.PublicBin, MaterialType.PaperCard, "", DataSubmissionPeriodTestData.Year2025H1)]
-    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Rigid, DataSubmissionPeriodTestData.Year2025H1)]
-    [DataRow(ProducerSize.Large, PackagingType.Household, MaterialType.Plastic, MaterialSubType.Flexible,  DataSubmissionPeriodTestData.Year2025H1)]
-    public void Should_Pass_When_No_Rating_Supplied_For_Matching_MaterialTypes_During_2025H1_Only(string producerSize, string packagingType, string materialType, string materialSubType, string submissionPeriod)
-    {
-        var row = BuildProducerRow(
-            dataSubmissionPeriod: submissionPeriod,
-            producerType: ProducerType.SuppliedUnderYourBrand,
-            producerSize: producerSize,
-            packagingType: packagingType,
-            packagingClass: PackagingClass.PrimaryPackaging,
-            materialType: materialType,
-            materialSubType: materialSubType,
-            recyclabilityRating: string.Empty);
-
-        var result = _systemUnderTest.TestValidate(new ValidationContext<ProducerRow>(row));
-
-        result.ShouldNotHaveAnyValidationErrors();
-    }
-
-    [TestMethod]
     [DataRow(ProducerSize.Large, PackagingType.NonHousehold, MaterialType.Plastic, MaterialSubType.Rigid, RecyclabilityRating.Amber)]
     [DataRow(ProducerSize.Large, PackagingType.NonHousehold, MaterialType.Wood, "", RecyclabilityRating.Red)]
     [DataRow(ProducerSize.Large, PackagingType.NonHousehold, MaterialType.Other, "", RecyclabilityRating.Green)]

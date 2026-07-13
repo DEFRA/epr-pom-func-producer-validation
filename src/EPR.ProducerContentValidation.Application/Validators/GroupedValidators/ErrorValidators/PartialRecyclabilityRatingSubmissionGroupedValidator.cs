@@ -25,7 +25,6 @@ public class PartialRecyclabilityRatingSubmissionGroupedValidator(IIssueCountSer
 
         var matchingRows = producerRows.Where(row =>
             HelperFunctions.HelperFunctions.IsLargeProducerFrom2025AndBeyond(row)
-            && !HelperFunctions.HelperFunctions.Is2025H1(row.DataSubmissionPeriod)
             && HelperFunctions.HelperFunctions.IsWasteMaterialEligibleForRecyclabilityRating(row)).ToList();
 
         if (matchingRows.Count == 0)
