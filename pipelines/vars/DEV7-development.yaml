@@ -1,6 +1,12 @@
 variables:
-  azureSubscription: 'AZD-RWD-DEV7'
-  docker.imageName: 'producervalidation'
-  acr.azureContainerRegistryName: 'devrwdinfac1401'
-  acr.repositoryName: 'producervalidationrepository'
-  serviceName: 'devrwdwebfa7402'
+- group: ServiceConnections
+- name: azureSubscription
+  value: $(ServiceConnectionDEV7)
+- name: docker.imageName
+  value: 'producervalidation'
+- name: acr.azureContainerRegistryName
+  value: 'devrwdinfac1401'
+- name: acr.repositoryName
+  value: 'producervalidationrepository'
+- name: serviceName
+  value: 'devrwdwebfa7402'
